@@ -90,6 +90,7 @@ corepack pnpm typecheck
 corepack pnpm test           # node:test unit tests (throwaway keys)
 corepack pnpm build          # → dist/ (prints sha256 of each file)
 node scripts/browser-verify.mjs http://127.0.0.1:8765/ verification/browser-local
+sh scripts/deploy.sh         # clean-clone build -> force-push dist/ to gh-pages
 ```
 
 `scripts/browser-verify.mjs` drives headless Chrome through CDP. It injects a

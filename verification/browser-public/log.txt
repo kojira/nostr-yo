@@ -21,10 +21,10 @@ WebSocket error
 ×
 [B] ws created wss://relay.damus.io/
 [A] ws created wss://relay.damus.io/
-B npub: npub15dlqfvd9jkp3m6u0kcvm6xr0dv42c8uxkrl2du73fym0sauysvjq8u7r7h
-[A] mock signer signed kind=7117 content="Yo!" tags=[["p","a37e04b1a595831deb8fb619bd186f6b2aac1f86b0fea6f3d14936f877848324"],["alt","Yo! (a one-word ping sent with nostr-yo)"]] id=de639e17436b2cd1c6716fad903a7b629c8b2cc5a59278bd7aefae5e10f29c37
+B npub: npub17j4s9j0dpu6qg00fmhj8q63ldpmr4agjf55daahqdln6v6xtpsmspxupd4
+[A] mock signer signed kind=7117 content="Yo!" tags=[["p","f4ab02c9ed0f34043de9dde4706a3f68763af5124d28def6e06fe7a668cb0c37"],["alt","Yo! (a one-word ping sent with nostr-yo)"]] id=849360b1c5cdaba37943c03694f0da4dcb7e8d89729fc19d21cafc0419c557b8
 [A] ws created wss://relay.damus.io/
-A status: Yo! を npub15dlqf…8u7r7h に送りました（3/4 relay が受理）
+A status: Yo! を npub17j4s9…pxupd4 に送りました（3/4 relay が受理）
 A send results: wss://nos.lol
 ✓ 受理 (OK true)
 wss://yabu.me
@@ -35,19 +35,19 @@ wss://relay.damus.io
 ✗ 失敗
 接続できませんでした
 B inbox: Yo!
-from npub1atnt7…t6acg9
-2026/11/27 11:07:56 | 1 件の Yo（署名検証済み）
+from npub1c8te9…cxz7u6
+2026/11/27 11:10:08 | 1 件の Yo（署名検証済み）
 [M-swap-recipient] ws created wss://nos.lol/
 [M-swap-recipient] ws created wss://yabu.me/
 [M-swap-recipient] ws created wss://nostr.mom/
 [M-swap-recipient] ws created wss://relay.damus.io/
 [M-swap-recipient] ws created wss://relay.damus.io/
-[M-swap-recipient] mock signer signed kind=7117 content="Yo!" tags=[["p","3d54159e3e54d9632d4c7629c98948651f47f49613312f4b162fa3eda3230f39"],["alt","Yo! (a one-word ping sent with nostr-yo)"]] id=7510e4ada581a301d1fc98ef1a7705a4bd7724b611421fc4b939df40062b0376
+[M-swap-recipient] mock signer signed kind=7117 content="Yo!" tags=[["p","5a689c43482b86c9ef8118d29929308e661b8a9ef50d6928aeba2a9a75dcec52"],["alt","Yo! (a one-word ping sent with nostr-yo)"]] id=19752c891d7117eca3b4fc779eff0a7923d9f65fa9b3598643756d24088b5154
 M-swap-recipient status: 署名済みイベントが要求と一致しないため送信を中止しました: tags が要求と違います（宛先が書き換えられた可能性） / p タグ（宛先）が要求と一致しません
 [M-kind1] ws created wss://nos.lol/
 [M-kind1] ws created wss://yabu.me/
 [M-kind1] ws created wss://nostr.mom/
 [M-kind1] ws created wss://relay.damus.io/
 [M-kind1] ws created wss://relay.damus.io/
-[M-kind1] mock signer signed kind=1 content="Yo!" tags=[["p","a37e04b1a595831deb8fb619bd186f6b2aac1f86b0fea6f3d14936f877848324"],["alt","Yo! (a one-word ping sent with nostr-yo)"]] id=4abdd1474f47c4d7ca7fbfe344813dc7b9342a5992b0410d0b6cccd368339b20
+[M-kind1] mock signer signed kind=1 content="Yo!" tags=[["p","f4ab02c9ed0f34043de9dde4706a3f68763af5124d28def6e06fe7a668cb0c37"],["alt","Yo! (a one-word ping sent with nostr-yo)"]] id=18b3ab5f6b421aa96b1741470e9d3c1109ba96609c041b3526c1b631ad768f71
 M-kind1 status: 署名済みイベントが要求と一致しないため送信を中止しました: kind が 7117 ではありません (1)
