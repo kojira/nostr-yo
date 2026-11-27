@@ -1,0 +1,7 @@
+# Supply-chain hardening (see README "Supply chain")
+# Refuse any package version published less than 7 days (10080 minutes) ago.
+minimumReleaseAge: 10080
+# No exceptions: minimumReleaseAgeExclude intentionally not set.
+# Do not run dependency lifecycle scripts (pnpm 10 default; made explicit).
+onlyBuiltDependencies: []
+strictDepBuilds: false

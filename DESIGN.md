@@ -1,0 +1,35 @@
+# nostr-yo 設計メモ（実装前）
+
+## 経緯
+- 当初 Go+Wasm 指定 → owner指示 e2240 で TypeScript に切替（Go の go.mod は未使用のまま退避）。
+- e2241 で minimumReleaseAge（7日=10080分）を必須化。
+
+## 目的
+Nostr で「Yo!」だけを送り合う静的Webアプリ。GitHub Pages で配信。
+
+## 構成
+- TypeScript → esbuild で単一 `app.js` にバンドル。CDN からのコード動的読込なし。
+- 署名は NIP-07 (`window.nostr`) のみ。秘密鍵の入力・保存は実装しない。
+- 暗号は自作しない: `@noble/curves`(schnorr検証), `@noble/hashes`(sha256), `@scure/base`(bech32)。
+- relay 通信はブラウザ標準 WebSocket で自前の最小実装（NIP-01 の EVENT/REQ/OK/EOSE/CLOSED/NOTICE）。
+
+## イベント設計
+- kind `7107`（regular, 1000–9999。2026-11時点の公式NIP一覧に未登録のアプリ独自kind）。kind1 は使わない＝タイムラインを汚さない。
+- content は固定 `"Yo!"`。
+- tags: `["p", <宛先hex>]` を正確に1つ、`["alt", "Yo! sent with nostr-yo"]`（NIP-31）。
+- 受信: `REQ {kinds:[7107], "#p":[自分], limit:50}`。
+
+## 検証
+- 送信前: NIP-07 が返したイベントの kind / content / tags / created_at / pubkey が依頼内容と一致、id 再計算一致、schnorr 署名検証OK でなければ送らない。
+- 受信: id・署名検証、kind/content/p タグ（自分宛）を確認し、不一致は破棄。表示は textContent のみ（HTMLとして解釈しない）。CSP meta で script-src 'self'。
+
+## UI
+- 大きな「Yo!」ボタン、npub 入力、relay ごとの接続状態と OK/失敗/タイムアウトを正直に表示、受信 Yo 一覧。
+
+## 供給網対策
+- pnpm（corepack, packageManager に版+hash固定）、`minimumReleaseAge: 10080`、厳密バージョン、lockfile コミット、lifecycle script 無効、`pnpm audit`。
+- 配信は GitHub Actions を使わず、クリーンビルドした dist を gh-pages ブランチへ push（第三者 Action ゼロ、秘密不要）。
+
+## テスト
+- node:test で純粋関数（bech32, id計算, 署名検証, 署名内容検証, 受信フィルタ）。
+- ブラウザ: Chrome headless + CDP（Node標準WebSocket、追加依存なし）。テスト専用 NIP-07 モック（使い捨て鍵、配信物に含めない）で実 relay への送受信を確認。実拡張での確認は別扱い。

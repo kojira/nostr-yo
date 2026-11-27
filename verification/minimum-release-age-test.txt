@@ -1,0 +1,18 @@
+# minimumReleaseAge rejection test (2026-11-27T02:01:48Z) in a throwaway temp copy of package.json/pnpm-workspace.yaml/.npmrc (deps emptied). Real project untouched.
+## Test A: exact young version typescript@7.1.0-dev.20261126.1 (expect reject)
+  * beta: 7.1.0-beta published at 10/21/2026
+  * next: 7.1.0-dev.20261126.1 published at 11/26/2026 5:20:34 PM
+
+If you need the full list of all 3896 published versions run "pnpm view typescript versions".
+
+If you want to install the matched version ignoring the time it was published, you can add the package name to the minimumReleaseAgeExclude setting. Read more about it: https://pnpm.io/settings#minimumreleaseageexclude
+exit=1
+ ERR_PNPM_NO_MATURE_MATCHING_VERSION  Version 7.1.0-dev.20261126.1 (released 17 hours ago) of typescript does not meet the minimumReleaseAge constraint
+
+This error happened while installing a direct dependency of /private/var/folders/ph/5dmdqcgx3ldb522n1psk0_lh0000gn/T/tmp.SvJwj5ffsM
+## Test B (control): same request with minimumReleaseAge: 0, --lockfile-only (no package code fetched/executed)
++ typescript 7.1.0-dev.20261126.1
+
+Done in 526ms using pnpm v10.34.9
+exit=0
+25
