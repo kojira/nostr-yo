@@ -1,0 +1,2 @@
+{"ext":"NIP-07 拡張: 未検出","status":"NIP-07 拡張（nos2x / Alby / nostr-keyx など）が見つかりません。インストールして再読み込みしてください。","hasNostr":"undefined","logs":[]}
+send w/o login: 先に「拡張でログイン」してください

@@ -1,0 +1,30 @@
+{
+  "site": "https://kojira.github.io/nostr-yo/",
+  "chrome": "Chrome/158.0.8127.38",
+  "startedAt": "2026-11-27T05:14:07.071Z",
+  "checks": {
+    "allRowsResolved": true,
+    "nameAndIconShown": true,
+    "sameNameDistinguishedByNpub": true,
+    "brokenImageFallsBack": true,
+    "badNameAsText": true,
+    "badUrlRejected": true,
+    "noPictureLetter": true,
+    "noProfileHonest": true,
+    "replyTargetsFixedToAuthor": true,
+    "emojiUrlNeverLoaded": true,
+    "imageRequestsOnlyHttps": true,
+    "searchIconShown": true,
+    "searchBrokenIconFallsBack": true,
+    "searchSameNameNpub": true,
+    "searchBadUrlLetter": true,
+    "searchNoProfileLetter": true,
+    "searchSelectFixesAuthor": true,
+    "searchSendOk": true,
+    "searchSentToSelected": true,
+    "replyOk": true,
+    "replySignedOnceToAuthor": true,
+    "s1ReceivedWithRName": true
+  },
+  "finishedAt": "2026-11-27T05:14:22.192Z"
+}
