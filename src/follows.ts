@@ -14,6 +14,8 @@ export interface FollowProfile {
   name: string;
   displayName: string;
   nip05: string;
+  /** safe https picture URL or "" */
+  picture: string;
   created_at: number;
   id: string;
 }
@@ -57,6 +59,19 @@ export function cleanText(v: unknown): string {
   return [...s].slice(0, MAX_FIELD).join("");
 }
 
+/** Accept only plain https image URLs (no credentials, no whitespace/control chars, bounded length). */
+export function safePictureUrl(v: unknown): string {
+  if (typeof v !== "string" || v.length === 0 || v.length > 1024) return "";
+  if (/[\s\u0000-\u001f\u007f-\u009f"'<>\\`]/.test(v)) return "";
+  try {
+    const u = new URL(v);
+    if (u.protocol !== "https:" || !u.hostname || u.username || u.password) return "";
+    return u.href;
+  } catch {
+    return "";
+  }
+}
+
 /** Parse a verified kind 0 into display fields. Returns null if not a valid kind 0 of `author`. */
 export function parseProfile(e: unknown, author: string): FollowProfile | null {
   if (!verifyEventSignature(e) || e.kind !== 0 || e.pubkey !== author) return null;
@@ -71,6 +86,7 @@ export function parseProfile(e: unknown, author: string): FollowProfile | null {
     name: cleanText(obj.name),
     displayName: cleanText(obj.display_name) || cleanText(obj.displayName),
     nip05: cleanText(obj.nip05),
+    picture: safePictureUrl(obj.picture),
     created_at: e.created_at,
     id: e.id,
   };
@@ -97,6 +113,8 @@ export interface SearchRow {
   label: string;
   name: string;
   nip05: string;
+  /** safe https picture URL or "" */
+  picture: string;
   hasProfile: boolean;
 }
 
@@ -127,6 +145,7 @@ export function searchFollows(query: string, follows: string[], profiles: Map<st
       label: p ? (p.displayName || p.name || "(名前なし)") : "(プロフィールなし)",
       name: p?.name ?? "",
       nip05: p?.nip05 ?? "",
+      picture: p?.picture ?? "",
       hasProfile: !!p,
     }]);
   });

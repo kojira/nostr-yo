@@ -82,3 +82,5 @@ UI marks: "nostr-yo" when emoji URL == ours, otherwise "他実装" (host shown a
 - `<img>` attributes: referrerpolicy=no-referrer, crossorigin=anonymous (no cookies), loading=lazy, decoding=async, width/height fixed. On error it falls back to a built-in letter avatar. CSP `img-src 'self' data: https:`.
 - Privacy: loading a sender's picture contacts that image's host. The host sees your IP and when you loaded it; no referrer is sent. Documented in the README. Emoji URLs inside Yo events are still never loaded.
 - No profile / lookup failed / no picture → letter avatar plus short npub. A short npub is always shown under the name (for same names). The Yo back target stays fixed to the event author.
+- e2264: search candidates use the same `avatar()` (safe https only, no-referrer, anonymous CORS, lazy, letter fallback on missing/error) from the follow loader's profiles. No extra queries. The short npub stays, and clicking still fixes that pubkey.
+- Bug found in testing: inbox re-render used requestAnimationFrame, which never fires in background tabs → switched to setTimeout.

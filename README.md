@@ -40,6 +40,19 @@ In the inbox, a Yo whose emoji URL is not ours is labelled "他実装".
 - **Choosing a result:** clicking one fixes that pubkey as the recipient. Editing the field by hand clears the choice; typing an npub manually still works.
 - **Honest states:** loading / failed (all relays) / no kind 3 / empty / profiles n/m / follows without a profile (findable by npub only).
 
+**Sender icons and names.** The inbox and the follow search show each person's icon and display_name/name, taken from their newest verified kind 0.
+- Profiles the follow loader already has are reused. Unknown senders are looked up in batches, at most once each.
+- Names are untrusted text, shown with `textContent`.
+- A short npub is always shown under the name, so people with the same name can be told apart. The Yo back target stays fixed to the event author.
+- No profile, a failed lookup, no picture, an invalid picture URL, or an image that fails to load → a built-in letter avatar.
+
+**Privacy note (profile pictures).** Showing a `picture` means your browser fetches that image from whatever host the profile points to. That host sees your IP address and the time.
+- Mitigations:
+  - only plain `https://` URLs are allowed (no credentials, whitespace or quotes, ≤ 1024 chars);
+  - images are fetched with `referrerpolicy="no-referrer"` and `crossorigin="anonymous"` (no cookies), and loaded lazily;
+  - CSP limits images to `'self' data: https:`.
+- The emoji URL inside a Yo event is **still never fetched**; the app always shows its own `yo.png`.
+
 **Retired format, kind 7117 (2026-11-26 – 2026-11-27).** The old Yo was `kind 7117, content "Yo!", ["p", to]`. It is no longer sent or read. Old 7117 events stay on relays and are simply ignored.
 
 **Existing Nostr clients: not verified, no promises.** Other clients may or may not show these reactions or notify the recipient. That is out of scope (owner instruction e2251) and was not tested.
@@ -70,7 +83,7 @@ and served the inbox query. If a relay ever refuses for lack of AUTH, the UI sho
 
 - Received data is shown with `textContent` only; it is never parsed as HTML.
   Content must be exactly "Yo!" anyway.
-- CSP meta: `default-src 'none'; script-src 'self'; style-src 'self'; connect-src wss: ws://localhost:*…`.
+- CSP meta: `default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data: https:; connect-src wss: ws://localhost:*…`. Profile pictures (https) are the only third-party requests.
   No inline scripts, and no third-party scripts, fonts or CDNs.
 - Relay URLs must be `wss://` (`ws://` is allowed only for localhost) and must not contain credentials.
 - The relay list is the only thing stored in `localStorage`.
@@ -88,7 +101,7 @@ and served the inbox query. If a relay ever refuses for lack of AUTH, the UI sho
 | Lifecycle scripts | `.npmrc ignore-scripts=true`, plus pnpm 10's default of not running dep build scripts (`onlyBuiltDependencies: []`). esbuild's `postinstall` does not run; its platform binary comes in as an optional dependency. |
 | Known vulns | `pnpm audit` and `pnpm audit --prod`: "No known vulnerabilities found" (2026-11-27, `verification/audit.txt`). |
 | Reproducible | A clean clone with `pnpm install --frozen-lockfile` and `pnpm build` gives byte-identical `dist/` (sha256 printed by the build). |
-| No runtime CDN | The bundle loads no remote code. The only network use is WebSocket to the relays you choose. |
+| No runtime CDN | The bundle loads no remote code. Network use: WebSocket to the relays you choose, plus https profile images (see the privacy note). |
 | Deployment | **No GitHub Actions, so no third-party Actions.** A locally built `dist/` is pushed to the `gh-pages` branch, and Pages serves that branch. No secrets involved. |
 
 Remaining supply-chain risks (not hidden):

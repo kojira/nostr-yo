@@ -1,0 +1,27 @@
+kind0 d92894e0 wss://r.kojira.io:true | wss://yabu.me:true | wss://x.kojira.io:true | wss://n.kojira.io:true
+kind0 95a24b93 wss://r.kojira.io:true duplicate: have this event | wss://yabu.me:true | wss://x.kojira.io:true | wss://n.kojira.io:true
+kind0 2898214b wss://r.kojira.io:true | wss://yabu.me:true | wss://x.kojira.io:true | wss://n.kojira.io:true
+kind0 bc0c6a35 wss://r.kojira.io:true | wss://yabu.me:true | wss://x.kojira.io:true | wss://n.kojira.io:true
+kind0 5378cf0c wss://r.kojira.io:true | wss://yabu.me:true | wss://x.kojira.io:true | wss://n.kojira.io:true
+kind0 166ee091 wss://r.kojira.io:true duplicate: have this event | wss://yabu.me:true | wss://x.kojira.io:true | wss://n.kojira.io:true
+R kind3 wss://r.kojira.io:true | wss://yabu.me:true | wss://x.kojira.io:true | wss://n.kojira.io:true
+yo from 95a24b93 wss://r.kojira.io:true | wss://yabu.me:true | wss://x.kojira.io:true | wss://n.kojira.io:true
+yo from 2898214b wss://r.kojira.io:true | wss://yabu.me:true | wss://x.kojira.io:true | wss://n.kojira.io:true
+yo from bc0c6a35 wss://r.kojira.io:true | wss://yabu.me:true | wss://x.kojira.io:true | wss://n.kojira.io:true
+yo from 5378cf0c wss://r.kojira.io:true | wss://yabu.me:true | wss://x.kojira.io:true | wss://n.kojira.io:true
+yo from fbe96c25 wss://r.kojira.io:true | wss://yabu.me:true | wss://x.kojira.io:true | wss://n.kojira.io:true
+yo from 166ee091 wss://r.kojira.io:true | wss://yabu.me:true | wss://x.kojira.io:true | wss://n.kojira.io:true
+[S1] ws created wss://r.kojira.io/
+[S1] ws created wss://yabu.me/
+[S1] ws created wss://x.kojira.io/
+[S1] ws created wss://n.kojira.io/
+[R] ws created wss://r.kojira.io/
+[R] ws created wss://yabu.me/
+[R] ws created wss://x.kojira.io/
+[R] ws created wss://n.kojira.io/
+rows: [{"to":"166ee0918ec1e175b606a322731ffb96ede134fa78a36c96385340dbf75c9e01","name":"httppic_e22637kvr","npub":"npub1zehwp…k48t35","img":null,"imgLoaded":null,"ref":null,"letter":true,"note":"返信先: httppic_e22637kvr (npub1zehwp…k48t35)"},{"to":"bc0c6a35d70c2f56323d9f1d8995e7a659bdcfb0ed5e34229eab4503782e1d4c","name":"<img src=x onerror=\"window.__xss=1\">e22637kvr","npub":"npub1hsxx5…0swa7r","img":null,"imgLoaded":null,"ref":null,"letter":true,"note":"返信先: <img src=x onerror=\"window.__xss=1\">e22637kvr (npub1hsxx5…0swa7r)"},{"to":"fbe96c2519977baafa2bb0d0f36be05b1d644b2cdf7147fba4a736e28a583f63","name":"プロフィールなし","npub":"npub1l05kc…saea3r","img":null,"imgLoaded":null,"ref":null,"letter":true,"note":"返信先: (npub1l05kc…saea3r)"},{"to":"5378cf0c4d0ab59091708d866392cf80f108a560f111119163fd02cebe458528","name":"nopic_e22637kvr","npub":"npub12duv7…3uqjhh","img":null,"imgLoaded":null,"ref":null,"letter":true,"note":"返信先: nopic_e22637kvr (npub12duv7…3uqjhh)"},{"to":"2898214b10d0f3edb1eaac162322f1d090dbda2ccab6212c534b4cbd568cba57","name":"アリス e22637kvr","npub":"npub19zvzz…z9esvv","img":null,"imgLoaded":null,"ref":null,"letter":true,"note":"返信先: アリス e22637kvr (npub19zvzz…z9esvv)"},{"to":"95a24b933d5bdd4a9d50832b1bd90e36a1b5f25cd0f05a0631cbbc2e679826fe","name":"アリス e22637kvr","npub":"npub1jk3yh…aywet2","img":"https://kojira.github.io/nostr-yo/yo.png","imgLoaded":true,"ref":"no-referrer","letter":false,"note":"返信先: アリス e22637kvr (npub1jk3yh…aywet2)"}]
+R follow-state: フォロー 4 人（プロフィールあり 3 / なし 1） ・ クエリ 8 件
+search rows: [{"pk":"95a24b933d5bdd4a9d50832b1bd90e36a1b5f25cd0f05a0631cbbc2e679826fe","name":"アリス e22637kvr","npub":"npub1jk3yhyeat…lqaywet2","img":"https://kojira.github.io/nostr-yo/yo.png","ref":"no-referrer","loaded":true,"letter":false},{"pk":"2898214b10d0f3edb1eaac162322f1d090dbda2ccab6212c534b4cbd568cba57","name":"アリス e22637kvr","npub":"npub19zvzzjcs6…tsz9esvv","img":null,"ref":null,"loaded":null,"letter":true}]
+[R] mock signer signed kind=7 content=":yo:" tags=[["e","757e8f712873113bf10d6768e0b49eb50a6f03468e50d93af5885baeaf16e381","wss://r.kojira.io","2898214b10d0f3edb1eaac162322f1d090dbda2ccab6212c534b4cbd568cba57"],["p","2898214b10d0f3edb1eaac162322f1d090dbda2ccab6212c534b4cbd568cba57","wss://r.kojira.io"],["k","0"],["emoji","yo","https://kojira.github.io/nostr-yo/yo.png"],["t","yo"]] id=585b8f49af86e375111e47a419b07dc13d76bd3720b2712094c35d9a1e8b73a7
+R status: Yo! (:yo: リアクション) を npub19zvzz…z9esvv のプロフィールに送りました（4/4 relay が受理）
+[R] mock signer signed kind=7 content=":yo:" tags=[["e","0b458df398951099f22327b1b884bba11fe94933427dde4a2286c923f0836e67","wss://r.kojira.io","95a24b933d5bdd4a9d50832b1bd90e36a1b5f25cd0f05a0631cbbc2e679826fe"],["p","95a24b933d5bdd4a9d50832b1bd90e36a1b5f25cd0f05a0631cbbc2e679826fe","wss://r.kojira.io"],["k","0"],["emoji","yo","https://kojira.github.io/nostr-yo/yo.png"],["t","yo"]] id=5a4f22fab3ad4b42446a08472999d1cd1dade65e96724ed35c3c657ee042e180

@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import { schnorr } from "@noble/curves/secp256k1.js";
 import { bytesToHex, hexToBytes } from "@noble/hashes/utils.js";
 import { computeEventId, toNpub, type NostrEvent, type UnsignedEvent } from "../src/yo.js";
-import { MAX_FOLLOWS, chunk, cleanText, extractFollows, newerProfile, parseProfile, pickLatest, searchFollows, type FollowProfile } from "../src/follows.js";
+import { MAX_FOLLOWS, safePictureUrl, chunk, cleanText, extractFollows, newerProfile, parseProfile, pickLatest, searchFollows, type FollowProfile } from "../src/follows.js";
 
 const key = () => { const sk = schnorr.utils.randomSecretKey(); return { sk, pk: bytesToHex(schnorr.getPublicKey(sk)) }; };
 function sign(e: UnsignedEvent, sk: Uint8Array): NostrEvent {
@@ -41,7 +41,7 @@ test("parseProfile: untrusted content -> sanitized strings only", () => {
   assert.equal(p.displayName, "Alice W");
   assert.equal(p.nip05, "");
   assert.equal(p.npub, toNpub(a.pk));
-  assert.ok(!("about" in p) && !("picture" in p));
+  assert.ok(!("about" in p)); assert.equal(p.picture, "https://x/p.png");
   assert.equal(parseProfile(ev, b.pk), null, "author mismatch");
   assert.equal(parseProfile({ ...ev, content: "{}" }, a.pk), null, "bad id");
   const bad = parseProfile(sign({ kind: 0, created_at: 5, tags: [], content: "not json" }, a.sk), a.pk)!;
@@ -81,4 +81,33 @@ test("searchFollows: names, same-name disambiguation, npub, no-profile", () => {
   assert.equal(byNpub[0]!.hasProfile, false);
   assert.equal(byNpub[0]!.label, "(プロフィールなし)");
   assert.equal(searchFollows("koj", fl, m, 1).length, 1, "limit");
+});
+
+test("safePictureUrl: only plain https", () => {
+  assert.equal(safePictureUrl("https://example.com/a.png"), "https://example.com/a.png");
+  assert.equal(safePictureUrl("https://example.com/a b.png"), "");
+  for (const bad of ["http://example.com/a.png", "javascript:alert(1)", "data:image/png;base64,AA", "//example.com/a.png",
+    "https://u:p@example.com/a.png", "https://example.com/\"onerror=\"x", "https://example.com/<x>", "https://e.com/" + "a".repeat(1100),
+    "", 42, null, "file:///etc/passwd", "blob:https://x/y", "https://example.com/\u0000.png"]) {
+    assert.equal(safePictureUrl(bad), "", String(bad).slice(0, 40));
+  }
+});
+
+test("parseProfile picture field", () => {
+  const ok = parseProfile(sign({ kind: 0, created_at: 1, tags: [], content: JSON.stringify({ name: "x", picture: "https://img.example/p.jpg" }) }, a.sk), a.pk)!;
+  assert.equal(ok.picture, "https://img.example/p.jpg");
+  const bad = parseProfile(sign({ kind: 0, created_at: 1, tags: [], content: JSON.stringify({ name: "x", picture: "javascript:alert(1)" }) }, a.sk), a.pk)!;
+  assert.equal(bad.picture, "");
+  const none = parseProfile(sign({ kind: 0, created_at: 1, tags: [], content: JSON.stringify({ name: "x" }) }, a.sk), a.pk)!;
+  assert.equal(none.picture, "");
+});
+
+test("searchFollows rows carry the safe picture", () => {
+  const p1 = parseProfile(sign({ kind: 0, created_at: 1, tags: [], content: JSON.stringify({ name: "pic_user", picture: "https://img.example/p.jpg" }) }, a.sk), a.pk)!;
+  const p2 = parseProfile(sign({ kind: 0, created_at: 1, tags: [], content: JSON.stringify({ name: "pic_user", picture: "javascript:x" }) }, b.sk), b.pk)!;
+  const rows = searchFollows("pic_user", [a.pk, b.pk, c.pk], new Map([[a.pk, p1], [b.pk, p2]]));
+  assert.equal(rows[0]!.picture, "https://img.example/p.jpg");
+  assert.equal(rows[1]!.picture, "");
+  const np = searchFollows(toNpub(c.pk).slice(5, 15), [c.pk], new Map());
+  assert.equal(np[0]!.picture, "");
 });

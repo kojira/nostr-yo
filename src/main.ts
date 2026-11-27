@@ -3,6 +3,7 @@ import { Relay, type PublishResult } from "./relay.js";
 import { LS_RELAYS, resolveRelayUrls } from "./config.js";
 import { FollowLoader } from "./follow-loader.js";
 import { searchFollows } from "./follows.js";
+import { ProfileCache } from "./profile-cache.js";
 import {
   buildYo,
   parseIncomingYo,
@@ -47,7 +48,15 @@ const myProfileIds = new Set<string>();
 let rejected = 0;
 /** recipient fixed by choosing a follow from search (cleared when the to-field is edited) */
 let selected: { pubkey: string; label: string } | null = null;
-const follows = new FollowLoader(() => { renderFollowState(); renderSearch(); });
+let inboxRenderQueued = false;
+function scheduleInbox() {
+  if (inboxRenderQueued) return;
+  inboxRenderQueued = true;
+  // setTimeout (not rAF): rAF never fires in background tabs, which would freeze the inbox.
+  setTimeout(() => { inboxRenderQueued = false; renderInbox(); }, 50);
+}
+const follows = new FollowLoader(() => { renderFollowState(); renderSearch(); if (follows.state.phase === "ready") scheduleInbox(); });
+const senders = new ProfileCache(() => [...relays], () => follows.profiles, scheduleInbox);
 
 function loadRelayUrls(): string[] {
   let raw: string | null = null;
@@ -140,7 +149,35 @@ function setInboxNote() {
     `${received.length} 件の Yo（署名検証済み）` + (rejected ? ` ／ 検証失敗などで破棄: ${rejected} 件` : "");
 }
 
+const AVATAR_COLORS = ["#7b2ff7", "#f107a3", "#1aa260", "#e67e22", "#2d7ff9", "#c0392b", "#16a085", "#8e44ad"];
+
+/** Letter avatar (built-in, no network). */
+function letterAvatar(pubkey: string, name: string): HTMLElement {
+  const d = el("span", "avatar letter", ([...name.trim()][0] ?? "?").toUpperCase());
+  d.style.background = AVATAR_COLORS[parseInt(pubkey.slice(0, 2), 16) % AVATAR_COLORS.length]!;
+  d.setAttribute("aria-hidden", "true");
+  return d;
+}
+
+/** Profile picture with privacy-preserving attributes and fallback to a letter avatar. */
+function avatar(pubkey: string, picture: string, name: string): HTMLElement {
+  if (!picture) return letterAvatar(pubkey, name);
+  const img = document.createElement("img");
+  img.className = "avatar";
+  img.alt = "";
+  img.width = 36;
+  img.height = 36;
+  img.referrerPolicy = "no-referrer";
+  img.crossOrigin = "anonymous";
+  img.loading = "lazy";
+  img.decoding = "async";
+  img.onerror = () => { img.replaceWith(letterAvatar(pubkey, name)); };
+  img.src = picture; // safePictureUrl(): https only
+  return img;
+}
+
 function renderInbox() {
+  senders.want(received.slice(0, 100).map((y) => y.ev.pubkey));
   const ul = $("inbox");
   ul.replaceChildren();
   for (const yo of received.slice(0, 100)) {
@@ -151,8 +188,16 @@ function renderInbox() {
     img.alt = ":yo:";
     img.className = "yo-emoji";
     li.append(img);
-    const who = el("button", "from", `from ${shortNpub(e.pubkey)}`) as HTMLButtonElement;
-    who.title = "この人に Yo を返す";
+    const { profile, state } = senders.get(e.pubkey);
+    const name = profile ? (profile.displayName || profile.name) : "";
+    const who = el("button", "from") as HTMLButtonElement;
+    who.type = "button";
+    who.append(avatar(e.pubkey, profile?.picture ?? "", name));
+    const names = el("span", "from-names");
+    names.append(el("span", name ? "from-name" : "from-name none", name || (state === "pending" ? "読み込み中…" : state === "failed" ? "プロフィール取得失敗" : profile ? "(名前なし)" : "プロフィールなし")));
+    names.append(el("span", "from-npub", shortNpub(e.pubkey)));
+    who.append(names);
+    who.title = `${toNpub(e.pubkey)} を宛先欄に入れる`;
     who.onclick = () => {
       clearSelection(false);
       ($("to") as HTMLInputElement).value = toNpub(e.pubkey);
@@ -175,7 +220,7 @@ function renderInbox() {
     back.dataset.to = author;
     back.title = `${toNpub(author)} に Yo を返す（署名が必要）`;
     back.disabled = sending;
-    const rowNote = el("span", "row-note", `返信先: ${shortNpub(author)}`);
+    const rowNote = el("span", "row-note", `返信先: ${name ? `${name} ` : ""}(${shortNpub(author)})`);
     back.onclick = () => { void sendYoTo(author, rowNote); };
     li.append(back, rowNote);
     ul.append(li);
@@ -362,6 +407,7 @@ function renderSearch() {
     const b = el("button", "pick") as HTMLButtonElement;
     b.type = "button";
     b.dataset.pubkey = r.pubkey;
+    b.append(avatar(r.pubkey, r.picture, r.hasProfile ? r.label : ""));
     b.append(el("span", r.hasProfile ? "pick-name" : "pick-name none", r.label));
     if (r.name && r.name !== r.label) b.append(el("span", "pick-sub", `@${r.name}`));
     if (r.nip05) b.append(el("span", "pick-sub", r.nip05));

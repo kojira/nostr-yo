@@ -69,3 +69,13 @@ h1 img { width: 128px; height: 128px; display: block; }
 .row-note.ok { color: #0b6b3a; }
 .row-note.err { color: #a1251b; }
 .selected[hidden] { display: none; }
+.from { display: flex; align-items: center; gap: 8px; background: transparent; padding: 2px 4px; text-align: left; }
+.from:hover { background: #f6f1ff; }
+.avatar { width: 36px; height: 36px; border-radius: 50%; object-fit: cover; flex: none; background: #eee; }
+.avatar.letter { display: inline-flex; align-items: center; justify-content: center; color: #fff; font-weight: 800; font-size: 16px; }
+.from-names { display: flex; flex-direction: column; min-width: 0; }
+.from-name { font-weight: 700; font-size: 14px; max-width: 180px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.from-name.none { color: #999; font-weight: 400; }
+.from-npub { font-family: ui-monospace, monospace; font-size: 11px; color: #888; }
+.pick { align-items: center; }
+.pick .avatar { width: 32px; height: 32px; font-size: 14px; }

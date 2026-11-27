@@ -151,7 +151,7 @@ await pageA.shot("selected.png");
 await pageA.evalJs(`document.getElementById('send').click()`);
 result.checks.sendOk = await waitFor(pageA, `/送りました/.test(document.getElementById('status').innerText)`, 45000);
 L("A status:", await pageA.evalJs(text("#status")));
-result.checks.receivedByB = await waitFor(pageB, `[...document.querySelectorAll('#inbox li')].some(l=>/from npub/.test(l.innerText))`, 20000);
+result.checks.receivedByB = await waitFor(pageB, `[...document.querySelectorAll('#inbox li')].some(l=>l.querySelector('.yo-back')?.dataset.to===${JSON.stringify(A.pk)})`, 20000);
 const signedLine = log.find((l) => l.startsWith("[A] mock signer signed kind=7"));
 result.checks.signedHasTyo = !!signedLine && signedLine.includes('["t","yo"]') && signedLine.includes(`["p","${B.pk}"`);
 result.checks.notSentToSameNameB2 = !!signedLine && !signedLine.includes(B2.pk);
