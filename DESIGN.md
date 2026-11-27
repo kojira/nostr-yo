@@ -49,3 +49,23 @@ Sources checked: NIP-25 and NIP-30 text at nostr-protocol/nips master bec0fc8 (c
   If the e id matches one of my kind 0 events that we know, the Yo is marked "target confirmed".
 - The old kind 7117 is retired: no longer sent or read. Old events stay on relays.
 - Existing Nostr clients are out of scope (owner e2251): no claim is made about how they display or notify these reactions.
+
+---
+## e2257 (2026-11-27): machine-readable Yo profile + follow-list recipient search
+
+### (1) "Yo reaction" convention (a proposal by this project, NOT an adopted NIP)
+Senders (this site) emit kind 7 with tags e / p / k=0 / emoji(yo, URL) **plus `["t","yo"]`**.
+Recognition rule (receivers), all required:
+- valid id+sig, kind 7, content exactly `:yo:`
+- exactly one `emoji` tag, shortcode `yo`, URL is any syntactically valid `https://` URL (≤2048 chars). **The URL is never fetched/displayed**; we always render our own yo.png.
+- exactly one `p` == me, exactly one `e` (64-hex; pubkey hint if present == me), `k` == "0", no `a`, created_at ≤ now+10min.
+- `["t","yo"]` is RECOMMENDED but NOT required (so pre-e2257 nostr-yo Yos without it still count) and is **never sufficient** on its own: a `t=yo` event failing any rule above is rejected (no tag-only false positives).
+UI marks: "nostr-yo" when emoji URL == ours, otherwise "他実装" (host shown as text only).
+
+### (2) Search recipients from my follow list
+- On login (background, non-blocking): latest verified kind 3 of me (`authors:[me]`), newest created_at / lowest id. Extract unique valid-hex `p` tags (cap 5000, shown if truncated).
+- Fetch kind 0 for follows in chunks of 150 authors, **relay by relay**: relay 1 gets all chunks; only still-missing pubkeys are asked from relay 2, etc. Max 2 REQs in flight. Keep newest verified kind 0 per author.
+- Parse content as untrusted JSON → only string `name`, `display_name`, `nip05` (control chars stripped, length capped). Rendered via textContent only, no pictures loaded.
+- Search: NFKC+lowercase substring over display_name/name/nip05/npub; top 30; each row shows display name, @name, short npub (distinguishes same names). Click → pubkey fixed (to field set to full npub, "選択中" chip). Editing the field manually clears the selection; manual npub entry still works.
+- Honest states: 未ログイン / フォロー読込中 / 取得失敗 (all relays failed) / kind3なし / フォロー0 / プロフィール取得中 n/m / プロフィールなし (still listed by npub).
+- Read-only: never publish kind 3 or change follows.
