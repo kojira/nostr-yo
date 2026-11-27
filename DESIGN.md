@@ -53,7 +53,7 @@ Sources checked: NIP-25 and NIP-30 text at nostr-protocol/nips master bec0fc8 (c
 ---
 ## e2257 (2026-11-27): machine-readable Yo profile + follow-list recipient search
 
-### (1) "Yo reaction" convention (a proposal by this project, NOT an adopted NIP)
+### (1) "Yo reaction" convention — FIXED, see SPEC.md (share SPEC.md first when asked for the spec)
 Senders (this site) emit kind 7 with tags e / p / k=0 / emoji(yo, URL) **plus `["t","yo"]`**.
 Recognition rule (receivers), all required:
 - valid id+sig, kind 7, content exactly `:yo:`
@@ -69,3 +69,9 @@ UI marks: "nostr-yo" when emoji URL == ours, otherwise "他実装" (host shown a
 - Search: NFKC+lowercase substring over display_name/name/nip05/npub; top 30; each row shows display name, @name, short npub (distinguishes same names). Click → pubkey fixed (to field set to full npub, "選択中" chip). Editing the field manually clears the selection; manual npub entry still works.
 - Honest states: 未ログイン / フォロー読込中 / 取得失敗 (all relays failed) / kind3なし / フォロー0 / プロフィール取得中 n/m / プロフィールなし (still listed by npub).
 - Read-only: never publish kind 3 or change follows.
+
+## e2259: Yo back button on each received Yo
+- Recipient = `ev.pubkey` of the verified received event (never a tag value).
+- Same send path as a normal Yo: newest kind 0 lookup → kind 7 with the shared tags → strict check of the signed result → publish.
+- Needs a click and a NIP-07 signature; there is no auto-reply.
+- While sending, all Yo buttons are disabled (prevents double sends). The row shows progress and then ok/failed.
