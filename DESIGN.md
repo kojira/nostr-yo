@@ -33,3 +33,19 @@ Nostr で「Yo!」だけを送り合う静的Webアプリ。GitHub Pages で配�
 ## テスト
 - node:test で純粋関数（bech32, id計算, 署名検証, 署名内容検証, 受信フィルタ）。
 - ブラウザ: Chrome headless + CDP（Node標準WebSocket、追加依存なし）。テスト専用 NIP-07 モック（使い捨て鍵、配信物に含めない）で実 relay への送受信を確認。実拡張での確認は別扱い。
+
+---
+## e2250 redesign (2026-11-27): Yo = NIP-25 kind 7 custom-emoji reaction to the recipient's kind 0
+
+Sources checked: NIP-25 and NIP-30 text at nostr-protocol/nips master bec0fc8 (copies in verification/e2250/).
+
+- Look up the recipient's latest kind 0: `{"kinds":[0],"authors":[to],"limit":1}` on every relay. Keep only events with a valid signature, `kind==0` and `pubkey==to`; take the newest `created_at` (on a tie, the lowest id, as NIP-01 says). If there is none, or every relay fails, say so in the UI and do not send.
+- Event: `kind 7`, `content ":yo:"`, tags:
+  `["e", <kind0 id>, <relay hint>, <to>]`, `["p", <to>, <relay hint>]`, `["k","0"]`,
+  `["emoji","yo","https://kojira.github.io/nostr-yo/yo.png"]` (exactly one emoji tag; image served by this site).
+  No `a` tag: kind 0 is replaceable, not addressable (30000–39999). No extra e/p tags.
+- Sender: the signed event must match the request exactly (kind, content, every tag, created_at, pubkey), and the id and signature must be valid.
+- Receiver: REQ `{"kinds":[7],"#p":[me],"#k":["0"]}`. Accept only: valid id and signature, kind 7, content exactly `:yo:`, exactly one emoji tag equal to ours (shortcode yo + our URL), exactly one p tag equal to me, exactly one e tag (64-hex id, pubkey hint equal to me), `k == "0"`, and created_at not more than 10 minutes in the future.
+  If the e id matches one of my kind 0 events that we know, the Yo is marked "target confirmed".
+- The old kind 7117 is retired: no longer sent or read. Old events stay on relays.
+- Existing Nostr clients are out of scope (owner e2251): no claim is made about how they display or notify these reactions.
