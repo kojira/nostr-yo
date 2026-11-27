@@ -1,0 +1,47 @@
+kind0 58756120 wss://r.kojira.io:true | wss://yabu.me:true | wss://x.kojira.io:true | wss://n.kojira.io:true
+kind0 95124ad0 wss://r.kojira.io:true | wss://yabu.me:true | wss://x.kojira.io:true | wss://n.kojira.io:true
+kind0 9084d7e8 wss://r.kojira.io:true | wss://yabu.me:true | wss://x.kojira.io:true | wss://n.kojira.io:true
+kind0 214a93f0 wss://r.kojira.io:true | wss://yabu.me:true | wss://x.kojira.io:true | wss://n.kojira.io:true
+A kind3 dcf25c048d72b9f40cfdca4460b648cbe3298b80e01f8724840aedb78c12868f follows=404 wss://r.kojira.io:true | wss://yabu.me:true | wss://x.kojira.io:true | wss://n.kojira.io:true
+[A] ws created wss://r.kojira.io/
+[B] ws created wss://r.kojira.io/
+[A] ws created wss://yabu.me/
+[B] ws created wss://yabu.me/
+[A] ws created wss://x.kojira.io/
+[B] ws created wss://x.kojira.io/
+[A] ws created wss://n.kojira.io/
+[B] ws created wss://n.kojira.io/
+[N-nokind3] ws created wss://r.kojira.io/
+[N-nokind3] ws created wss://yabu.me/
+[N-nokind3] ws created wss://x.kojira.io/
+[N-nokind3] ws created wss://n.kojira.io/
+A follow-state: フォロー 404 人（プロフィールあり 3 / なし 401） ・ クエリ 16 件
+search rows: [{"pk":"587561207d47677e565dcda23e601bed402c385261ae860e08ebda1667f310a8","text":"ヨー太郎 e2e3a7n0\n@yoTarget_e2e3a7n0\nnpub1tp6kzgrag…5qf7jatn"},{"pk":"95124ad0b87677218cd2e3c1c0d90de3fcd768083651d10f2d7dc4fd32946406","text":"ヨー太郎 e2e3a7n0\n@yoTarget_e2e3a7n0\nnpub1j5fy459cw…rq74qxsk"}]
+[A] mock signer signed kind=7 content=":yo:" tags=[["e","87d34e63aabd07e9674f02b31276348b9b61e4a895d7d132bf074d3c28fa47ff","wss://r.kojira.io","587561207d47677e565dcda23e601bed402c385261ae860e08ebda1667f310a8"],["p","587561207d47677e565dcda23e601bed402c385261ae860e08ebda1667f310a8","wss://r.kojira.io"],["k","0"],["emoji","yo","https://kojira.github.io/nostr-yo/yo.png"],["t","yo"]] id=f0c6b3bbd4da9b9631e5d814fdc0cc2274eb8d6c7bdb5d9a1eb63b41cd2eb5d3
+A status: Yo! (:yo: リアクション) を npub1tp6kz…f7jatn のプロフィールに送りました（4/4 relay が受理）
+publish otherYo 392b542443ef wss://r.kojira.io:true | wss://yabu.me:true | wss://x.kojira.io:true | wss://n.kojira.io:true
+publish compatYo db299538dac7 wss://r.kojira.io:true | wss://yabu.me:true | wss://x.kojira.io:true | wss://n.kojira.io:true
+publish fakeTagOnly c43e95ec4667 wss://r.kojira.io:true | wss://yabu.me:true | wss://x.kojira.io:true | wss://n.kojira.io:true
+publish fakeNoEmoji b5acbdad0b42 wss://r.kojira.io:true | wss://yabu.me:true | wss://x.kojira.io:true | wss://n.kojira.io:true
+publish fakeHttp 7ae6a11ebba1 wss://r.kojira.io:true | wss://yabu.me:true | wss://x.kojira.io:true | wss://n.kojira.io:true
+B inbox: from npub1jzzd0…4rjl6y
+kind0 一致
+2026/11/27 13:49:25
+Yo! を返す
+返信先: npub1jzzd0…4rjl6y
+from npub1jv482…dxvgwg
+kind0 一致
+他実装
+2026/11/27 13:49:25
+Yo! を返す
+返信先: npub1jv482…dxvgwg
+from npub1ge9lu…l3ma3j
+kind0 一致
+2026/11/27 13:49:25
+Yo! を返す
+返信先: npub1ge9lu…l3ma3j | 3 件の Yo（署名検証済み） ／ 検証失敗などで破棄: 3 件
+B rows: [{"to":"9084d7e818fd97cb0516a1c00b3ff81cb61e497c1603372af6e9452e1c50fe66","note":"返信先: npub1jzzd0…4rjl6y"},{"to":"932a750ae9b31c00fd37b7038886e6d1a02dd877215229c46c3fe84fb803928a","note":"返信先: npub1jv482…dxvgwg"},{"to":"464bfe55617c5963ee668c1e48075ca7ad8303987b7b0288d93f67684c15d3d8","note":"返信先: npub1ge9lu…l3ma3j"}]
+[B] mock signer signed kind=7 content=":yo:" tags=[["e","e72115a2a29a11cd72a65e02b8ce446dafd81b25e9cd2e936fc66870594b7efd","wss://r.kojira.io","9084d7e818fd97cb0516a1c00b3ff81cb61e497c1603372af6e9452e1c50fe66"],["p","9084d7e818fd97cb0516a1c00b3ff81cb61e497c1603372af6e9452e1c50fe66","wss://r.kojira.io"],["k","0"],["emoji","yo","https://kojira.github.io/nostr-yo/yo.png"],["t","yo"]] id=c5f89eb416d0d49b6081e478ca5c9497e2551e4b5b519581ad02761736ecc991
+B signed: [B] mock signer signed kind=7 content=":yo:" tags=[["e","e72115a2a29a11cd72a65e02b8ce446dafd81b25e9cd2e936fc66870594b7efd","wss://r.kojira.io","9084d7e818fd97cb0516a1c00b3ff81cb61e497c1603372af6e9452e1c50fe66"],["p","9084d7e818fd97cb0516a1c00b3ff81cb61e497c1603372af6e9452e1c50fe66","wss://r.kojira.io"],["k","0"],["emoji","yo","https://kojira.github.io/nostr-yo/yo.png"],["t","yo"]] id=c5f89eb416d0d49b6081e478ca5c9497e2551e4b5b519581ad02761736ecc991
+B rows after: ["✓ Yo を返しました（4/4 relay）","宛先の署名検証済み kind 0 プロフィールが見つかりません。Yo はプロフィールへのリアクションなので送信できません。 wss://r.kojira.io: 0件 / wss://yabu.me: 0件 / wss://x.kojira.io: 0件 / wss://n.kojira.io: 0件","返信先: npub1ge9lu…l3ma3j"]
+N follow-state: 署名検証済みのフォローリスト (kind 3) が見つかりません。npub を直接入力してください。
