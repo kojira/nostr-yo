@@ -66,6 +66,7 @@ test("buildYo: NIP-25 kind 7 + NIP-30 emoji reaction to kind 0", () => {
     ["p", pkB, RELAY],
     ["k", "0"],
     ["emoji", "yo", "https://kojira.github.io/nostr-yo/yo.png"],
+    ["t", "yo"],
   ]);
   assert.equal(YO_EMOJI_URL, "https://kojira.github.io/nostr-yo/yo.png");
   assert.equal(e.tags.filter((t) => t[0] === "a").length, 0, "kind 0 is not addressable: no a tag");
@@ -106,12 +107,14 @@ test("checkSignedYo rejects a signer that changed anything", () => {
   const req = buildYo(tB, 1700000000);
   const t = req.tags;
   const variants: Array<[string, UnsignedEvent]> = [
-    ["recipient p swapped", { ...req, tags: [t[0]!, ["p", pkA, RELAY], t[2]!, t[3]!] }],
-    ["target e swapped", { ...req, tags: [["e", "f".repeat(64), RELAY, pkB], t[1]!, t[2]!, t[3]!] }],
+    ["recipient p swapped", { ...req, tags: [t[0]!, ["p", pkA, RELAY], t[2]!, t[3]!, t[4]!] }],
+    ["target e swapped", { ...req, tags: [["e", "f".repeat(64), RELAY, pkB], t[1]!, t[2]!, t[3]!, t[4]!] }],
     ["extra p", { ...req, tags: [...t, ["p", pkA]] }],
     ["extra e", { ...req, tags: [["e", "f".repeat(64)], ...t] }],
-    ["emoji url swapped", { ...req, tags: [t[0]!, t[1]!, t[2]!, ["emoji", "yo", "https://evil.example/x.png"]] }],
-    ["k changed", { ...req, tags: [t[0]!, t[1]!, ["k", "1"], t[3]!] }],
+    ["emoji url swapped", { ...req, tags: [t[0]!, t[1]!, t[2]!, ["emoji", "yo", "https://evil.example/x.png"], t[4]!] }],
+    ["k changed", { ...req, tags: [t[0]!, t[1]!, ["k", "1"], t[3]!, t[4]!] }],
+    ["t tag dropped", { ...req, tags: [t[0]!, t[1]!, t[2]!, t[3]!] }],
+    ["t tag changed", { ...req, tags: [t[0]!, t[1]!, t[2]!, t[3]!, ["t", "spam"]] }],
     ["content +", { ...req, content: "+" }],
     ["content kind1 text", { ...req, content: "buy my coin" }],
     ["kind 1", { ...req, kind: 1 }],
@@ -132,36 +135,69 @@ test("checkSignedYo rejects tampered id / sig / garbage", () => {
   }
 });
 
-test("parseIncomingYo: accepts only exact Yo reactions to me", () => {
+test("parseIncomingYo: recognition rule", () => {
   const now = 1700000000;
   const req = buildYo(tB, now);
-  const t = req.tags;
+  const [E, P, K, EM, T] = req.tags as [string[], string[], string[], string[], string[]];
   const good = sign(req, skA);
-  assert.equal(parseIncomingYo(good, pkB, now)?.targetId, profB.id);
+  const y = parseIncomingYo(good, pkB, now);
+  assert.equal(y?.targetId, profB.id);
+  assert.equal(y?.ours, true);
+  assert.equal(y?.hasTag, true);
   assert.ok(acceptIncomingYo(good, pkB, now));
+  const yes = (tags: string[][], why: string, content = ":yo:") => {
+    const r = parseIncomingYo(sign({ ...req, tags, content }, skA), pkB, now);
+    assert.ok(r, why);
+    return r!;
+  };
   const no = (e: unknown, why: string) => assert.equal(parseIncomingYo(e, pkB, now), null, why);
+  const tagsNo = (tags: string[][], why: string, extra: Partial<UnsignedEvent> = {}) => no(sign({ ...req, ...extra, tags }, skA), why);
+
+  // compatibility: pre-e2257 nostr-yo Yo (no t tag) is still a Yo
+  const legacy = yes([E, P, K, EM], "pre-e2257 nostr-yo Yo without t tag");
+  assert.equal(legacy.hasTag, false);
+  assert.equal(legacy.ours, true);
+  // other implementation: different https emoji URL, still recognized, flagged as not ours
+  const other = yes([E, P, K, ["emoji", "yo", "https://cdn.example.org/emoji/yo.webp"], T], "other impl with own image");
+  assert.equal(other.ours, false);
+  assert.equal(other.emojiHost, "cdn.example.org");
+  yes([["e", profB.id], ["p", pkB], K, EM], "minimal hints");
+  yes([E, P, K, EM, ["t", "YO"]], "t value case-insensitive");
+  yes([E, P, K, EM, T, ["t", "nostr"], ["client", "x"]], "extra unrelated tags ok");
+
+  // tag-only false positives: t=yo alone is never enough
+  tagsNo([E, P, K, T], "t=yo but no emoji tag");
+  tagsNo([E, P, K, EM, T], "t=yo but plain like", { content: "+" });
+  tagsNo([E, P, K, EM, T], "t=yo but text content", { content: "yo" });
+  tagsNo([E, P, K, EM, T], "t=yo but kind 1", { kind: 1 });
+  tagsNo([E, P, K, ["emoji", "wave", "https://x.example/w.png"], T], "t=yo but other shortcode", { content: ":wave:" });
+  tagsNo([P, K, EM, T], "t=yo but no e");
+  tagsNo([E, K, EM, T], "t=yo but no p");
+  tagsNo([E, P, EM, T], "t=yo but no k");
+  tagsNo([E, P, ["k", "1"], EM, T], "t=yo but reaction to a note");
+
+  // emoji URL rules (never fetched; must be https)
+  tagsNo([E, P, K, ["emoji", "yo", "http://x.example/yo.png"], T], "http url");
+  tagsNo([E, P, K, ["emoji", "yo", "javascript:alert(1)"], T], "javascript url");
+  tagsNo([E, P, K, ["emoji", "yo", "data:image/png;base64,AAAA"], T], "data url");
+  tagsNo([E, P, K, ["emoji", "yo", "https://u:p@x.example/yo.png"], T], "credentials url");
+  tagsNo([E, P, K, ["emoji", "yo", "https://x.example/" + "a".repeat(2100)], T], "too long url");
+  tagsNo([E, P, K, ["emoji", "yo"], T], "emoji without url");
+  tagsNo([E, P, K, ["emoji", "yo2", YO_EMOJI_URL], T], "other shortcode");
+  tagsNo([E, P, K, EM, ["emoji", "yo", YO_EMOJI_URL], T], "two emoji tags");
+
+  // previous structural rules still hold
   assert.equal(parseIncomingYo(good, pkA, now), null, "not addressed to me");
   no({ ...good, sig: "f".repeat(128) }, "bad sig");
-  no(sign({ ...req, content: "+" }, skA), "plain like");
   no(sign({ ...req, content: ":yo: hi" }, skA), "extra content");
   no(sign({ ...req, content: "<img src=x onerror=alert(1)>" }, skA), "html");
   no(sign({ ...req, kind: LEGACY_KIND, content: "Yo!", tags: [["p", pkB]] }, skA), "legacy 7117");
-  no(sign({ ...req, kind: 1 }, skA), "kind 1");
-  no(sign({ ...req, tags: [t[0]!, t[1]!, t[2]!, ["emoji", "yo", "https://evil.example/yo.png"]] }, skA), "foreign emoji url");
-  no(sign({ ...req, tags: [t[0]!, t[1]!, t[2]!, ["emoji", "yo2", YO_EMOJI_URL]] }, skA), "other shortcode");
-  no(sign({ ...req, tags: [t[0]!, t[1]!, t[2]!] }, skA), "no emoji tag");
-  no(sign({ ...req, tags: [...t, ["emoji", "yo", YO_EMOJI_URL]] }, skA), "two emoji tags");
-  no(sign({ ...req, tags: [t[0]!, t[1]!, t[3]!] }, skA), "no k");
-  no(sign({ ...req, tags: [t[0]!, t[1]!, ["k", "1"], t[3]!] }, skA), "k != 0");
-  no(sign({ ...req, tags: [t[1]!, t[2]!, t[3]!] }, skA), "no e");
-  no(sign({ ...req, tags: [["e", "f".repeat(64)], ...t] }, skA), "two e");
-  no(sign({ ...req, tags: [["e", "nothex", RELAY, pkB], t[1]!, t[2]!, t[3]!] }, skA), "e not hex");
-  no(sign({ ...req, tags: [["e", profB.id, RELAY, pkA], t[1]!, t[2]!, t[3]!] }, skA), "e author hint not me");
-  no(sign({ ...req, tags: [...t, ["p", pkA]] }, skA), "two p");
-  no(sign({ ...req, tags: [...t, ["a", `0:${pkB}:`]] }, skA), "a tag");
+  tagsNo([["e", "f".repeat(64)], E, P, K, EM, T], "two e");
+  tagsNo([["e", "nothex", RELAY, pkB], P, K, EM, T], "e not hex");
+  tagsNo([["e", profB.id, RELAY, pkA], P, K, EM, T], "e author hint not me");
+  tagsNo([E, P, ["p", pkA], K, EM, T], "two p");
+  tagsNo([E, P, K, EM, T, ["a", `0:${pkB}:`]], "a tag");
   no(sign(buildYo(tB, now + 3600), skA), "future");
-  // e without relay/pubkey hints is still a valid NIP-25 reaction
-  assert.ok(parseIncomingYo(sign({ ...req, tags: [["e", profB.id], ["p", pkB], t[2]!, t[3]!] }, skA), pkB, now));
 });
 
 test("normalizeRelay", () => {

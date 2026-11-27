@@ -57,7 +57,6 @@ Confirmed (everything above):
 - The reply rule: a reply goes to the event's author.
 
 Not yet confirmed / open:
-- **Deployment:** the live site (gh-pages) still runs the e2250 build. It does not send `t=yo` yet, and it recognises only its own emoji URL. This spec takes effect there once the e2257/e2259 build is published.
 - No guidance yet on emoji image size or format.
 - Not checked: which relays support `#t` filtering.
 - Not checked: how existing Nostr clients display or notify these reactions. Not promised (e2251).

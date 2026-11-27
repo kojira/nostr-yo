@@ -1,6 +1,8 @@
 // UI entry point. All untrusted text is rendered via textContent only.
 import { Relay, type PublishResult } from "./relay.js";
 import { LS_RELAYS, resolveRelayUrls } from "./config.js";
+import { FollowLoader } from "./follow-loader.js";
+import { searchFollows } from "./follows.js";
 import {
   buildYo,
   parseIncomingYo,
@@ -12,6 +14,7 @@ import {
   shortNpub,
   toNpub,
   yoFilter,
+  type IncomingYo,
   type NostrEvent,
 } from "./yo.js";
 
@@ -38,10 +41,13 @@ function el(tag: string, cls?: string, text?: string): HTMLElement {
 let me: string | null = null;
 let relays: Relay[] = [];
 const seen = new Set<string>();
-const received: Array<{ ev: NostrEvent; targetId: string }> = [];
+const received: IncomingYo[] = [];
 /** ids of my own kind 0 events seen (verified), to mark Yo targets as confirmed */
 const myProfileIds = new Set<string>();
 let rejected = 0;
+/** recipient fixed by choosing a follow from search (cleared when the to-field is edited) */
+let selected: { pubkey: string; label: string } | null = null;
+const follows = new FollowLoader(() => { renderFollowState(); renderSearch(); });
 
 function loadRelayUrls(): string[] {
   let raw: string | null = null;
@@ -137,7 +143,8 @@ function setInboxNote() {
 function renderInbox() {
   const ul = $("inbox");
   ul.replaceChildren();
-  for (const { ev: e, targetId } of received.slice(0, 100)) {
+  for (const yo of received.slice(0, 100)) {
+    const { ev: e, targetId } = yo;
     const li = el("li", "yo-item");
     const img = document.createElement("img");
     img.src = "yo.png"; // our own static copy; never load the URL from the event
@@ -147,13 +154,30 @@ function renderInbox() {
     const who = el("button", "from", `from ${shortNpub(e.pubkey)}`) as HTMLButtonElement;
     who.title = "この人に Yo を返す";
     who.onclick = () => {
+      clearSelection(false);
       ($("to") as HTMLInputElement).value = toNpub(e.pubkey);
       ($("to") as HTMLInputElement).focus();
     };
     const conf = myProfileIds.has(targetId);
     const badge = el("span", conf ? "target ok" : "target", conf ? "kind0 一致" : "kind0 未確認");
     badge.title = conf ? `対象 kind0 ${targetId} はあなたのプロフィールと確認済み` : `対象 kind0 ${targetId}（あなたの既知のプロフィールと未照合／古い版の可能性）`;
-    li.append(who, badge, el("time", "when", new Date(e.created_at * 1000).toLocaleString()));
+    li.append(who, badge);
+    if (!yo.ours) {
+      const o = el("span", "target other", "他実装");
+      o.title = `絵文字画像は ${yo.emojiHost} を指定（読み込まず当サイトの画像で表示）`;
+      li.append(o);
+    }
+    li.append(el("time", "when", new Date(e.created_at * 1000).toLocaleString()));
+    // Yo back: recipient is the verified author of this event (never a tag value).
+    const author = e.pubkey;
+    const back = el("button", "yo-back", "Yo! を返す") as HTMLButtonElement;
+    back.type = "button";
+    back.dataset.to = author;
+    back.title = `${toNpub(author)} に Yo を返す（署名が必要）`;
+    back.disabled = sending;
+    const rowNote = el("span", "row-note", `返信先: ${shortNpub(author)}`);
+    back.onclick = () => { void sendYoTo(author, rowNote); };
+    li.append(back, rowNote);
     ul.append(li);
   }
   setInboxNote();
@@ -190,49 +214,74 @@ async function login() {
   status("ログインしました。受信箱を購読中…", "ok");
   for (const r of relays) subscribeOne(r);
   void loadMyProfiles(me);
+  ($("search") as HTMLInputElement).disabled = false;
+  void follows.load(me, [...relays]);
 }
 
+let sending = false;
+
+function setSendingUi(on: boolean) {
+  sending = on;
+  ($("send") as HTMLButtonElement).disabled = on;
+  document.querySelectorAll<HTMLButtonElement>("button.yo-back").forEach((b) => (b.disabled = on));
+}
+
+/** Manual send from the form (selected follow or typed npub). */
 async function sendYo() {
   if (!me || !window.nostr) { status("先に「拡張でログイン」してください", "err"); return; }
   let to: string;
   try {
-    to = parsePubkey(($("to") as HTMLInputElement).value);
+    to = selected ? selected.pubkey : parsePubkey(($("to") as HTMLInputElement).value);
   } catch (e) {
     status((e as Error).message, "err");
     return;
   }
-  if (relays.length === 0) { status("relay がありません", "err"); return; }
-  const btn = $("send") as HTMLButtonElement;
-  btn.disabled = true;
+  await sendYoTo(to, null);
+}
+
+/**
+ * Shared send path: newest verified kind 0 of `to` → build kind 7 Yo →
+ * NIP-07 sign → strict check of the signed event → publish. Returns true on ≥1 OK.
+ * `rowNote` (optional) mirrors progress in a received-Yo row.
+ */
+async function sendYoTo(to: string, rowNote: HTMLElement | null): Promise<boolean> {
+  const note = (t: string, kind: "info" | "ok" | "err" = "info") => {
+    status(t, kind);
+    if (rowNote) { rowNote.textContent = t; rowNote.className = `row-note ${kind}`; }
+  };
+  if (!me || !window.nostr) { note("先に「拡張でログイン」してください", "err"); return false; }
+  if (sending) { note("送信中です。完了までお待ちください", "err"); return false; }
+  if (relays.length === 0) { note("relay がありません", "err"); return false; }
+  setSendingUi(true);
   try {
-    status("宛先の最新プロフィール (kind 0) を検索中…");
+    note(`宛先 ${shortNpub(to)} の最新プロフィール (kind 0) を検索中…`);
     const qs = await Promise.all(relays.map(async (r) => ({ r, q: await r.query(profileFilter(to)) })));
     const target = pickLatestProfile(qs.flatMap(({ r, q }) => q.events.map((ev) => ({ ev, relay: r.url }))), to);
     if (!target) {
       const detail = qs.map(({ r, q }) => `${r.url}: ${q.status === "eose" ? `${q.events.length}件` : q.status}${q.message ? ` (${q.message})` : ""}`).join(" / ");
       const allFailed = qs.every(({ q }) => q.status !== "eose");
-      status(allFailed
+      note(allFailed
         ? `プロフィール検索に失敗しました（どの relay からも応答なし）。送信していません。 ${detail}`
         : `宛先の署名検証済み kind 0 プロフィールが見つかりません。Yo はプロフィールへのリアクションなので送信できません。 ${detail}`, "err");
       $("send-results").replaceChildren();
-      return;
+      return false;
     }
     const req = buildYo(target);
-    status("拡張で署名を確認してください…");
+    note(`${shortNpub(to)} 宛ての Yo を拡張で署名してください…`);
     let signed: unknown;
     try {
       signed = await window.nostr.signEvent(structuredClone(req));
     } catch (e) {
-      status(`署名が拒否/失敗しました: ${(e as Error).message ?? e}`, "err");
-      return;
+      note(`署名が拒否/失敗しました: ${(e as Error).message ?? e}`, "err");
+      return false;
     }
     const problems = checkSignedYo(signed, req, me);
     if (problems.length) {
-      status(`署名済みイベントが要求と一致しないため送信を中止しました: ${problems.join(" / ")}`, "err");
-      return;
+      note(`署名済みイベントが要求と一致しないため送信を中止しました: ${problems.join(" / ")}`, "err");
+      return false;
     }
     const ev = signed as NostrEvent;
-    status(`${relays.length} 個の relay に送信中…（応答を待っています）`);
+    note(`${relays.length} 個の relay に送信中…（応答を待っています）`);
     const targets = [...relays];
     const results: Array<[Relay, PublishResult | null]> = targets.map((r) => [r, null]);
     renderSendResults(results, to, false);
@@ -242,8 +291,14 @@ async function sendYo() {
       renderSendResults(results, to, false);
     }));
     renderSendResults(results, to, true);
+    const ok = results.filter(([, r]) => r?.ok).length;
+    if (rowNote) {
+      rowNote.textContent = ok ? `✓ Yo を返しました（${ok}/${results.length} relay）` : `✗ 失敗（0/${results.length} relay）`;
+      rowNote.className = `row-note ${ok ? "ok" : "err"}`;
+    }
+    return ok > 0;
   } finally {
-    btn.disabled = false;
+    setSendingUi(false);
   }
 }
 
@@ -270,6 +325,75 @@ function renderSendResults(results: Array<[Relay, PublishResult | null]>, to: st
   }
 }
 
+function renderFollowState() {
+  const st = follows.state;
+  const t = $("follow-state");
+  let msg = "";
+  let cls = "small";
+  switch (st.phase) {
+    case "idle": msg = "ログインするとフォローリスト (kind 3) を読み込みます。"; break;
+    case "loading-kind3": msg = "フォローリスト (kind 3) を読み込み中…"; break;
+    case "failed": msg = `フォローリストの取得に失敗しました（全relay応答なし）: ${st.message}`; cls += " bad"; break;
+    case "no-kind3": msg = "署名検証済みのフォローリスト (kind 3) が見つかりません。npub を直接入力してください。"; cls += " bad"; break;
+    case "empty": msg = "フォローリストは空です。npub を直接入力してください。"; break;
+    case "profiles": msg = `フォロー ${st.total} 人。プロフィール取得中… ${st.done}/${st.total}` + (st.truncated ? "（先頭5000人のみ）" : ""); break;
+    case "ready": msg = `フォロー ${st.follows.length} 人（プロフィールあり ${st.follows.length - st.missing} / なし ${st.missing}）` + (st.truncated ? "（先頭5000人のみ）" : "") + ` ・ クエリ ${st.queries} 件`; break;
+  }
+  t.textContent = msg;
+  t.className = cls;
+}
+
+function renderSearch() {
+  const ul = $("search-results");
+  ul.replaceChildren();
+  const q = ($("search") as HTMLInputElement).value;
+  if (!q.trim()) return;
+  if (!follows.follows.length) {
+    ul.append(el("li", "none", "検索できるフォローがまだありません"));
+    return;
+  }
+  const rows = searchFollows(q, follows.follows, follows.profiles, 30);
+  if (!rows.length) {
+    ul.append(el("li", "none", follows.state.phase === "profiles" ? "見つかりません（プロフィール取得中）" : "見つかりません"));
+    return;
+  }
+  for (const r of rows) {
+    const li = el("li");
+    const b = el("button", "pick") as HTMLButtonElement;
+    b.type = "button";
+    b.dataset.pubkey = r.pubkey;
+    b.append(el("span", r.hasProfile ? "pick-name" : "pick-name none", r.label));
+    if (r.name && r.name !== r.label) b.append(el("span", "pick-sub", `@${r.name}`));
+    if (r.nip05) b.append(el("span", "pick-sub", r.nip05));
+    b.append(el("span", "pick-npub", `${r.npub.slice(0, 14)}…${r.npub.slice(-8)}`));
+    b.onclick = () => selectRecipient(r.pubkey, r.label);
+    li.append(b);
+    ul.append(li);
+  }
+}
+
+function selectRecipient(pubkey: string, label: string) {
+  selected = { pubkey, label };
+  ($("to") as HTMLInputElement).value = toNpub(pubkey);
+  const box = $("selected");
+  box.replaceChildren(el("span", "sel-label", `選択中: ${label}`), el("code", "sel-npub", toNpub(pubkey)));
+  const x = el("button", "rm", "×") as HTMLButtonElement;
+  x.type = "button";
+  x.title = "選択解除";
+  x.onclick = () => clearSelection(true);
+  box.append(x);
+  box.hidden = false;
+  $("search-results").replaceChildren();
+  ($("search") as HTMLInputElement).value = "";
+}
+
+function clearSelection(clearField: boolean) {
+  selected = null;
+  $("selected").hidden = true;
+  $("selected").replaceChildren();
+  if (clearField) ($("to") as HTMLInputElement).value = "";
+}
+
 function addRelay(ev: Event) {
   ev.preventDefault();
   const input = $("relay-input") as HTMLInputElement;
@@ -292,6 +416,9 @@ function init() {
   $("send").onclick = sendYo;
   $("relay-form").onsubmit = addRelay;
   ($("to") as HTMLInputElement).onkeydown = (e) => { if (e.key === "Enter") void sendYo(); };
+  ($("to") as HTMLInputElement).oninput = () => { if (selected) clearSelection(false); };
+  let searchTimer: ReturnType<typeof setTimeout> | undefined;
+  ($("search") as HTMLInputElement).oninput = () => { clearTimeout(searchTimer); searchTimer = setTimeout(renderSearch, 120); };
   // Extensions often inject window.nostr slightly after load.
   setTimeout(() => {
     $("ext").textContent = window.nostr ? "NIP-07 拡張: 検出" : "NIP-07 拡張: 未検出";

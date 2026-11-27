@@ -11,6 +11,19 @@ export const PROFILE_KIND = 0;
 export const YO_SHORTCODE = "yo";
 export const YO_CONTENT = ":yo:";
 export const YO_EMOJI_URL = "https://kojira.github.io/nostr-yo/yo.png";
+/** Hashtag that marks a Yo reaction for machine discovery (nostr-yo convention, not an adopted NIP). */
+export const YO_TAG: readonly [string, string] = ["t", "yo"];
+
+/** Any https URL is acceptable as a Yo emoji image (never fetched by us). */
+export function isAcceptableEmojiUrl(u: unknown): u is string {
+  if (typeof u !== "string" || u.length > 2048) return false;
+  try {
+    const x = new URL(u);
+    return x.protocol === "https:" && !!x.hostname && !x.username && !x.password;
+  } catch {
+    return false;
+  }
+}
 /** Retired format (kind 7117, before 2026-11-27). Not sent or read anymore. */
 export const LEGACY_KIND = 7117;
 /** Reject events whose created_at is too far in the future (seconds). */
@@ -113,6 +126,7 @@ export function buildYo(target: ProfileTarget, now: number = Math.floor(Date.now
       ["p", target.pubkey, hint],
       ["k", String(PROFILE_KIND)],
       ["emoji", YO_SHORTCODE, YO_EMOJI_URL],
+      [YO_TAG[0], YO_TAG[1]],
     ],
     content: YO_CONTENT,
   };
@@ -163,6 +177,8 @@ export function checkSignedYo(signed: unknown, requested: UnsignedEvent, expecte
   if (es.length !== 1 || es[0]?.[1] !== reqE) problems.push("e タグ（対象 kind0）が要求と一致しません");
   if (ps.length !== 1 || ps[0]?.[1] !== reqP) problems.push("p タグ（宛先）が要求と一致しません");
   if (em.length !== 1 || em[0]?.[1] !== YO_SHORTCODE || em[0]?.[2] !== YO_EMOJI_URL) problems.push("emoji タグが Yo 絵文字ではありません");
+  const ts = tagsNamed(e.tags, "t");
+  if (ts.length !== 1 || ts[0]?.[1] !== YO_TAG[1]) problems.push("t タグ (yo) が要求と一致しません");
   return problems;
 }
 
@@ -170,6 +186,12 @@ export interface IncomingYo {
   ev: NostrEvent;
   /** kind 0 id the Yo reacts to */
   targetId: string;
+  /** true if the emoji URL is this site's image (sent by nostr-yo) */
+  ours: boolean;
+  /** hostname of the emoji URL (display as text only; never fetched) */
+  emojiHost: string;
+  /** has the recommended ["t","yo"] tag */
+  hasTag: boolean;
 }
 
 /** Decide whether an incoming relay event is a valid Yo reaction addressed to `me`. */
@@ -178,7 +200,8 @@ export function parseIncomingYo(e: unknown, me: string, now: number = Math.floor
   if (e.kind !== YO_KIND || e.content !== YO_CONTENT) return null;
   if (e.created_at > now + MAX_FUTURE_SKEW) return null;
   const em = tagsNamed(e.tags, "emoji");
-  if (em.length !== 1 || em[0]?.[1] !== YO_SHORTCODE || em[0]?.[2] !== YO_EMOJI_URL) return null;
+  if (em.length !== 1 || em[0]?.[1] !== YO_SHORTCODE || !isAcceptableEmojiUrl(em[0]?.[2])) return null;
+  const emojiUrl = em[0][2] as string;
   const ps = tagsNamed(e.tags, "p");
   if (ps.length !== 1 || ps[0]?.[1] !== me) return null;
   const ks = tagsNamed(e.tags, "k");
@@ -190,7 +213,8 @@ export function parseIncomingYo(e: unknown, me: string, now: number = Math.floor
   const authorHint = es[0]?.[3];
   if (authorHint !== undefined && authorHint !== "" && authorHint !== me) return null;
   if (tagsNamed(e.tags, "a").length) return null;
-  return { ev: e, targetId: target };
+  const hasTag = tagsNamed(e.tags, "t").some((t) => t[1]?.toLowerCase() === YO_TAG[1]);
+  return { ev: e, targetId: target, ours: emojiUrl === YO_EMOJI_URL, emojiHost: new URL(emojiUrl).hostname, hasTag };
 }
 
 export function acceptIncomingYo(e: unknown, me: string, now?: number): e is NostrEvent {

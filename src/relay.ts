@@ -156,7 +156,7 @@ export class Relay {
   }
 
   /** One-shot REQ: collect events until EOSE/CLOSED or timeout. */
-  async query(filter: unknown, timeoutMs = 8000): Promise<{ events: unknown[]; status: "eose" | "closed" | "timeout" | "unreachable"; message: string }> {
+  async query(filter: unknown, timeoutMs = 8000, maxEvents = 50): Promise<{ events: unknown[]; status: "eose" | "closed" | "timeout" | "unreachable"; message: string }> {
     const opened = await this.waitOpen(Math.min(timeoutMs, 8000));
     if (!opened) return { events: [], status: "unreachable", message: "接続できませんでした" };
     const subId = "q" + Math.random().toString(36).slice(2, 10);
@@ -168,7 +168,7 @@ export class Relay {
         resolve({ events, status, message });
       };
       const t = setTimeout(() => finish("timeout", `${timeoutMs / 1000}秒以内に EOSE なし`), timeoutMs);
-      this.subscribe(subId, filter, (e) => { if (events.length < 50) events.push(e); }, () => finish("eose"), (m) => finish("closed", m));
+      this.subscribe(subId, filter, (e) => { if (events.length < maxEvents) events.push(e); }, () => finish("eose"), (m) => finish("closed", m));
     });
   }
 

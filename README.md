@@ -9,44 +9,36 @@ Send a single "Yo!" to any npub over Nostr. That's it.
   This site never asks for, stores, or handles a secret key.
 - Relays are talked to directly from your browser over WebSocket.
 
-## Protocol spec: Yo = custom-emoji reaction to the recipient's profile
+## Protocol spec
 
-Since 2026-11-27, a Yo is a **NIP-25 reaction (kind 7)** that uses the **NIP-30 custom
-emoji `:yo:`** and targets the recipient's **latest kind 0 (profile) event**.
-The spec was written against the NIP-25 / NIP-30 text at nostr-protocol/nips `bec0fc8`
-(copies in `verification/e2250/`).
+**The shared Yo reaction convention is in [`SPEC.md`](SPEC.md).** It is a convention proposed by this project, not an adopted NIP.
 
-| field | value |
-|---|---|
-| `kind` | `7` |
-| `content` | exactly `":yo:"` (one shortcode only, as NIP-25 requires) |
-| `e` | `["e", <kind0 id>, <relay hint>, <recipient pubkey>]`, exactly one |
-| `p` | `["p", <recipient pubkey>, <relay hint>]`, exactly one |
-| `k` | `["k", "0"]` |
-| `emoji` | `["emoji", "yo", "https://kojira.github.io/nostr-yo/yo.png"]`, exactly one. The image is served from this site. |
-| `a` | not used: kind 0 is replaceable, not addressable |
+In short, a Yo is:
+- a NIP-25 kind 7 reaction, `content ":yo:"`;
+- with tags `e` (the recipient's latest kind 0), `p` (the recipient), `k=0`, the NIP-30 `["emoji","yo",<https URL>]`, and `["t","yo"]`.
 
-The relay hint is the relay where the kind 0 was found.
+Receivers accept **any https emoji URL from any implementation, but never fetch it**; nostr-yo always shows its own `yo.png`. A `t=yo` tag is neither required nor sufficient, so:
+- Yo events sent by nostr-yo before the `t` tag existed are still recognised;
+- an event with only `t=yo` but missing other rules is rejected.
 
-**Sending**
-1. Query `{"kinds":[0],"authors":[to],"limit":1}` on every configured relay.
-2. Keep only events with a valid id and signature, `kind 0` and `pubkey == to`. Take the newest `created_at`; on a tie, the lowest id (NIP-01).
-3. If nothing valid is found, the UI says so and nothing is signed. It also says whether every relay failed or whether there simply is no profile, with a count per relay.
-4. The extension signs the event. The returned event must match the request exactly: kind, content, every tag, created_at, author pubkey, plus a valid id and signature. Otherwise nothing is published and the UI lists the mismatches.
+In the inbox, a Yo whose emoji URL is not ours is labelled "他実装".
 
-**Receiving**
-- Query: `{"kinds":[7],"#p":[me],"#k":["0"],"limit":50}`.
-- An event is accepted only if all of these hold:
-  - valid id and signature, `kind 7`, `content == ":yo:"`;
-  - exactly one `emoji` tag, exactly `["emoji","yo",<our URL>]`;
-  - exactly one `p` tag, equal to me;
-  - `k == "0"`;
-  - exactly one `e` tag, a 64-hex id, and if it carries a pubkey hint, that hint is me;
-  - no `a` tag;
-  - `created_at` no more than 10 minutes in the future.
-- Everything else is dropped and counted as "rejected". Plain `+` likes and other custom emojis are never treated as a Yo.
-- The app also loads my own kind 0 events. A Yo whose `e` points to one of them is labelled "kind0 一致"; otherwise it is labelled "kind0 未確認" (for example, a reaction to an older version of my profile that we didn't load).
-- The emoji image is always our own `yo.png`. The URL inside the event is compared but never loaded, and CSP `img-src 'self'` enforces this.
+**Sending (nostr-yo)**
+1. Look up the recipient's newest kind 0 whose signature checks out. If there is none, say so and don't sign.
+2. Build the event and have the NIP-07 extension sign it.
+3. Strictly check the signed result (kind, content, every tag including `t`, time, author, id, signature) before publishing.
+
+**Yo back.** Every received Yo has a "Yo! を返す" button.
+- The recipient is the **author pubkey of the verified event**, never a tag value.
+- It reuses the send path above and needs a click plus a NIP-07 signature; there are no auto-replies.
+- While a send is in progress, all Yo buttons are disabled. The row shows the target npub, progress, and the result.
+
+**Pick a recipient from your follows.** After login, the app loads your newest verified kind 3 (read-only: it never publishes kind 3 or changes follows).
+- **Loading profiles:** follows' kind 0 are fetched in batches of 150 authors, relay by relay. Each relay is only asked for profiles still missing, with at most 2 requests in flight, and the UI yields between batches. Test: 404 follows took 16 queries in total.
+- **What's used from a profile:** only `name`, `display_name` and `nip05`, as untrusted strings. Control/bidi characters are removed, length is capped, and everything is shown with `textContent`. Pictures and `about` are not used.
+- **Searching:** matches name, display name, nip05 and npub (case- and width-insensitive). Every result shows a short npub, so people with the same name can be told apart.
+- **Choosing a result:** clicking one fixes that pubkey as the recipient. Editing the field by hand clears the choice; typing an npub manually still works.
+- **Honest states:** loading / failed (all relays) / no kind 3 / empty / profiles n/m / follows without a profile (findable by npub only).
 
 **Retired format, kind 7117 (2026-11-26 – 2026-11-27).** The old Yo was `kind 7117, content "Yo!", ["p", to]`. It is no longer sent or read. Old 7117 events stay on relays and are simply ignored.
 
@@ -132,5 +124,6 @@ This is not a test with a real NIP-07 extension.
 - If a relay never sends an `OK`, the send times out after 25 s and is shown as a failure,
   even though the relay may have stored the event anyway.
 - No spam controls beyond the strict format. Anyone can Yo anyone.
+- Follow search loads at most 5000 follows; anything beyond is noted as truncated. Kind 3 lists are not refreshed until you reload.
 - You can't Yo someone who has no kind 0 profile on the configured relays.
 - The emoji image is only the 256×256 `yo.png` on this site. If its URL ever changes, older Yo events will stop matching the receive filter.

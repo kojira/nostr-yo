@@ -23,8 +23,13 @@
   </section>
 
   <section class="card" id="sendbox">
+    <label for="search">フォローから宛先を探す</label>
+    <input id="search" placeholder="名前で検索（ログイン後）" autocomplete="off" spellcheck="false" disabled>
+    <p class="small" id="follow-state" role="status" aria-live="polite">ログインするとフォローリスト (kind 3) を読み込みます。</p>
+    <ul id="search-results" class="search-results"></ul>
     <label for="to">宛先 npub</label>
-    <input id="to" placeholder="npub1…" autocomplete="off" spellcheck="false">
+    <div id="selected" class="selected" hidden></div>
+    <input id="to" placeholder="npub1…（手動入力も可）" autocomplete="off" spellcheck="false">
     <button id="send" class="yo-btn">Yo!</button>
     <div id="status" class="status info" role="status" aria-live="polite">秘密鍵はこのサイトに入力しません。署名は拡張が行います。</div>
     <ul id="send-results" class="results"></ul>
@@ -46,7 +51,7 @@
   </section>
 
   <footer class="small">
-    Yo = 宛先の kind 0 プロフィールへの kind 7 カスタム絵文字 :yo: リアクション (NIP-25 / NIP-30)。
+    Yo = 宛先の kind 0 プロフィールへの kind 7 カスタム絵文字 :yo: リアクション (NIP-25 / NIP-30) + <code>["t","yo"]</code>。
     <a href="https://github.com/kojira/nostr-yo" rel="noopener noreferrer">source &amp; spec</a>
   </footer>
 </main>
