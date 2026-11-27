@@ -45,3 +45,22 @@ A reply ("Yo back") is an ordinary Yo to the **author pubkey of the verified rec
 
 ## Retired format
 `kind 7117` (2026-11-26–27, nostr-yo only). It is no longer sent or recognised.
+
+## Confirmed vs. not yet confirmed (as of 2026-11-27)
+Confirmed (everything above):
+- The event shape, including `["t","yo"]`.
+- Rules 1–6 for recognising a Yo.
+- `t=yo` is neither required nor sufficient.
+- Any https emoji URL is accepted and never fetched.
+- Yo events without the `t` tag are still Yo (backward compatible).
+- Kind 7117 is retired.
+- The reply rule: a reply goes to the event's author.
+
+Not yet confirmed / open:
+- **Deployment:** the live site (gh-pages) still runs the e2250 build. It does not send `t=yo` yet, and it recognises only its own emoji URL. This spec takes effect there once the e2257/e2259 build is published.
+- No guidance yet on emoji image size or format.
+- Not checked: which relays support `#t` filtering.
+- Not checked: how existing Nostr clients display or notify these reactions. Not promised (e2251).
+- No rate limit or anti-spam rule beyond the strict format.
+- Possible future tightening (for example, requiring `t=yo`): undecided. It would break compatibility with older Yo events.
+- Not adopted as a NIP, and no other implementer has agreed to it.
