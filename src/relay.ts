@@ -155,6 +155,23 @@ export class Relay {
     else this.connect();
   }
 
+  /** One-shot REQ: collect events until EOSE/CLOSED or timeout. */
+  async query(filter: unknown, timeoutMs = 8000): Promise<{ events: unknown[]; status: "eose" | "closed" | "timeout" | "unreachable"; message: string }> {
+    const opened = await this.waitOpen(Math.min(timeoutMs, 8000));
+    if (!opened) return { events: [], status: "unreachable", message: "接続できませんでした" };
+    const subId = "q" + Math.random().toString(36).slice(2, 10);
+    const events: unknown[] = [];
+    return new Promise((resolve) => {
+      const finish = (status: "eose" | "closed" | "timeout", message = "") => {
+        clearTimeout(t);
+        this.unsubscribe(subId);
+        resolve({ events, status, message });
+      };
+      const t = setTimeout(() => finish("timeout", `${timeoutMs / 1000}秒以内に EOSE なし`), timeoutMs);
+      this.subscribe(subId, filter, (e) => { if (events.length < 50) events.push(e); }, () => finish("eose"), (m) => finish("closed", m));
+    });
+  }
+
   unsubscribe(id: string) {
     if (this.subs.delete(id)) this.sendRaw(["CLOSE", id]);
   }

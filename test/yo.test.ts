@@ -4,8 +4,9 @@ import { createHash } from "node:crypto";
 import { schnorr } from "@noble/curves/secp256k1.js";
 import { bytesToHex, hexToBytes } from "@noble/hashes/utils.js";
 import {
-  YO_KIND, acceptIncomingYo, buildYo, checkSignedYo, computeEventId, normalizeRelay,
-  parsePubkey, toNpub, verifyEventSignature, type NostrEvent, type UnsignedEvent,
+  LEGACY_KIND, YO_EMOJI_URL, YO_KIND, acceptIncomingYo, buildYo, checkSignedYo, computeEventId, normalizeRelay,
+  parseIncomingYo, parsePubkey, pickLatestProfile, profileFilter, toNpub, verifyEventSignature, yoFilter,
+  type NostrEvent, type ProfileTarget, type UnsignedEvent,
 } from "../src/yo.js";
 import { DEFAULT_RELAYS, resolveRelayUrls } from "../src/config.js";
 
@@ -45,59 +46,122 @@ test("NIP-01 id matches an independent sha256 of the canonical serialization", (
   assert.equal(computeEventId(e), createHash("sha256").update(ser).digest("hex"));
 });
 
-test("buildYo shape", () => {
-  const e = buildYo(pkB, 1700000000);
-  assert.equal(e.kind, YO_KIND);
-  assert.equal(e.content, "Yo!");
-  assert.deepEqual(e.tags[0], ["p", pkB]);
-  assert.equal(e.tags.filter((t) => t[0] === "p").length, 1);
-  assert.throws(() => buildYo("npub1..."));
+const RELAY = "wss://r.kojira.io";
+function profileOf(sk: Uint8Array, created_at: number, name = "b"): NostrEvent {
+  return sign({ kind: 0, created_at, tags: [], content: JSON.stringify({ name }) }, sk);
+}
+function targetOf(p: NostrEvent): ProfileTarget {
+  return { id: p.id, pubkey: p.pubkey, created_at: p.created_at, relay: RELAY };
+}
+const profB = profileOf(skB, 1690000000);
+const tB = targetOf(profB);
+
+test("buildYo: NIP-25 kind 7 + NIP-30 emoji reaction to kind 0", () => {
+  const e = buildYo(tB, 1700000000);
+  assert.equal(e.kind, 7);
+  assert.equal(YO_KIND, 7);
+  assert.equal(e.content, ":yo:");
+  assert.deepEqual(e.tags, [
+    ["e", profB.id, RELAY, pkB],
+    ["p", pkB, RELAY],
+    ["k", "0"],
+    ["emoji", "yo", "https://kojira.github.io/nostr-yo/yo.png"],
+  ]);
+  assert.equal(YO_EMOJI_URL, "https://kojira.github.io/nostr-yo/yo.png");
+  assert.equal(e.tags.filter((t) => t[0] === "a").length, 0, "kind 0 is not addressable: no a tag");
+  assert.throws(() => buildYo({ ...tB, id: "x" }));
+});
+
+test("pickLatestProfile: newest verified kind 0 of the author only", () => {
+  const old = profileOf(skB, 1000, "old");
+  const newer = profileOf(skB, 2000, "new");
+  const forged = { ...profileOf(skB, 9999, "forged"), content: "{\"name\":\"evil\"}" }; // bad id
+  const otherAuthor = profileOf(skA, 5000, "a");
+  const notKind0 = sign({ kind: 1, created_at: 8000, tags: [], content: "x" }, skB);
+  const got = pickLatestProfile([old, forged, otherAuthor, notKind0, newer].map((ev) => ({ ev, relay: "wss://x" })), pkB);
+  assert.equal(got?.id, newer.id);
+  assert.equal(got?.relay, "wss://x");
+  assert.equal(pickLatestProfile([], pkB), null);
+  assert.equal(pickLatestProfile([{ ev: otherAuthor, relay: "" }, { ev: forged, relay: "" }], pkB), null);
+  // tie on created_at -> lowest id (NIP-01)
+  const t1 = profileOf(skB, 3000, "t1"), t2 = profileOf(skB, 3000, "t2");
+  const lo = t1.id < t2.id ? t1 : t2;
+  assert.equal(pickLatestProfile([{ ev: t1, relay: "" }, { ev: t2, relay: "" }], pkB)?.id, lo.id);
+  assert.equal(pickLatestProfile([{ ev: t2, relay: "" }, { ev: t1, relay: "" }], pkB)?.id, lo.id);
+});
+
+test("filters", () => {
+  assert.deepEqual(yoFilter(pkB), { kinds: [7], "#p": [pkB], "#k": ["0"], limit: 50 });
+  assert.deepEqual(profileFilter(pkB), { kinds: [0], authors: [pkB], limit: 1 });
 });
 
 test("checkSignedYo accepts an honest signature", () => {
-  const req = buildYo(pkB, 1700000000);
+  const req = buildYo(tB, 1700000000);
   const signed = sign(structuredClone(req), skA);
   assert.ok(verifyEventSignature(signed));
   assert.deepEqual(checkSignedYo(signed, req, pkA), []);
 });
 
-test("checkSignedYo rejects a signer that swapped recipient / content / kind / author", () => {
-  const req = buildYo(pkB, 1700000000);
-  const swappedTo = sign({ ...req, tags: [["p", pkA], req.tags[1]!] }, skA);
-  assert.ok(checkSignedYo(swappedTo, req, pkA).length > 0);
-  const extraP = sign({ ...req, tags: [...req.tags, ["p", pkA]] }, skA);
-  assert.ok(checkSignedYo(extraP, req, pkA).length > 0);
-  const content = sign({ ...req, content: "buy my coin" }, skA);
-  assert.ok(checkSignedYo(content, req, pkA).length > 0);
-  const kind1 = sign({ ...req, kind: 1 }, skA);
-  assert.ok(checkSignedYo(kind1, req, pkA).length > 0);
-  const otherAuthor = sign(req, skB);
-  assert.ok(checkSignedYo(otherAuthor, req, pkA).length > 0);
-  const ts = sign({ ...req, created_at: req.created_at + 1 }, skA);
-  assert.ok(checkSignedYo(ts, req, pkA).length > 0);
+test("checkSignedYo rejects a signer that changed anything", () => {
+  const req = buildYo(tB, 1700000000);
+  const t = req.tags;
+  const variants: Array<[string, UnsignedEvent]> = [
+    ["recipient p swapped", { ...req, tags: [t[0]!, ["p", pkA, RELAY], t[2]!, t[3]!] }],
+    ["target e swapped", { ...req, tags: [["e", "f".repeat(64), RELAY, pkB], t[1]!, t[2]!, t[3]!] }],
+    ["extra p", { ...req, tags: [...t, ["p", pkA]] }],
+    ["extra e", { ...req, tags: [["e", "f".repeat(64)], ...t] }],
+    ["emoji url swapped", { ...req, tags: [t[0]!, t[1]!, t[2]!, ["emoji", "yo", "https://evil.example/x.png"]] }],
+    ["k changed", { ...req, tags: [t[0]!, t[1]!, ["k", "1"], t[3]!] }],
+    ["content +", { ...req, content: "+" }],
+    ["content kind1 text", { ...req, content: "buy my coin" }],
+    ["kind 1", { ...req, kind: 1 }],
+    ["legacy kind", { ...req, kind: LEGACY_KIND }],
+    ["created_at", { ...req, created_at: req.created_at + 1 }],
+  ];
+  for (const [name, v] of variants) assert.ok(checkSignedYo(sign(v, skA), req, pkA).length > 0, name);
+  assert.ok(checkSignedYo(sign(req, skB), req, pkA).length > 0, "other author");
 });
 
 test("checkSignedYo rejects tampered id / sig / garbage", () => {
-  const req = buildYo(pkB, 1700000000);
+  const req = buildYo(tB, 1700000000);
   const s = sign(req, skA);
-  assert.ok(checkSignedYo({ ...s, content: "Yo!!" }, req, pkA).length > 0);
+  assert.ok(checkSignedYo({ ...s, content: ":yo::yo:" }, req, pkA).length > 0);
   assert.ok(checkSignedYo({ ...s, sig: "0".repeat(128) }, req, pkA).length > 0);
-  assert.ok(checkSignedYo({ ...s, tags: [["p", pkA], req.tags[1]!] }, req, pkA).length > 0);
   for (const g of [null, undefined, "x", 1, {}, [], { ...s, tags: "p" }]) {
     assert.ok(checkSignedYo(g, req, pkA).length > 0);
   }
 });
 
-test("acceptIncomingYo filters", () => {
+test("parseIncomingYo: accepts only exact Yo reactions to me", () => {
   const now = 1700000000;
-  const good = sign(buildYo(pkB, now), skA);
+  const req = buildYo(tB, now);
+  const t = req.tags;
+  const good = sign(req, skA);
+  assert.equal(parseIncomingYo(good, pkB, now)?.targetId, profB.id);
   assert.ok(acceptIncomingYo(good, pkB, now));
-  assert.ok(!acceptIncomingYo(good, pkA, now), "not addressed to me");
-  assert.ok(!acceptIncomingYo({ ...good, sig: "f".repeat(128) }, pkB, now));
-  assert.ok(!acceptIncomingYo(sign({ ...buildYo(pkB, now), content: "<script>alert(1)</script>" }, skA), pkB, now));
-  assert.ok(!acceptIncomingYo(sign({ ...buildYo(pkB, now), kind: 1 }, skA), pkB, now));
-  assert.ok(!acceptIncomingYo(sign(buildYo(pkB, now + 3600), skA), pkB, now), "future");
-  assert.ok(!acceptIncomingYo(sign({ ...buildYo(pkB, now), tags: [["p", pkB], ["p", pkA]] }, skA), pkB, now));
+  const no = (e: unknown, why: string) => assert.equal(parseIncomingYo(e, pkB, now), null, why);
+  assert.equal(parseIncomingYo(good, pkA, now), null, "not addressed to me");
+  no({ ...good, sig: "f".repeat(128) }, "bad sig");
+  no(sign({ ...req, content: "+" }, skA), "plain like");
+  no(sign({ ...req, content: ":yo: hi" }, skA), "extra content");
+  no(sign({ ...req, content: "<img src=x onerror=alert(1)>" }, skA), "html");
+  no(sign({ ...req, kind: LEGACY_KIND, content: "Yo!", tags: [["p", pkB]] }, skA), "legacy 7117");
+  no(sign({ ...req, kind: 1 }, skA), "kind 1");
+  no(sign({ ...req, tags: [t[0]!, t[1]!, t[2]!, ["emoji", "yo", "https://evil.example/yo.png"]] }, skA), "foreign emoji url");
+  no(sign({ ...req, tags: [t[0]!, t[1]!, t[2]!, ["emoji", "yo2", YO_EMOJI_URL]] }, skA), "other shortcode");
+  no(sign({ ...req, tags: [t[0]!, t[1]!, t[2]!] }, skA), "no emoji tag");
+  no(sign({ ...req, tags: [...t, ["emoji", "yo", YO_EMOJI_URL]] }, skA), "two emoji tags");
+  no(sign({ ...req, tags: [t[0]!, t[1]!, t[3]!] }, skA), "no k");
+  no(sign({ ...req, tags: [t[0]!, t[1]!, ["k", "1"], t[3]!] }, skA), "k != 0");
+  no(sign({ ...req, tags: [t[1]!, t[2]!, t[3]!] }, skA), "no e");
+  no(sign({ ...req, tags: [["e", "f".repeat(64)], ...t] }, skA), "two e");
+  no(sign({ ...req, tags: [["e", "nothex", RELAY, pkB], t[1]!, t[2]!, t[3]!] }, skA), "e not hex");
+  no(sign({ ...req, tags: [["e", profB.id, RELAY, pkA], t[1]!, t[2]!, t[3]!] }, skA), "e author hint not me");
+  no(sign({ ...req, tags: [...t, ["p", pkA]] }, skA), "two p");
+  no(sign({ ...req, tags: [...t, ["a", `0:${pkB}:`]] }, skA), "a tag");
+  no(sign(buildYo(tB, now + 3600), skA), "future");
+  // e without relay/pubkey hints is still a valid NIP-25 reaction
+  assert.ok(parseIncomingYo(sign({ ...req, tags: [["e", profB.id], ["p", pkB], t[2]!, t[3]!] }, skA), pkB, now));
 });
 
 test("normalizeRelay", () => {

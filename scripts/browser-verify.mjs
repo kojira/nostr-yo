@@ -35,7 +35,10 @@ async function newPage(name, sk, tamper) {
       const { reqId, ev } = JSON.parse(msg.params.payload);
       const pubkey = bytesToHex(schnorr.getPublicKey(sk));
       let e = { ...ev, pubkey };
-      if (tamper === "swap-recipient") e.tags = [["p", bytesToHex(schnorr.getPublicKey(schnorr.utils.randomSecretKey()))], ...e.tags.slice(1)];
+      const rnd = () => bytesToHex(schnorr.getPublicKey(schnorr.utils.randomSecretKey()));
+      if (tamper === "swap-recipient") e.tags = e.tags.map((t) => (t[0] === "p" ? ["p", rnd(), t[2] ?? ""] : t));
+      if (tamper === "swap-target") e.tags = e.tags.map((t) => (t[0] === "e" ? ["e", "f".repeat(64), t[2] ?? "", t[3] ?? ""] : t));
+      if (tamper === "swap-emoji") e.tags = e.tags.map((t) => (t[0] === "emoji" ? ["emoji", "yo", "https://evil.example/yo.png"] : t));
       if (tamper === "kind1") e.kind = 1;
       const evid = bytesToHex(sha256(utf8ToBytes(JSON.stringify([0, e.pubkey, e.created_at, e.kind, e.tags, e.content]))));
       e = { ...e, id: evid, sig: bytesToHex(schnorr.sign(hexToBytes(evid), sk)) };
@@ -68,6 +71,24 @@ async function waitFor(p, expr, ms) { const end = Date.now() + ms; while (Date.n
 
 const result = { site, chrome: ver?.Browser, startedAt: new Date().toISOString(), checks: {} };
 const skA = schnorr.utils.randomSecretKey(), skB = schnorr.utils.randomSecretKey();
+const RELAYS = ["wss://r.kojira.io", "wss://yabu.me", "wss://x.kojira.io", "wss://n.kojira.io"];
+function signNode(e, sk) {
+  const pubkey = bytesToHex(schnorr.getPublicKey(sk));
+  const id = bytesToHex(sha256(utf8ToBytes(JSON.stringify([0, pubkey, e.created_at, e.kind, e.tags, e.content]))));
+  return { ...e, pubkey, id, sig: bytesToHex(schnorr.sign(hexToBytes(id), sk)) };
+}
+async function publishNode(ev) {
+  return Promise.all(RELAYS.map((u) => new Promise((res) => {
+    const ws = new WebSocket(u); const to = setTimeout(() => { ws.close(); res(`${u}: timeout`); }, 25000);
+    ws.onopen = () => ws.send(JSON.stringify(["EVENT", ev]));
+    ws.onmessage = (m) => { const d = JSON.parse(m.data); if (d[0] === "OK" && d[1] === ev.id) { clearTimeout(to); ws.close(); res(`${u}: OK ${d[2]} ${d[3] ?? ""}`); } };
+    ws.onerror = () => { clearTimeout(to); res(`${u}: error`); };
+  })));
+}
+// Test-only: B (throwaway key) publishes a kind 0 profile so it has a reaction target.
+const profileB = signNode({ kind: 0, created_at: Math.floor(Date.now() / 1000), tags: [], content: JSON.stringify({ name: "nostr-yo e2e test (throwaway)" }) }, skB);
+L("B kind0", profileB.id, "publish:", (await publishNode(profileB)).join(" | "));
+result.profileB = profileB.id;
 const A = await newPage("A", skA), B = await newPage("B", skB);
 for (const p of [A, B]) { await p.send("Page.navigate", { url: site }); }
 await sleep(2500);
@@ -84,6 +105,7 @@ L("A status:", await A.evalJs(text("#status")));
 L("A send results:", await A.evalJs(text("#send-results")));
 await A.shot("A-sent.png");
 result.checks.receivedByB = await waitFor(B, `document.querySelectorAll('#inbox li').length>0`, 20000);
+result.checks.receivedTargetConfirmed = await waitFor(B, `document.querySelector('#inbox li .target.ok')!==null`, 15000);
 if (!result.checks.receivedByB) { // live sub may miss; reload to re-REQ stored events
   await B.send("Page.reload"); await sleep(2500); await B.evalJs(`document.getElementById('login').click()`);
   result.checks.receivedByBAfterReload = await waitFor(B, `document.querySelectorAll('#inbox li').length>0`, 15000);
@@ -91,13 +113,26 @@ if (!result.checks.receivedByB) { // live sub may miss; reload to re-REQ stored 
 L("B inbox:", await B.evalJs(text("#inbox")), "|", await B.evalJs(text("#inbox-note")));
 await B.shot("B-received.png");
 
+// Recipient without any kind 0: must refuse to send, with an explanation.
+{
+  const N = await newPage("N-noprofile", schnorr.utils.randomSecretKey());
+  await N.send("Page.navigate", { url: site }); await sleep(2500);
+  await N.evalJs(`document.getElementById('login').click()`); await sleep(500);
+  const ghost = (await import("@scure/base")).bech32;
+  const ghostHex = bytesToHex(schnorr.getPublicKey(schnorr.utils.randomSecretKey()));
+  const ghostNpub = ghost.encode("npub", ghost.toWords(hexToBytes(ghostHex)), 90);
+  await N.evalJs(`document.getElementById('to').value=${JSON.stringify(ghostNpub)}; document.getElementById('send').click()`);
+  result.checks.noProfileRefused = await waitFor(N, `/kind 0 プロフィールが見つかりません|プロフィール検索に失敗/.test(document.getElementById('status').innerText) && document.querySelectorAll('#send-results li').length===0`, 30000);
+  L("N-noprofile status:", await N.evalJs(text("#status")));
+  await N.shot("no-profile.png"); N.close();
+}
 // Negative: tampering signer must be refused before publishing.
-for (const mode of ["swap-recipient", "kind1"]) {
+for (const mode of ["swap-recipient", "swap-target", "swap-emoji", "kind1"]) {
   const M = await newPage(`M-${mode}`, schnorr.utils.randomSecretKey(), mode);
   await M.send("Page.navigate", { url: site }); await sleep(2000);
   await M.evalJs(`document.getElementById('login').click()`); await sleep(500);
   await M.evalJs(`document.getElementById('to').value=${JSON.stringify(npubB)}; document.getElementById('send').click()`);
-  result.checks[`tamper_${mode}_refused`] = await waitFor(M, `/送信を中止/.test(document.getElementById('status').innerText) && document.querySelectorAll('#send-results li').length===0`, 8000);
+  result.checks[`tamper_${mode}_refused`] = await waitFor(M, `/送信を中止/.test(document.getElementById('status').innerText) && document.querySelectorAll('#send-results li').length===0`, 30000);
   L(`M-${mode} status:`, await M.evalJs(text("#status")));
   await M.shot(`tamper-${mode}.png`); M.close();
 }

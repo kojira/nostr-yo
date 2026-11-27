@@ -5,9 +5,14 @@ import { sha256 } from "@noble/hashes/sha2.js";
 import { bytesToHex, hexToBytes, utf8ToBytes } from "@noble/hashes/utils.js";
 import { bech32 } from "@scure/base";
 
-export const YO_KIND = 7117;
-export const YO_CONTENT = "Yo!";
-export const YO_ALT = "Yo! (a one-word ping sent with nostr-yo)";
+/** Yo is a NIP-25 reaction (kind 7) with a NIP-30 custom emoji, targeting the recipient's kind 0. */
+export const YO_KIND = 7;
+export const PROFILE_KIND = 0;
+export const YO_SHORTCODE = "yo";
+export const YO_CONTENT = ":yo:";
+export const YO_EMOJI_URL = "https://kojira.github.io/nostr-yo/yo.png";
+/** Retired format (kind 7117, before 2026-11-27). Not sent or read anymore. */
+export const LEGACY_KIND = 7117;
 /** Reject events whose created_at is too far in the future (seconds). */
 export const MAX_FUTURE_SKEW = 10 * 60;
 
@@ -74,12 +79,41 @@ export function computeEventId(e: UnsignedEvent & { pubkey: string }): string {
   return bytesToHex(sha256(utf8ToBytes(ser)));
 }
 
-export function buildYo(recipientHex: string, now: number = Math.floor(Date.now() / 1000)): UnsignedEvent {
-  if (!isHex64(recipientHex)) throw new Error("invalid recipient");
+export interface ProfileTarget {
+  /** kind 0 event id */
+  id: string;
+  /** recipient pubkey (author of the kind 0) */
+  pubkey: string;
+  created_at: number;
+  /** relay URL where it was found ("" if unknown) */
+  relay: string;
+}
+
+/** Pick the newest valid kind 0 of `author` from candidates (NIP-01 tie-break: lowest id). */
+export function pickLatestProfile(cands: Array<{ ev: unknown; relay: string }>, author: string): ProfileTarget | null {
+  let best: ProfileTarget | null = null;
+  for (const { ev, relay } of cands) {
+    if (!verifyEventSignature(ev)) continue;
+    if (ev.kind !== PROFILE_KIND || ev.pubkey !== author) continue;
+    if (!best || ev.created_at > best.created_at || (ev.created_at === best.created_at && ev.id < best.id)) {
+      best = { id: ev.id, pubkey: ev.pubkey, created_at: ev.created_at, relay };
+    }
+  }
+  return best;
+}
+
+export function buildYo(target: ProfileTarget, now: number = Math.floor(Date.now() / 1000)): UnsignedEvent {
+  if (!isHex64(target.id) || !isHex64(target.pubkey)) throw new Error("invalid target");
+  const hint = target.relay;
   return {
     kind: YO_KIND,
     created_at: now,
-    tags: [["p", recipientHex], ["alt", YO_ALT]],
+    tags: [
+      ["e", target.id, hint, target.pubkey],
+      ["p", target.pubkey, hint],
+      ["k", String(PROFILE_KIND)],
+      ["emoji", YO_SHORTCODE, YO_EMOJI_URL],
+    ],
     content: YO_CONTENT,
   };
 }
@@ -105,15 +139,14 @@ export function verifyEventSignature(e: unknown): e is NostrEvent {
   }
 }
 
-function pTags(tags: string[][]): string[] {
-  return tags.filter((t) => t[0] === "p").map((t) => t[1] ?? "");
+function tagsNamed(tags: string[][], name: string): string[][] {
+  return tags.filter((t) => t[0] === name);
 }
 
 /**
  * Verify that what the NIP-07 signer returned is exactly what we asked for:
- * same kind/content/tags/created_at, the expected author, the single intended
- * recipient, a correct id and a valid signature. Returns a list of problems
- * (empty = OK).
+ * same kind/content/tags/created_at, the expected author, the intended target
+ * and recipient, a correct id and a valid signature. Returns problems (empty = OK).
  */
 export function checkSignedYo(signed: unknown, requested: UnsignedEvent, expectedPubkey: string): string[] {
   const problems: string[] = [];
@@ -121,26 +154,55 @@ export function checkSignedYo(signed: unknown, requested: UnsignedEvent, expecte
   const e = signed;
   if (e.pubkey !== expectedPubkey) problems.push("署名者の公開鍵が拡張から取得したものと違います");
   if (e.kind !== YO_KIND || e.kind !== requested.kind) problems.push(`kind が ${YO_KIND} ではありません (${e.kind})`);
-  if (e.content !== YO_CONTENT || e.content !== requested.content) problems.push("本文が \"Yo!\" ではありません");
+  if (e.content !== YO_CONTENT || e.content !== requested.content) problems.push(`本文が "${YO_CONTENT}" ではありません`);
   if (e.created_at !== requested.created_at) problems.push("created_at が要求と違います");
-  if (JSON.stringify(e.tags) !== JSON.stringify(requested.tags)) problems.push("tags が要求と違います（宛先が書き換えられた可能性）");
-  const ps = pTags(e.tags);
-  if (ps.length !== 1 || ps[0] !== pTags(requested.tags)[0]) problems.push("p タグ（宛先）が要求と一致しません");
+  if (JSON.stringify(e.tags) !== JSON.stringify(requested.tags)) problems.push("tags が要求と違います（宛先/対象が書き換えられた可能性）");
+  const reqE = tagsNamed(requested.tags, "e")[0]?.[1];
+  const reqP = tagsNamed(requested.tags, "p")[0]?.[1];
+  const es = tagsNamed(e.tags, "e"), ps = tagsNamed(e.tags, "p"), em = tagsNamed(e.tags, "emoji");
+  if (es.length !== 1 || es[0]?.[1] !== reqE) problems.push("e タグ（対象 kind0）が要求と一致しません");
+  if (ps.length !== 1 || ps[0]?.[1] !== reqP) problems.push("p タグ（宛先）が要求と一致しません");
+  if (em.length !== 1 || em[0]?.[1] !== YO_SHORTCODE || em[0]?.[2] !== YO_EMOJI_URL) problems.push("emoji タグが Yo 絵文字ではありません");
   return problems;
 }
 
-/** Decide whether an incoming relay event is a valid Yo addressed to `me`. */
-export function acceptIncomingYo(e: unknown, me: string, now: number = Math.floor(Date.now() / 1000)): e is NostrEvent {
-  if (!verifyEventSignature(e)) return false;
-  if (e.kind !== YO_KIND || e.content !== YO_CONTENT) return false;
-  const ps = pTags(e.tags);
-  if (ps.length !== 1 || ps[0] !== me) return false;
-  if (e.created_at > now + MAX_FUTURE_SKEW) return false;
-  return true;
+export interface IncomingYo {
+  ev: NostrEvent;
+  /** kind 0 id the Yo reacts to */
+  targetId: string;
+}
+
+/** Decide whether an incoming relay event is a valid Yo reaction addressed to `me`. */
+export function parseIncomingYo(e: unknown, me: string, now: number = Math.floor(Date.now() / 1000)): IncomingYo | null {
+  if (!verifyEventSignature(e)) return null;
+  if (e.kind !== YO_KIND || e.content !== YO_CONTENT) return null;
+  if (e.created_at > now + MAX_FUTURE_SKEW) return null;
+  const em = tagsNamed(e.tags, "emoji");
+  if (em.length !== 1 || em[0]?.[1] !== YO_SHORTCODE || em[0]?.[2] !== YO_EMOJI_URL) return null;
+  const ps = tagsNamed(e.tags, "p");
+  if (ps.length !== 1 || ps[0]?.[1] !== me) return null;
+  const ks = tagsNamed(e.tags, "k");
+  if (ks.length !== 1 || ks[0]?.[1] !== String(PROFILE_KIND)) return null;
+  const es = tagsNamed(e.tags, "e");
+  if (es.length !== 1) return null;
+  const target = es[0]?.[1];
+  if (!isHex64(target)) return null;
+  const authorHint = es[0]?.[3];
+  if (authorHint !== undefined && authorHint !== "" && authorHint !== me) return null;
+  if (tagsNamed(e.tags, "a").length) return null;
+  return { ev: e, targetId: target };
+}
+
+export function acceptIncomingYo(e: unknown, me: string, now?: number): e is NostrEvent {
+  return parseIncomingYo(e, me, now) !== null;
 }
 
 export function yoFilter(me: string, limit = 50): Record<string, unknown> {
-  return { kinds: [YO_KIND], "#p": [me], limit };
+  return { kinds: [YO_KIND], "#p": [me], "#k": [String(PROFILE_KIND)], limit };
+}
+
+export function profileFilter(author: string): Record<string, unknown> {
+  return { kinds: [PROFILE_KIND], authors: [author], limit: 1 };
 }
 
 /** Normalize a relay URL; only wss:// (and ws://localhost for dev) allowed. */

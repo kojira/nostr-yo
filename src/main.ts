@@ -2,8 +2,10 @@
 import { Relay, type PublishResult } from "./relay.js";
 import { LS_RELAYS, resolveRelayUrls } from "./config.js";
 import {
-  acceptIncomingYo,
   buildYo,
+  parseIncomingYo,
+  pickLatestProfile,
+  profileFilter,
   checkSignedYo,
   normalizeRelay,
   parsePubkey,
@@ -36,7 +38,9 @@ function el(tag: string, cls?: string, text?: string): HTMLElement {
 let me: string | null = null;
 let relays: Relay[] = [];
 const seen = new Set<string>();
-const received: NostrEvent[] = [];
+const received: Array<{ ev: NostrEvent; targetId: string }> = [];
+/** ids of my own kind 0 events seen (verified), to mark Yo targets as confirmed */
+const myProfileIds = new Set<string>();
 let rejected = 0;
 
 function loadRelayUrls(): string[] {
@@ -99,17 +103,30 @@ function subscribeOne(r: Relay) {
 function onIncoming(ev: unknown, mine: string) {
   const id = (ev as { id?: unknown })?.id;
   if (typeof id === "string" && seen.has(id)) return;
-  if (!acceptIncomingYo(ev, mine)) {
+  const yo = parseIncomingYo(ev, mine);
+  if (!yo) {
     rejected++;
+    if (typeof id === "string") seen.add(id);
     setInboxNote();
     return;
   }
-  seen.add(ev.id);
-  received.push(ev);
-  received.sort((a, b) => b.created_at - a.created_at);
+  seen.add(yo.ev.id);
+  received.push(yo);
+  received.sort((a, b) => b.ev.created_at - a.ev.created_at);
   renderInbox();
-  const newest = received[0];
-  if (newest && newest.id === ev.id && ev.created_at > Date.now() / 1000 - 60) bounce();
+  if (received[0]?.ev.id === yo.ev.id && yo.ev.created_at > Date.now() / 1000 - 60) bounce();
+}
+
+async function loadMyProfiles(mine: string) {
+  const res = await Promise.all(relays.map(async (r) => {
+    const q = await r.query({ kinds: [0], authors: [mine], limit: 5 });
+    return q.events.map((ev) => ({ ev, relay: r.url }));
+  }));
+  for (const { ev } of res.flat()) {
+    const t = pickLatestProfile([{ ev, relay: "" }], mine);
+    if (t) myProfileIds.add(t.id);
+  }
+  renderInbox();
 }
 
 function setInboxNote() {
@@ -120,16 +137,23 @@ function setInboxNote() {
 function renderInbox() {
   const ul = $("inbox");
   ul.replaceChildren();
-  for (const e of received.slice(0, 100)) {
+  for (const { ev: e, targetId } of received.slice(0, 100)) {
     const li = el("li", "yo-item");
-    li.append(el("span", "yo-word", "Yo!"));
+    const img = document.createElement("img");
+    img.src = "yo.png"; // our own static copy; never load the URL from the event
+    img.alt = ":yo:";
+    img.className = "yo-emoji";
+    li.append(img);
     const who = el("button", "from", `from ${shortNpub(e.pubkey)}`) as HTMLButtonElement;
     who.title = "この人に Yo を返す";
     who.onclick = () => {
       ($("to") as HTMLInputElement).value = toNpub(e.pubkey);
       ($("to") as HTMLInputElement).focus();
     };
-    li.append(who, el("time", "when", new Date(e.created_at * 1000).toLocaleString()));
+    const conf = myProfileIds.has(targetId);
+    const badge = el("span", conf ? "target ok" : "target", conf ? "kind0 一致" : "kind0 未確認");
+    badge.title = conf ? `対象 kind0 ${targetId} はあなたのプロフィールと確認済み` : `対象 kind0 ${targetId}（あなたの既知のプロフィールと未照合／古い版の可能性）`;
+    li.append(who, badge, el("time", "when", new Date(e.created_at * 1000).toLocaleString()));
     ul.append(li);
   }
   setInboxNote();
@@ -165,6 +189,7 @@ async function login() {
   document.body.classList.add("logged-in");
   status("ログインしました。受信箱を購読中…", "ok");
   for (const r of relays) subscribeOne(r);
+  void loadMyProfiles(me);
 }
 
 async function sendYo() {
@@ -180,7 +205,19 @@ async function sendYo() {
   const btn = $("send") as HTMLButtonElement;
   btn.disabled = true;
   try {
-    const req = buildYo(to);
+    status("宛先の最新プロフィール (kind 0) を検索中…");
+    const qs = await Promise.all(relays.map(async (r) => ({ r, q: await r.query(profileFilter(to)) })));
+    const target = pickLatestProfile(qs.flatMap(({ r, q }) => q.events.map((ev) => ({ ev, relay: r.url }))), to);
+    if (!target) {
+      const detail = qs.map(({ r, q }) => `${r.url}: ${q.status === "eose" ? `${q.events.length}件` : q.status}${q.message ? ` (${q.message})` : ""}`).join(" / ");
+      const allFailed = qs.every(({ q }) => q.status !== "eose");
+      status(allFailed
+        ? `プロフィール検索に失敗しました（どの relay からも応答なし）。送信していません。 ${detail}`
+        : `宛先の署名検証済み kind 0 プロフィールが見つかりません。Yo はプロフィールへのリアクションなので送信できません。 ${detail}`, "err");
+      $("send-results").replaceChildren();
+      return;
+    }
+    const req = buildYo(target);
     status("拡張で署名を確認してください…");
     let signed: unknown;
     try {
@@ -226,7 +263,7 @@ function renderSendResults(results: Array<[Relay, PublishResult | null]>, to: st
     return;
   }
   if (okCount > 0) {
-    status(`Yo! を ${shortNpub(to)} に送りました（${okCount}/${results.length} relay が受理）`, "ok");
+    status(`Yo! (:yo: リアクション) を ${shortNpub(to)} のプロフィールに送りました（${okCount}/${results.length} relay が受理）`, "ok");
     bounce();
   } else {
     status(`どの relay にも受理されませんでした（0/${results.length}）`, "err");

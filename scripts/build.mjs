@@ -15,7 +15,7 @@ if (test) {
   rmSync("dist", { recursive: true, force: true });
   mkdirSync("dist");
   await build({ ...common, entryPoints: ["src/main.ts"], outfile: "dist/app.js", platform: "browser", minify: true });
-  for (const f of ["index.html", "style.css"]) cpSync(`web/${f}`, `dist/${f}`);
+  for (const f of ["index.html", "style.css", "yo.png"]) cpSync(`web/${f}`, `dist/${f}`);
   cpSync("web/.nojekyll", "dist/.nojekyll");
   for (const f of readdirSync("dist")) {
     const h = createHash("sha256").update(readFileSync(`dist/${f}`)).digest("hex");

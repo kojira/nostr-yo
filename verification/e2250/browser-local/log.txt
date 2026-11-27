@@ -1,0 +1,64 @@
+B kind0 da4dfbbad38013611d359a082de4943c37b60ecf0b73ba6b509becefa4901dbd publish: wss://r.kojira.io: OK true  | wss://yabu.me: OK true  | wss://x.kojira.io: OK true  | wss://n.kojira.io: OK true 
+[B] ws created wss://r.kojira.io/
+[B] ws created wss://yabu.me/
+[B] ws created wss://x.kojira.io/
+[B] ws created wss://n.kojira.io/
+[A] ws created wss://r.kojira.io/
+[A] ws created wss://yabu.me/
+[A] ws created wss://x.kojira.io/
+[A] ws created wss://n.kojira.io/
+relay list A: wss://r.kojira.io
+接続OK
+×
+wss://yabu.me
+接続OK
+×
+wss://x.kojira.io
+接続OK
+×
+wss://n.kojira.io
+接続OK
+×
+B npub: npub1m0s7y5pauaqvs9d5hhxlj38mfw3d5wcp96y647mhz56lsxgx62nqzlyd5u
+[A] mock signer signed kind=7 content=":yo:" tags=[["e","da4dfbbad38013611d359a082de4943c37b60ecf0b73ba6b509becefa4901dbd","wss://r.kojira.io","dbe1e2503de740c815b4bdcdf944fb4ba2da3b012e89aafb771535f81906d2a6"],["p","dbe1e2503de740c815b4bdcdf944fb4ba2da3b012e89aafb771535f81906d2a6","wss://r.kojira.io"],["k","0"],["emoji","yo","https://kojira.github.io/nostr-yo/yo.png"]] id=4880fb6fa15e4f828446f859c97bd6cbc4615581c7edcfb0eddc8493e152eae3
+A status: Yo! (:yo: リアクション) を npub1m0s7y…zlyd5u のプロフィールに送りました（4/4 relay が受理）
+A send results: wss://r.kojira.io
+✓ 受理 (OK true)
+wss://yabu.me
+✓ 受理 (OK true)
+wss://x.kojira.io
+✓ 受理 (OK true)
+wss://n.kojira.io
+✓ 受理 (OK true)
+B inbox: from npub1ucv3q…p027fr
+kind0 一致
+2026/11/27 13:23:23 | 1 件の Yo（署名検証済み）
+[N-noprofile] ws created wss://r.kojira.io/
+[N-noprofile] ws created wss://yabu.me/
+[N-noprofile] ws created wss://x.kojira.io/
+[N-noprofile] ws created wss://n.kojira.io/
+N-noprofile status: 宛先の署名検証済み kind 0 プロフィールが見つかりません。Yo はプロフィールへのリアクションなので送信できません。 wss://r.kojira.io: 0件 / wss://yabu.me: 0件 / wss://x.kojira.io: 0件 / wss://n.kojira.io: 0件
+[M-swap-recipient] ws created wss://r.kojira.io/
+[M-swap-recipient] ws created wss://yabu.me/
+[M-swap-recipient] ws created wss://x.kojira.io/
+[M-swap-recipient] ws created wss://n.kojira.io/
+[M-swap-recipient] mock signer signed kind=7 content=":yo:" tags=[["e","da4dfbbad38013611d359a082de4943c37b60ecf0b73ba6b509becefa4901dbd","wss://r.kojira.io","dbe1e2503de740c815b4bdcdf944fb4ba2da3b012e89aafb771535f81906d2a6"],["p","c0dfc56b78435bc6e56f3db7d26e2b3567da5a8831d2f482b88171608944aa79","wss://r.kojira.io"],["k","0"],["emoji","yo","https://kojira.github.io/nostr-yo/yo.png"]] id=bc27a3bad59227f4ca41063868aec3549d94574c8c4cff000a4b543599b24139
+M-swap-recipient status: 署名済みイベントが要求と一致しないため送信を中止しました: tags が要求と違います（宛先/対象が書き換えられた可能性） / p タグ（宛先）が要求と一致しません
+[M-swap-target] ws created wss://r.kojira.io/
+[M-swap-target] ws created wss://yabu.me/
+[M-swap-target] ws created wss://x.kojira.io/
+[M-swap-target] ws created wss://n.kojira.io/
+[M-swap-target] mock signer signed kind=7 content=":yo:" tags=[["e","ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff","wss://r.kojira.io","dbe1e2503de740c815b4bdcdf944fb4ba2da3b012e89aafb771535f81906d2a6"],["p","dbe1e2503de740c815b4bdcdf944fb4ba2da3b012e89aafb771535f81906d2a6","wss://r.kojira.io"],["k","0"],["emoji","yo","https://kojira.github.io/nostr-yo/yo.png"]] id=098a0b757ddcce9dc5715fc2ad3d660a15d8ab71f041a233886368803ea24e1b
+M-swap-target status: 署名済みイベントが要求と一致しないため送信を中止しました: tags が要求と違います（宛先/対象が書き換えられた可能性） / e タグ（対象 kind0）が要求と一致しません
+[M-swap-emoji] ws created wss://r.kojira.io/
+[M-swap-emoji] ws created wss://yabu.me/
+[M-swap-emoji] ws created wss://x.kojira.io/
+[M-swap-emoji] ws created wss://n.kojira.io/
+[M-swap-emoji] mock signer signed kind=7 content=":yo:" tags=[["e","da4dfbbad38013611d359a082de4943c37b60ecf0b73ba6b509becefa4901dbd","wss://r.kojira.io","dbe1e2503de740c815b4bdcdf944fb4ba2da3b012e89aafb771535f81906d2a6"],["p","dbe1e2503de740c815b4bdcdf944fb4ba2da3b012e89aafb771535f81906d2a6","wss://r.kojira.io"],["k","0"],["emoji","yo","https://evil.example/yo.png"]] id=4d4cfac712d59a4ee1bd3f3be504c167d9f94aaff02f435963b3801334204d0f
+M-swap-emoji status: 署名済みイベントが要求と一致しないため送信を中止しました: tags が要求と違います（宛先/対象が書き換えられた可能性） / emoji タグが Yo 絵文字ではありません
+[M-kind1] ws created wss://r.kojira.io/
+[M-kind1] ws created wss://yabu.me/
+[M-kind1] ws created wss://x.kojira.io/
+[M-kind1] ws created wss://n.kojira.io/
+[M-kind1] mock signer signed kind=1 content=":yo:" tags=[["e","da4dfbbad38013611d359a082de4943c37b60ecf0b73ba6b509becefa4901dbd","wss://r.kojira.io","dbe1e2503de740c815b4bdcdf944fb4ba2da3b012e89aafb771535f81906d2a6"],["p","dbe1e2503de740c815b4bdcdf944fb4ba2da3b012e89aafb771535f81906d2a6","wss://r.kojira.io"],["k","0"],["emoji","yo","https://kojira.github.io/nostr-yo/yo.png"]] id=ab86c0825b56bf7ca5b3e270c9ebac7d23f4528200731b4954e46f4f7d1563ba
+M-kind1 status: 署名済みイベントが要求と一致しないため送信を中止しました: kind が 7 ではありません (1)
