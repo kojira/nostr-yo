@@ -1,9 +1,18 @@
 // UI entry point. All untrusted text is rendered via textContent only.
+//
+// Account model:
+//  - `account` is the public key the user explicitly logged in with. It is
+//    remembered (pubkey only, see session.ts) so the inbox survives reloads and
+//    returning from the background. It is NOT a signing permission.
+//  - Signing always goes through the NIP-07 extension, only after a user tap,
+//    and the extension's current key is re-checked against `account` first.
+//  - Explicit logout forgets the account and suppresses any auto-restore.
 import { Relay, type PublishResult } from "./relay.js";
 import { LS_RELAYS, resolveRelayUrls } from "./config.js";
 import { FollowLoader } from "./follow-loader.js";
 import { searchFollows } from "./follows.js";
 import { ProfileCache } from "./profile-cache.js";
+import { LS_SESSION, compareSigner, formatWhen, parseSession, serializeSession, signerLabel, type SignerState } from "./session.js";
 import {
   buildYo,
   parseIncomingYo,
@@ -29,8 +38,8 @@ declare global {
   }
 }
 
-
 const $ = <T extends HTMLElement>(id: string) => document.getElementById(id) as T;
+const input = (id: string) => $(id) as HTMLInputElement;
 
 function el(tag: string, cls?: string, text?: string): HTMLElement {
   const e = document.createElement(tag);
@@ -39,41 +48,50 @@ function el(tag: string, cls?: string, text?: string): HTMLElement {
   return e;
 }
 
-let me: string | null = null;
+// ---------------------------------------------------------------- state
+let account: string | null = null;
+/** bumps on every login / account switch / logout; stale async work checks it */
+let accountGen = 0;
+let signer: SignerState = "checking";
 let relays: Relay[] = [];
-const seen = new Set<string>();
-const received: IncomingYo[] = [];
-/** ids of my own kind 0 events seen (verified), to mark Yo targets as confirmed */
-const myProfileIds = new Set<string>();
-let rejected = 0;
-/** recipient fixed by choosing a follow from search (cleared when the to-field is edited) */
+let seen = new Set<string>();
+let received: IncomingYo[] = [];
+let inboxLoaded = false;
+let inboxShown = 5;
 let selected: { pubkey: string; label: string } | null = null;
+let sending = false;
+
 let inboxRenderQueued = false;
 function scheduleInbox() {
   if (inboxRenderQueued) return;
   inboxRenderQueued = true;
   // setTimeout (not rAF): rAF never fires in background tabs, which would freeze the inbox.
-  setTimeout(() => { inboxRenderQueued = false; renderInbox(); }, 50);
+  setTimeout(() => { inboxRenderQueued = false; renderInbox(); renderAccount(); }, 50);
 }
 const follows = new FollowLoader(() => { renderFollowState(); renderSearch(); if (follows.state.phase === "ready") scheduleInbox(); });
 const senders = new ProfileCache(() => [...relays], () => follows.profiles, scheduleInbox);
 
-function loadRelayUrls(): string[] {
-  let raw: string | null = null;
-  try { raw = localStorage.getItem(LS_RELAYS); } catch { /* storage blocked */ }
-  return resolveRelayUrls(raw);
+// ---------------------------------------------------------------- storage
+function storageGet(k: string): string | null {
+  try { return localStorage.getItem(k); } catch { return null; }
+}
+function storageSet(k: string, v: string | null) {
+  try { if (v === null) localStorage.removeItem(k); else localStorage.setItem(k, v); } catch { /* storage blocked */ }
 }
 
+// ---------------------------------------------------------------- relays
 function saveRelayUrls() {
-  localStorage.setItem(LS_RELAYS, JSON.stringify(relays.map((r) => r.url)));
+  storageSet(LS_RELAYS, JSON.stringify(relays.map((r) => r.url)));
 }
 
-const STATE_LABEL: Record<string, string> = {
-  connecting: "接続中…",
-  open: "接続OK",
-  closed: "未接続",
-  error: "エラー",
-};
+const STATE_LABEL: Record<string, string> = { connecting: "接続中…", open: "接続中", closed: "未接続", error: "エラー" };
+
+let relayRenderQueued = false;
+function onRelayChange() {
+  if (relayRenderQueued) return;
+  relayRenderQueued = true;
+  setTimeout(() => { relayRenderQueued = false; renderRelays(); renderNet(); }, 30);
+}
 
 function renderRelays() {
   const ul = $("relays");
@@ -82,71 +100,71 @@ function renderRelays() {
     const li = el("li", `relay ${r.state}`);
     li.dataset.url = r.url;
     li.append(el("span", "dot"), el("span", "url", r.url), el("span", "state", STATE_LABEL[r.state] ?? r.state));
-    if (r.lastNotice) li.append(el("span", "notice", r.lastNotice));
+    if (r.lastNotice && r.state !== "open") li.append(el("span", "notice", r.lastNotice));
     const rm = el("button", "rm", "×") as HTMLButtonElement;
-    rm.title = "このrelayを外す";
+    rm.type = "button";
+    rm.setAttribute("aria-label", `${r.url} を外す`);
     rm.onclick = () => {
       r.close();
       relays = relays.filter((x) => x !== r);
       saveRelayUrls();
       renderRelays();
+      renderNet();
     };
     li.append(rm);
     ul.append(li);
   }
 }
 
+let netGraceUntil = 0;
+function renderNet() {
+  const n = $("net");
+  if (!account) { n.hidden = true; return; }
+  const open = relays.filter((r) => r.state === "open").length;
+  if (relays.length === 0) { n.textContent = "リレーがありません。メニューの「リレー設定」で追加してください。"; n.hidden = false; return; }
+  if (open > 0 || Date.now() < netGraceUntil) { n.hidden = true; return; }
+  n.textContent = "リレーに接続できていません。再接続しています…";
+  n.hidden = false;
+}
+
 function makeRelay(url: string) {
-  const r = new Relay(url, renderRelays);
+  const r = new Relay(url, onRelayChange);
   r.connect();
-  if (me) subscribeOne(r);
+  if (account) subscribeOne(r);
   return r;
 }
 
 function subscribeOne(r: Relay) {
-  if (!me) return;
-  const mine = me;
+  if (!account) return;
+  const mine = account;
+  const gen = accountGen;
   r.subscribe(
     "yo-inbox",
     yoFilter(mine),
-    (ev) => onIncoming(ev, mine),
-    () => setInboxNote(),
-    (m) => { r.lastNotice = `購読が閉じられました: ${m}`; renderRelays(); },
+    (ev) => { if (gen === accountGen) onIncoming(ev, mine); },
+    () => { if (gen === accountGen && !inboxLoaded) { inboxLoaded = true; renderInbox(); } },
+    (m) => { r.lastNotice = `購読が閉じられました: ${m}`; onRelayChange(); },
   );
 }
 
+function reconnectAll() {
+  netGraceUntil = Date.now() + 6000;
+  setTimeout(renderNet, 6100);
+  for (const r of relays) r.reconnectIfNeeded();
+}
+
+// ---------------------------------------------------------------- inbox
 function onIncoming(ev: unknown, mine: string) {
   const id = (ev as { id?: unknown })?.id;
   if (typeof id === "string" && seen.has(id)) return;
+  // Strict recognition (signature, kind, content, tags, recipient) — see SPEC.md.
   const yo = parseIncomingYo(ev, mine);
-  if (!yo) {
-    rejected++;
-    if (typeof id === "string") seen.add(id);
-    setInboxNote();
-    return;
-  }
-  seen.add(yo.ev.id);
+  if (typeof id === "string") seen.add(id);
+  if (!yo) return; // not a valid Yo for me: silently ignored
   received.push(yo);
   received.sort((a, b) => b.ev.created_at - a.ev.created_at);
-  renderInbox();
+  scheduleInbox();
   if (received[0]?.ev.id === yo.ev.id && yo.ev.created_at > Date.now() / 1000 - 60) bounce();
-}
-
-async function loadMyProfiles(mine: string) {
-  const res = await Promise.all(relays.map(async (r) => {
-    const q = await r.query({ kinds: [0], authors: [mine], limit: 5 });
-    return q.events.map((ev) => ({ ev, relay: r.url }));
-  }));
-  for (const { ev } of res.flat()) {
-    const t = pickLatestProfile([{ ev, relay: "" }], mine);
-    if (t) myProfileIds.add(t.id);
-  }
-  renderInbox();
-}
-
-function setInboxNote() {
-  $("inbox-note").textContent =
-    `${received.length} 件の Yo（署名検証済み）` + (rejected ? ` ／ 検証失敗などで破棄: ${rejected} 件` : "");
 }
 
 const AVATAR_COLORS = ["#7b2ff7", "#f107a3", "#1aa260", "#e67e22", "#2d7ff9", "#c0392b", "#16a085", "#8e44ad"];
@@ -165,8 +183,8 @@ function avatar(pubkey: string, picture: string, name: string): HTMLElement {
   const img = document.createElement("img");
   img.className = "avatar";
   img.alt = "";
-  img.width = 36;
-  img.height = 36;
+  img.width = 38;
+  img.height = 38;
   img.referrerPolicy = "no-referrer";
   img.crossOrigin = "anonymous";
   img.loading = "lazy";
@@ -176,56 +194,70 @@ function avatar(pubkey: string, picture: string, name: string): HTMLElement {
   return img;
 }
 
+function displayName(pubkey: string): { name: string; picture: string; state: string } {
+  const { profile, state } = senders.get(pubkey);
+  return { name: profile ? (profile.displayName || profile.name) : "", picture: profile?.picture ?? "", state };
+}
+
+/** Per-row progress notes survive re-renders. */
+const rowNotes = new Map<string, { text: string; kind: "info" | "ok" | "err" }>();
+
 function renderInbox() {
-  senders.want(received.slice(0, 100).map((y) => y.ev.pubkey));
+  const card = $("inbox-card");
+  card.hidden = !account;
+  if (!account) { $("inbox").replaceChildren(); card.querySelector("button.more")?.remove(); return; }
+  const rows = received.slice(0, Math.min(inboxShown, 100));
+  senders.want(rows.map((y) => y.ev.pubkey));
   const ul = $("inbox");
   ul.replaceChildren();
-  for (const yo of received.slice(0, 100)) {
-    const { ev: e, targetId } = yo;
+  for (const yo of rows) {
+    const e = yo.ev;
     const li = el("li", "yo-item");
-    const img = document.createElement("img");
-    img.src = "yo.png"; // our own static copy; never load the URL from the event
-    img.alt = ":yo:";
-    img.className = "yo-emoji";
-    li.append(img);
-    const { profile, state } = senders.get(e.pubkey);
-    const name = profile ? (profile.displayName || profile.name) : "";
-    const who = el("button", "from") as HTMLButtonElement;
-    who.type = "button";
-    who.append(avatar(e.pubkey, profile?.picture ?? "", name));
-    const names = el("span", "from-names");
-    names.append(el("span", name ? "from-name" : "from-name none", name || (state === "pending" ? "読み込み中…" : state === "failed" ? "プロフィール取得失敗" : profile ? "(名前なし)" : "プロフィールなし")));
-    names.append(el("span", "from-npub", shortNpub(e.pubkey)));
-    who.append(names);
-    who.title = `${toNpub(e.pubkey)} を宛先欄に入れる`;
-    who.onclick = () => {
-      clearSelection(false);
-      ($("to") as HTMLInputElement).value = toNpub(e.pubkey);
-      ($("to") as HTMLInputElement).focus();
-    };
-    const conf = myProfileIds.has(targetId);
-    const badge = el("span", conf ? "target ok" : "target", conf ? "kind0 一致" : "kind0 未確認");
-    badge.title = conf ? `対象 kind0 ${targetId} はあなたのプロフィールと確認済み` : `対象 kind0 ${targetId}（あなたの既知のプロフィールと未照合／古い版の可能性）`;
-    li.append(who, badge);
-    if (!yo.ours) {
-      const o = el("span", "target other", "他実装");
-      o.title = `絵文字画像は ${yo.emojiHost} を指定（読み込まず当サイトの画像で表示）`;
-      li.append(o);
-    }
-    li.append(el("time", "when", new Date(e.created_at * 1000).toLocaleString()));
+    li.dataset.id = e.id;
+    const { name, picture, state } = displayName(e.pubkey);
+    const who = el("div", "who");
+    who.append(avatar(e.pubkey, picture, name));
+    const t = el("div", "who-text");
+    t.append(el("span", name ? "from-name" : "from-name none", name || (state === "pending" ? "読み込み中…" : "名前なし")));
+    const when = el("time", "when", formatWhen(e.created_at));
+    when.setAttribute("datetime", new Date(e.created_at * 1000).toISOString());
+    when.title = new Date(e.created_at * 1000).toLocaleString();
+    t.append(when);
+    who.append(t);
     // Yo back: recipient is the verified author of this event (never a tag value).
     const author = e.pubkey;
     const back = el("button", "yo-back", "Yo! を返す") as HTMLButtonElement;
     back.type = "button";
     back.dataset.to = author;
-    back.title = `${toNpub(author)} に Yo を返す（署名が必要）`;
+    back.setAttribute("aria-label", `${name || "この相手"} に Yo! を返す`);
     back.disabled = sending;
-    const rowNote = el("span", "row-note", `返信先: ${name ? `${name} ` : ""}(${shortNpub(author)})`);
-    back.onclick = () => { void sendYoTo(author, rowNote); };
-    li.append(back, rowNote);
+    li.append(who, back);
+    const noteState = rowNotes.get(e.id);
+    const rowNote = el("span", `row-note ${noteState?.kind ?? ""}`, noteState?.text ?? "");
+    rowNote.hidden = !noteState;
+    back.onclick = () => { void sendYoTo(author, e.id); };
+    li.append(rowNote);
+    const det = el("details", "detail");
+    det.append(el("summary", undefined, "詳細"));
+    det.append(el("code", "from-npub", toNpub(author)));
+    if (!yo.ours) det.append(el("div", undefined, `他のアプリから（絵文字: ${yo.emojiHost}・読み込みません）`));
+    li.append(det);
     ul.append(li);
   }
-  setInboxNote();
+  const note = $("inbox-note");
+  if (!received.length) note.textContent = inboxLoaded ? "まだ Yo は届いていません。" : "読み込み中…";
+  else note.textContent = "";
+  note.hidden = received.length > 0;
+  let more = card.querySelector<HTMLButtonElement>("button.more");
+  if (received.length > rows.length && rows.length < 100) {
+    if (!more) {
+      more = el("button", "more", "") as HTMLButtonElement;
+      more.type = "button";
+      more.onclick = () => { inboxShown = Math.min(inboxShown + 20, 100); renderInbox(); };
+      card.append(more);
+    }
+    more.textContent = `さらに表示（全 ${received.length} 件）`;
+  } else more?.remove();
 }
 
 function bounce() {
@@ -235,35 +267,179 @@ function bounce() {
   b.classList.add("bounce");
 }
 
+// ---------------------------------------------------------------- account UI
+function renderAccount() {
+  const acc = $("account");
+  const loggedIn = !!account;
+  document.body.classList.toggle("logged-in", loggedIn);
+  $("auth").hidden = loggedIn;
+  $("sendbox").hidden = !loggedIn;
+  $("logout").hidden = !loggedIn;
+  $("relogin").hidden = !loggedIn;
+  $("me-detail").hidden = !loggedIn;
+  if (!account) {
+    acc.hidden = true;
+    acc.replaceChildren();
+    $("menu-me").textContent = "未ログイン";
+    $("me-npub").textContent = "";
+    renderSigner();
+    renderNet();
+    return;
+  }
+  senders.want([account]);
+  const { name, picture } = displayName(account);
+  acc.replaceChildren(avatar(account, picture, name || "?"), el("span", "acc-name", name || "自分"));
+  acc.hidden = false;
+  $("menu-me").textContent = `ログイン中: ${name || "（名前なし）"}`;
+  $("me-npub").textContent = toNpub(account);
+  renderSigner();
+  renderNet();
+}
+
+function renderSigner() {
+  const s = $("signer");
+  if (!account || signer === "ready" || signer === "unverified") { s.hidden = true; return; }
+  s.replaceChildren(el("span", undefined, signerLabel(signer)));
+  s.className = `signer ${signer === "checking" ? "" : "bad"}`;
+  if (signer === "mismatch") {
+    const b = el("button", undefined, "切り替える") as HTMLButtonElement;
+    b.type = "button";
+    b.onclick = () => { void relogin(); };
+    s.append(b);
+  }
+  s.hidden = false;
+}
+
+function setSigner(st: SignerState) {
+  signer = st;
+  renderSigner();
+}
+
+// ---------------------------------------------------------------- NIP-07 presence
+/** Wait for an extension to inject window.nostr (they often do it late). Never calls it. */
+function waitForExtension(ms: number): Promise<boolean> {
+  if (window.nostr) return Promise.resolve(true);
+  return new Promise((res) => {
+    const end = Date.now() + ms;
+    const tick = () => {
+      if (window.nostr) return res(true);
+      if (Date.now() >= end) return res(false);
+      setTimeout(tick, 150);
+    };
+    tick();
+  });
+}
+
+async function refreshExtensionPresence(ms = 4000) {
+  const had = signer;
+  if (!window.nostr && had !== "missing") setSigner("checking");
+  const ok = await waitForExtension(ms);
+  if (!ok) { setSigner("missing"); $("ext").textContent = "NIP-07 拡張が見つかりません。"; return; }
+  $("ext").textContent = "NIP-07 拡張を検出しました。";
+  // Present, but the active key is only checked when the user acts (no automatic prompts).
+  if (signer === "checking" || signer === "missing" || signer === "error") setSigner("unverified");
+}
+
+// ---------------------------------------------------------------- login / logout
+function startAccount(pk: string) {
+  accountGen++;
+  account = pk;
+  received = [];
+  seen = new Set();
+  rowNotes.clear();
+  inboxLoaded = false;
+  inboxShown = 5;
+  clearSelection(true);
+  $("send-results").replaceChildren();
+  $("send-detail").hidden = true;
+  hideStatus();
+  for (const r of relays) { r.unsubscribe("yo-inbox"); subscribeOne(r); }
+  netGraceUntil = Date.now() + 6000;
+  setTimeout(renderNet, 6100);
+  follows.reset();
+  void follows.load(pk, [...relays]);
+  renderAccount();
+  renderInbox();
+}
+
+function stopAccount() {
+  accountGen++;
+  account = null;
+  for (const r of relays) r.unsubscribe("yo-inbox");
+  received = [];
+  seen = new Set();
+  rowNotes.clear();
+  inboxLoaded = false;
+  clearSelection(true);
+  follows.reset();
+  $("send-results").replaceChildren();
+  $("send-detail").hidden = true;
+  hideStatus();
+  renderAccount();
+  renderInbox();
+}
+
+/** Ask the extension for its current key (user-initiated only). */
+async function askExtensionKey(): Promise<string> {
+  if (!(await waitForExtension(1500)) || !window.nostr) throw new Error("NIP-07 拡張が見つかりません");
+  const pk = await window.nostr.getPublicKey();
+  if (typeof pk !== "string" || !/^[0-9a-f]{64}$/.test(pk)) throw new Error("拡張から公開鍵を取得できませんでした");
+  return pk;
+}
+
+async function login() {
+  const btn = $("login") as HTMLButtonElement;
+  btn.disabled = true;
+  try {
+    const pk = await askExtensionKey();
+    storageSet(LS_SESSION, serializeSession(pk));
+    setSigner("ready");
+    startAccount(pk);
+  } catch (e) {
+    $("ext").textContent = errText(e, "ログインできませんでした");
+    $("ext").className = "small bad";
+  } finally {
+    btn.disabled = false;
+  }
+}
+
+/** Menu: re-read the extension's key and switch to it if different. */
+async function relogin() {
+  try {
+    const pk = await askExtensionKey();
+    storageSet(LS_SESSION, serializeSession(pk));
+    setSigner("ready");
+    if (pk !== account) startAccount(pk);
+    else renderAccount();
+    menuMsg("拡張のアカウントで入り直しました。");
+    closeMenu();
+  } catch (e) {
+    setSigner(window.nostr ? "error" : "missing");
+    menuMsg(errText(e, "拡張に接続できません"));
+  }
+}
+
+function logout() {
+  storageSet(LS_SESSION, null); // removes the remembered pubkey → no auto-restore
+  stopAccount();
+  closeMenu();
+  $("ext").className = "small";
+  $("ext").textContent = "ログアウトしました。";
+}
+
+function errText(e: unknown, fallback: string): string {
+  const m = (e as Error)?.message;
+  return typeof m === "string" && m && /[ぁ-んァ-ン一-龥]/.test(m) ? m : fallback;
+}
+
+// ---------------------------------------------------------------- send
 function status(text: string, kind: "info" | "ok" | "err" = "info") {
   const s = $("status");
   s.textContent = text;
   s.className = `status ${kind}`;
+  s.hidden = false;
 }
-
-async function login() {
-  if (!window.nostr) {
-    status("NIP-07 拡張（nos2x / Alby / nostr-keyx など）が見つかりません。インストールして再読み込みしてください。", "err");
-    return;
-  }
-  try {
-    const pk = await window.nostr.getPublicKey();
-    if (typeof pk !== "string" || !/^[0-9a-f]{64}$/.test(pk)) throw new Error("拡張が不正な公開鍵を返しました");
-    me = pk;
-  } catch (e) {
-    status(`公開鍵を取得できませんでした: ${(e as Error).message ?? e}`, "err");
-    return;
-  }
-  $("me").textContent = toNpub(me);
-  document.body.classList.add("logged-in");
-  status("ログインしました。受信箱を購読中…", "ok");
-  for (const r of relays) subscribeOne(r);
-  void loadMyProfiles(me);
-  ($("search") as HTMLInputElement).disabled = false;
-  void follows.load(me, [...relays]);
-}
-
-let sending = false;
+function hideStatus() { const s = $("status"); s.hidden = true; s.textContent = ""; }
 
 function setSendingUi(on: boolean) {
   sending = on;
@@ -273,202 +449,272 @@ function setSendingUi(on: boolean) {
 
 /** Manual send from the form (selected follow or typed npub). */
 async function sendYo() {
-  if (!me || !window.nostr) { status("先に「拡張でログイン」してください", "err"); return; }
+  if (!account) { status("先にログインしてください", "err"); return; }
   let to: string;
-  try {
-    to = selected ? selected.pubkey : parsePubkey(($("to") as HTMLInputElement).value);
-  } catch (e) {
-    status((e as Error).message, "err");
-    return;
+  if (selected) to = selected.pubkey;
+  else {
+    const v = input("search").value.trim();
+    if (!v) { status("宛先を選んでください", "err"); return; }
+    try { to = parsePubkey(v); } catch { status("宛先が見つかりません。候補から選ぶか npub を入力してください", "err"); return; }
   }
   await sendYoTo(to, null);
 }
 
 /**
- * Shared send path: newest verified kind 0 of `to` → build kind 7 Yo →
- * NIP-07 sign → strict check of the signed event → publish. Returns true on ≥1 OK.
- * `rowNote` (optional) mirrors progress in a received-Yo row.
+ * Shared send path (user tap only): extension key == account → newest verified
+ * kind 0 of `to` → build kind 7 Yo → NIP-07 sign → strict check of the signed
+ * event → publish. Returns true on ≥1 relay OK.
  */
-async function sendYoTo(to: string, rowNote: HTMLElement | null): Promise<boolean> {
+async function sendYoTo(to: string, rowId: string | null): Promise<boolean> {
   const note = (t: string, kind: "info" | "ok" | "err" = "info") => {
-    status(t, kind);
-    if (rowNote) { rowNote.textContent = t; rowNote.className = `row-note ${kind}`; }
+    if (rowId) { rowNotes.set(rowId, { text: t, kind }); renderInbox(); }
+    else status(t, kind);
   };
-  if (!me || !window.nostr) { note("先に「拡張でログイン」してください", "err"); return false; }
-  if (sending) { note("送信中です。完了までお待ちください", "err"); return false; }
-  if (relays.length === 0) { note("relay がありません", "err"); return false; }
+  if (!account) { note("先にログインしてください", "err"); return false; }
+  if (sending) { note("送信中です。少しお待ちください", "err"); return false; }
+  if (relays.length === 0) { note("リレーがありません。メニューで設定してください", "err"); return false; }
+  const gen = accountGen;
+  const mine = account;
   setSendingUi(true);
   try {
-    note(`宛先 ${shortNpub(to)} の最新プロフィール (kind 0) を検索中…`);
+    // 1) the extension must currently be on the logged-in account
+    note("拡張を確認中…");
+    let extPk: string;
+    try { extPk = await askExtensionKey(); } catch (e) {
+      setSigner(window.nostr ? "error" : "missing");
+      note(errText(e, "拡張に接続できません"), "err");
+      return false;
+    }
+    if (gen !== accountGen) return false;
+    const st = compareSigner(mine, extPk);
+    setSigner(st);
+    if (st !== "ready") { note("拡張のアカウントが違います。メニューから切り替えてください", "err"); return false; }
+
+    // 2) recipient's newest verified kind 0
+    note("送信準備中…");
+    for (const r of relays) r.reconnectIfNeeded();
     const qs = await Promise.all(relays.map(async (r) => ({ r, q: await r.query(profileFilter(to)) })));
+    if (gen !== accountGen) return false;
     const target = pickLatestProfile(qs.flatMap(({ r, q }) => q.events.map((ev) => ({ ev, relay: r.url }))), to);
     if (!target) {
-      const detail = qs.map(({ r, q }) => `${r.url}: ${q.status === "eose" ? `${q.events.length}件` : q.status}${q.message ? ` (${q.message})` : ""}`).join(" / ");
       const allFailed = qs.every(({ q }) => q.status !== "eose");
-      note(allFailed
-        ? `プロフィール検索に失敗しました（どの relay からも応答なし）。送信していません。 ${detail}`
-        : `宛先の署名検証済み kind 0 プロフィールが見つかりません。Yo はプロフィールへのリアクションなので送信できません。 ${detail}`, "err");
-      $("send-results").replaceChildren();
+      note(allFailed ? "リレーに接続できず送れませんでした" : "相手のプロフィールが見つからないため送れません", "err");
       return false;
     }
+
+    // 3) sign (extension prompt) and strictly check what came back
     const req = buildYo(target);
-    note(`${shortNpub(to)} 宛ての Yo を拡張で署名してください…`);
+    note("拡張で署名してください…");
     let signed: unknown;
     try {
-      signed = await window.nostr.signEvent(structuredClone(req));
-    } catch (e) {
-      note(`署名が拒否/失敗しました: ${(e as Error).message ?? e}`, "err");
+      signed = await window.nostr!.signEvent(structuredClone(req));
+    } catch {
+      note("署名がキャンセルされました", "err");
       return false;
     }
-    const problems = checkSignedYo(signed, req, me);
+    if (gen !== accountGen) { note("アカウントが変わったため送信を中止しました", "err"); return false; }
+    const problems = checkSignedYo(signed, req, mine);
     if (problems.length) {
-      note(`署名済みイベントが要求と一致しないため送信を中止しました: ${problems.join(" / ")}`, "err");
+      console.warn("nostr-yo: signed event rejected:", problems);
+      note("署名結果が正しくないため送信を中止しました", "err");
       return false;
     }
     const ev = signed as NostrEvent;
-    note(`${relays.length} 個の relay に送信中…（応答を待っています）`);
+
+    // 4) publish
+    note("送信中…");
     const targets = [...relays];
     const results: Array<[Relay, PublishResult | null]> = targets.map((r) => [r, null]);
-    renderSendResults(results, to, false);
+    if (!rowId) renderSendResults(results);
     await Promise.all(targets.map(async (r, i) => {
       const res = await r.publish(ev);
       results[i] = [r, res];
-      renderSendResults(results, to, false);
+      if (!rowId) renderSendResults(results);
     }));
-    renderSendResults(results, to, true);
     const ok = results.filter(([, r]) => r?.ok).length;
-    if (rowNote) {
-      rowNote.textContent = ok ? `✓ Yo を返しました（${ok}/${results.length} relay）` : `✗ 失敗（0/${results.length} relay）`;
-      rowNote.className = `row-note ${ok ? "ok" : "err"}`;
-    }
+    if (ok) { note(rowId ? "✓ Yo! を返しました" : "✓ Yo! を送りました", "ok"); bounce(); }
+    else note("送れませんでした（リレーが受け付けませんでした）", "err");
+    if (ok && !rowId) clearSelection(true);
     return ok > 0;
   } finally {
     setSendingUi(false);
   }
 }
 
-function renderSendResults(results: Array<[Relay, PublishResult | null]>, to: string, done: boolean) {
+function renderSendResults(results: Array<[Relay, PublishResult | null]>) {
   const ul = $("send-results");
   ul.replaceChildren();
-  let okCount = 0;
   for (const [r, res] of results) {
-    if (res?.ok) okCount++;
     const li = el("li", res === null ? "pending" : res.ok ? "ok" : "err");
-    li.append(el("span", "url", r.url), el("span", "res", res === null ? "… 応答待ち" : res.ok ? "✓ 受理 (OK true)" : "✗ 失敗"));
+    li.dataset.url = r.url;
+    li.append(el("span", "url", r.url), el("span", "res", res === null ? "応答待ち…" : res.ok ? "✓ 受理" : "✗ 失敗"));
     if (res?.message) li.append(el("span", "notice", res.message));
     ul.append(li);
   }
-  if (!done) {
-    if (okCount > 0) status(`Yo! 送信中… いま ${okCount}/${results.length} relay が受理`, "ok");
-    return;
-  }
-  if (okCount > 0) {
-    status(`Yo! (:yo: リアクション) を ${shortNpub(to)} のプロフィールに送りました（${okCount}/${results.length} relay が受理）`, "ok");
-    bounce();
-  } else {
-    status(`どの relay にも受理されませんでした（0/${results.length}）`, "err");
-  }
+  $("send-detail").hidden = false;
 }
 
+// ---------------------------------------------------------------- recipient search
 function renderFollowState() {
   const st = follows.state;
   const t = $("follow-state");
   let msg = "";
-  let cls = "small";
+  let bad = false;
   switch (st.phase) {
-    case "idle": msg = "ログインするとフォローリスト (kind 3) を読み込みます。"; break;
-    case "loading-kind3": msg = "フォローリスト (kind 3) を読み込み中…"; break;
-    case "failed": msg = `フォローリストの取得に失敗しました（全relay応答なし）: ${st.message}`; cls += " bad"; break;
-    case "no-kind3": msg = "署名検証済みのフォローリスト (kind 3) が見つかりません。npub を直接入力してください。"; cls += " bad"; break;
-    case "empty": msg = "フォローリストは空です。npub を直接入力してください。"; break;
-    case "profiles": msg = `フォロー ${st.total} 人。プロフィール取得中… ${st.done}/${st.total}` + (st.truncated ? "（先頭5000人のみ）" : ""); break;
-    case "ready": msg = `フォロー ${st.follows.length} 人（プロフィールあり ${st.follows.length - st.missing} / なし ${st.missing}）` + (st.truncated ? "（先頭5000人のみ）" : "") + ` ・ クエリ ${st.queries} 件`; break;
+    case "loading-kind3": case "profiles": msg = "フォローを読み込み中…"; break;
+    case "failed": msg = "フォローを読み込めませんでした。npub を入力して送れます。"; bad = true; break;
+    case "no-kind3": case "empty": msg = "フォローが見つかりません。npub を入力して送れます。"; break;
+    default: msg = "";
   }
   t.textContent = msg;
-  t.className = cls;
+  t.className = bad ? "small bad" : "small";
+  t.hidden = !msg;
 }
 
 function renderSearch() {
   const ul = $("search-results");
   ul.replaceChildren();
-  const q = ($("search") as HTMLInputElement).value;
-  if (!q.trim()) return;
+  const q = input("search").value;
+  if (!q.trim() || selected) return;
+  let manual: string | null = null;
+  try { manual = parsePubkey(q); } catch { /* not a key */ }
+  if (manual) {
+    const li = el("li");
+    const { name, picture } = displayName(manual);
+    senders.want([manual]);
+    li.append(pickButton(manual, name || "この npub", picture, name ? "" : shortNpub(manual), !!name));
+    ul.append(li);
+    return;
+  }
   if (!follows.follows.length) {
-    ul.append(el("li", "none", "検索できるフォローがまだありません"));
+    if (follows.state.phase !== "loading-kind3" && follows.state.phase !== "profiles") ul.append(el("li", "none", "候補がありません"));
     return;
   }
   const rows = searchFollows(q, follows.follows, follows.profiles, 30);
   if (!rows.length) {
-    ul.append(el("li", "none", follows.state.phase === "profiles" ? "見つかりません（プロフィール取得中）" : "見つかりません"));
+    ul.append(el("li", "none", follows.state.phase === "profiles" ? "見つかりません（読み込み中）" : "見つかりません"));
     return;
   }
+  const counts = new Map<string, number>();
+  for (const r of rows) counts.set(r.label, (counts.get(r.label) ?? 0) + 1);
   for (const r of rows) {
     const li = el("li");
-    const b = el("button", "pick") as HTMLButtonElement;
-    b.type = "button";
-    b.dataset.pubkey = r.pubkey;
-    b.append(avatar(r.pubkey, r.picture, r.hasProfile ? r.label : ""));
-    b.append(el("span", r.hasProfile ? "pick-name" : "pick-name none", r.label));
-    if (r.name && r.name !== r.label) b.append(el("span", "pick-sub", `@${r.name}`));
-    if (r.nip05) b.append(el("span", "pick-sub", r.nip05));
-    b.append(el("span", "pick-npub", `${r.npub.slice(0, 14)}…${r.npub.slice(-8)}`));
-    b.onclick = () => selectRecipient(r.pubkey, r.label);
-    li.append(b);
+    // Sub line: a human hint; the short npub only when the name is ambiguous or missing.
+    const sub = (counts.get(r.label) ?? 0) > 1 || !r.hasProfile ? shortNpub(r.pubkey) : (r.nip05 || (r.name && r.name !== r.label ? `@${r.name}` : ""));
+    li.append(pickButton(r.pubkey, r.label, r.picture, sub, r.hasProfile));
     ul.append(li);
   }
 }
 
-function selectRecipient(pubkey: string, label: string) {
+function pickButton(pubkey: string, label: string, picture: string, sub: string, hasProfile: boolean): HTMLElement {
+  const b = el("button", "pick") as HTMLButtonElement;
+  b.type = "button";
+  b.dataset.pubkey = pubkey;
+  b.append(avatar(pubkey, picture, hasProfile ? label : ""));
+  const t = el("span", "pick-text");
+  t.append(el("span", hasProfile ? "pick-name" : "pick-name none", label));
+  if (sub) t.append(el("span", "pick-sub", sub));
+  b.append(t);
+  b.onclick = () => selectRecipient(pubkey, label, picture);
+  return b;
+}
+
+function selectRecipient(pubkey: string, label: string, picture: string) {
   selected = { pubkey, label };
-  ($("to") as HTMLInputElement).value = toNpub(pubkey);
   const box = $("selected");
-  box.replaceChildren(el("span", "sel-label", `選択中: ${label}`), el("code", "sel-npub", toNpub(pubkey)));
+  box.replaceChildren(avatar(pubkey, picture, label), el("span", "sel-name", label));
+  box.dataset.pubkey = pubkey;
   const x = el("button", "rm", "×") as HTMLButtonElement;
   x.type = "button";
-  x.title = "選択解除";
-  x.onclick = () => clearSelection(true);
+  x.setAttribute("aria-label", "宛先を解除");
+  x.onclick = () => { clearSelection(true); input("search").focus(); };
   box.append(x);
   box.hidden = false;
   $("search-results").replaceChildren();
-  ($("search") as HTMLInputElement).value = "";
+  input("search").value = "";
+  input("search").hidden = true;
 }
 
 function clearSelection(clearField: boolean) {
   selected = null;
-  $("selected").hidden = true;
-  $("selected").replaceChildren();
-  if (clearField) ($("to") as HTMLInputElement).value = "";
+  const box = $("selected");
+  box.hidden = true;
+  box.replaceChildren();
+  delete box.dataset.pubkey;
+  input("search").hidden = false;
+  if (clearField) { input("search").value = ""; $("search-results").replaceChildren(); }
 }
+
+// ---------------------------------------------------------------- menu
+const menu = () => $("menu") as HTMLDialogElement;
+function openMenu() {
+  renderRelays();
+  menuMsg("");
+  const d = menu();
+  if (typeof d.showModal === "function") d.showModal(); else d.setAttribute("open", "");
+}
+function closeMenu() {
+  const d = menu();
+  if (typeof d.close === "function") { if (d.open) d.close(); } else d.removeAttribute("open");
+}
+function menuMsg(t: string) { $("relay-msg").textContent = t; }
 
 function addRelay(ev: Event) {
   ev.preventDefault();
-  const input = $("relay-input") as HTMLInputElement;
+  const inp = input("relay-input");
   try {
-    const url = normalizeRelay(input.value);
+    const url = normalizeRelay(inp.value);
     if (relays.some((r) => r.url === url)) throw new Error("追加済みです");
     relays.push(makeRelay(url));
     saveRelayUrls();
-    input.value = "";
+    inp.value = "";
     renderRelays();
+    menuMsg(`${url} を追加しました`);
   } catch (e) {
-    status(`relay 追加失敗: ${(e as Error).message}`, "err");
+    menuMsg(`追加できません: ${errText(e, "wss:// の URL を入力してください")}`);
   }
 }
 
+// ---------------------------------------------------------------- lifecycle
+function onResume() {
+  reconnectAll();
+  // The extension may have switched accounts while we were away: re-check at next send.
+  if (account && signer === "ready") setSigner("unverified");
+  void refreshExtensionPresence(3000);
+}
+
 function init() {
-  relays = loadRelayUrls().map(makeRelay);
+  relays = resolveRelayUrls(storageGet(LS_RELAYS)).map(makeRelay);
   renderRelays();
-  $("login").onclick = login;
-  $("send").onclick = sendYo;
+  $("login").onclick = () => { void login(); };
+  $("logout").onclick = logout;
+  $("relogin").onclick = () => { void relogin(); };
+  $("send").onclick = () => { void sendYo(); };
+  $("menu-btn").onclick = openMenu;
+  $("menu-close").onclick = closeMenu;
+  menu().addEventListener("click", (e) => { if (e.target === menu()) closeMenu(); });
   $("relay-form").onsubmit = addRelay;
-  ($("to") as HTMLInputElement).onkeydown = (e) => { if (e.key === "Enter") void sendYo(); };
-  ($("to") as HTMLInputElement).oninput = () => { if (selected) clearSelection(false); };
+  const s = input("search");
   let searchTimer: ReturnType<typeof setTimeout> | undefined;
-  ($("search") as HTMLInputElement).oninput = () => { clearTimeout(searchTimer); searchTimer = setTimeout(renderSearch, 120); };
-  // Extensions often inject window.nostr slightly after load.
-  setTimeout(() => {
-    $("ext").textContent = window.nostr ? "NIP-07 拡張: 検出" : "NIP-07 拡張: 未検出";
-  }, 400);
+  s.oninput = () => { clearTimeout(searchTimer); searchTimer = setTimeout(renderSearch, 120); };
+  s.onkeydown = (e) => { if (e.key === "Enter") { e.preventDefault(); void sendYo(); } };
+
+  document.addEventListener("visibilitychange", () => { if (document.visibilityState === "visible") onResume(); });
+  window.addEventListener("pageshow", (e) => { if ((e as PageTransitionEvent).persisted) onResume(); });
+  window.addEventListener("online", onResume);
+  // Another tab logged out / switched account.
+  window.addEventListener("storage", (e) => {
+    if (e.key !== LS_SESSION && e.key !== null) return;
+    const pk = parseSession(storageGet(LS_SESSION));
+    if (!pk && account) stopAccount();
+    else if (pk && pk !== account) { setSigner("unverified"); startAccount(pk); }
+  });
+
+  // Restore the remembered account (pubkey only → read-only until the user acts).
+  const remembered = parseSession(storageGet(LS_SESSION));
+  if (remembered) startAccount(remembered);
+  else { storageSet(LS_SESSION, null); renderAccount(); renderInbox(); }
+  void refreshExtensionPresence(4000);
 }
 
 init();

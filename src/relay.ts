@@ -37,15 +37,18 @@ export class Relay {
     }
     this.ws = ws;
     ws.onopen = () => {
+      if (this.ws !== ws) { ws.close(); return; }
       this.setState("open");
       for (const [id, s] of this.subs) this.sendRaw(["REQ", id, s.filter]);
       this.flushOpenWaiters(true);
     };
     ws.onerror = () => {
+      if (this.ws !== ws) return;
       this.lastNotice = "WebSocket error";
       this.setState("error");
     };
     ws.onclose = (ev) => {
+      if (this.ws !== ws) return; // stale socket replaced by a reconnect
       if (this.state !== "error") this.setState("closed");
       if (ev.reason) this.lastNotice = ev.reason;
       for (const [, cb] of this.pendingOk) cb({ ok: false, message: "接続が切れました（OK未受信）" });
@@ -53,11 +56,25 @@ export class Relay {
       this.flushOpenWaiters(false);
       this.ws = null;
     };
-    ws.onmessage = (m) => this.handle(m.data);
+    ws.onmessage = (m) => { if (this.ws === ws) this.handle(m.data); };
   }
 
   close(): void {
     this.ws?.close();
+  }
+
+  /** Reconnect after sleep/background/network loss. Active subscriptions are re-sent on open. */
+  reconnectIfNeeded(): void {
+    const dead = this.state === "closed" || this.state === "error" || (this.ws !== null && this.ws.readyState > WebSocket.OPEN);
+    if (!dead) return;
+    const old = this.ws;
+    this.ws = null;
+    for (const [, cb] of this.pendingOk) cb({ ok: false, message: "接続が切れました（OK未受信）" });
+    this.pendingOk.clear();
+    this.flushOpenWaiters(false);
+    if (old) { try { old.close(); } catch { /* ignore */ } }
+    this.state = "closed";
+    this.connect();
   }
 
   waitOpen(timeoutMs: number): Promise<boolean> {

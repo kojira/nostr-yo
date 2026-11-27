@@ -54,7 +54,13 @@ export class ProfileCache {
       }
       this.onChange();
     }
-    for (const pk of batch) if (!this.profiles.has(pk) && !this.external().has(pk)) this.state.set(pk, anyAnswered ? "none" : "failed");
+    for (const pk of batch) {
+      if (this.profiles.has(pk)) continue;
+      // Served by the external (follow) map: forget the pending mark so it can be
+      // looked up again if that map is reset (logout / account switch).
+      if (this.external().has(pk)) this.state.delete(pk);
+      else this.state.set(pk, anyAnswered ? "none" : "failed");
+    }
     this.onChange();
   }
 }

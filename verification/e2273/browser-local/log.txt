@@ -1,0 +1,20 @@
+kind0 1ae450d9 wss://r.kojira.io:true | wss://yabu.me:true | wss://x.kojira.io:true | wss://n.kojira.io:true
+kind0 d0c37315 wss://r.kojira.io:true | wss://yabu.me:true | wss://x.kojira.io:true | wss://n.kojira.io:true
+kind0 3073a659 wss://r.kojira.io:true | wss://yabu.me:true | wss://x.kojira.io:true | wss://n.kojira.io:true
+kind0 7321d6c4 wss://r.kojira.io:true | wss://yabu.me:true | wss://x.kojira.io:true | wss://n.kojira.io:true
+R kind3 wss://r.kojira.io:true | wss://yabu.me:true | wss://x.kojira.io:true | wss://n.kojira.io:true
+S1 kind3 wss://r.kojira.io:true | wss://yabu.me:true | wss://x.kojira.io:true | wss://n.kojira.io:true
+yo S1->R wss://r.kojira.io:true | wss://yabu.me:true | wss://x.kojira.io:true | wss://n.kojira.io:true
+yo S3->R (other impl emoji) wss://r.kojira.io:true | wss://yabu.me:true | wss://x.kojira.io:true | wss://n.kojira.io:true
+forged yo wss://r.kojira.io:false | wss://yabu.me:false | wss://x.kojira.io:false | wss://n.kojira.io:false
+[R] getPublicKey called
+localStorage: {"nostr-yo:session":"{\"v\":1,\"pubkey\":\"1ae450d97fd9a75e44926576c8c96b3751aea4d7dba6c2a45caf38e6bb558d7b\"}"}
+rows [{"to":"7321d6c4","name":"ながーい名前ながーい名前ながーい名前ながーい名前ながーい名前ながーい名前XXXXXXXXXXXXXXXXXXXXXXXXXXXX","when":"11/27 19:59","datetime":"2026-11-27T10:59:26.000Z","detailOpen":false},{"to":"d0c37315","name":"アリス e2273ifx1","when":"11/27 19:01","datetime":"2026-11-27T10:01:26.000Z","detailOpen":false}]
+[R] getPublicKey called
+[R] mock signer signed kind=7 as 1ae450d9 tags=[["e","c741892ba40bfafa2642e1dacaf372d2363d930204f5039e2838ac2689e1ef99","wss://r.kojira.io","d0c37315763e5c3cba116840b04cbc1611844846825de33d376def5c8cf7297c"],["p","d0c37315763e5c3cba116840b04cbc1611844846825de33d376def5c8cf7297c","wss://r.kojira.io"],["k","0"],["emoji","yo","https://kojira.github.io/nostr-yo/yo.png"],["t","yo"]]
+[R] getPublicKey called
+[R] mock signer signed kind=7 as 1ae450d9 tags=[["e","25cf5b84b54c67252c8e3fe3490cb62a52455f5dcf1b37fbee4843027cbc4d84","wss://r.kojira.io","3073a659465035b7491b550e64f3846df68561bfdff56348bb2931e5a524229e"],["p","3073a659465035b7491b550e64f3846df68561bfdff56348bb2931e5a524229e","wss://r.kojira.io"],["k","0"],["emoji","yo","https://kojira.github.io/nostr-yo/yo.png"],["t","yo"]]
+yo S2->R after reconnect wss://r.kojira.io:true | wss://yabu.me:true | wss://x.kojira.io:true | wss://n.kojira.io:true
+[R] getPublicKey called
+[R] getPublicKey called
+[LATE] getPublicKey called

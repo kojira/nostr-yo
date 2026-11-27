@@ -21,6 +21,13 @@ export class FollowLoader {
   private gen = 0;
   constructor(private onChange: () => void) {}
 
+  /** Forget everything (logout / account switch); in-flight loads are ignored. */
+  reset(): void {
+    this.gen++;
+    this.follows = []; this.profiles.clear(); this.queries = 0;
+    this.set({ phase: "idle" });
+  }
+
   private set(s: FollowState) { this.state = s; this.onChange(); }
 
   async load(me: string, relays: Relay[]): Promise<void> {

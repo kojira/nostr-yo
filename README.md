@@ -9,6 +9,18 @@ Send a single "Yo!" to any npub over Nostr. That's it.
   This site never asks for, stores, or handles a secret key.
 - Relays are talked to directly from your browser over WebSocket.
 
+## Screen & login (e2273, 2026-11-27)
+
+- **Simple UI.** Compact header (logo, your icon/name, ☰ menu). After login the first view shows the received Yo, newest first: icon, name, date and time, and a "Yo! を返す" button. The send box follows.
+  Technical details (signature checks, kind 0 matching, follow/query counts, "reply to npub…" lines) are no longer shown. **All verification still runs internally**: invalid events are silently dropped. npubs live in a collapsed "詳細" section.
+- **Menu (☰).** Account (npub inside "詳細", "拡張のアカウントで入り直す", **ログアウト**) and relay settings (add/remove; defaults unchanged).
+- **Remembered login.** Only `{"v":1,"pubkey":<hex>}` is stored in `localStorage` (`nostr-yo:session`). Anything else in that key is refused. No secret key, token or signature is ever stored.
+  - Reload, reopening or returning from the background restores the inbox read-only, **without calling the extension**. Relays reconnect on `visibilitychange`, `pageshow` and `online`.
+  - Remembering the pubkey is not a signing permission. Each send/reply is a user tap. Before signing, the app asks the extension for its current key; if it differs, nothing is signed and "拡張のアカウントが違います" is shown with a "切り替える" button.
+  - With no extension, the page says so ("拡張が見つかりません（受信の表示のみ）") and never claims it can send. Late-injected extensions are waited for (≈4 s).
+  - **Logout** removes the stored pubkey, clears the inbox and search, and stops subscriptions. Nothing is restored on reload. Logging out or switching in another tab is followed via the `storage` event.
+- **iPhone.** All inputs are 16 px or larger, so iOS does not zoom on focus. The viewport still allows pinch zoom (no `maximum-scale` / `user-scalable=no`). Long names are ellipsized, and the layout has no horizontal overflow at 390 px.
+
 ## Protocol spec
 
 **The shared Yo reaction convention is in [`SPEC.md`](SPEC.md).** It is a convention proposed by this project, not an adopted NIP.
@@ -21,7 +33,7 @@ Receivers accept **any https emoji URL from any implementation, but never fetch 
 - Yo events sent by nostr-yo before the `t` tag existed are still recognised;
 - an event with only `t=yo` but missing other rules is rejected.
 
-In the inbox, a Yo whose emoji URL is not ours is labelled "他実装".
+In the inbox, a Yo whose emoji URL is not ours is noted inside the row's collapsed "詳細" section.
 
 **Sending (nostr-yo)**
 1. Look up the recipient's newest kind 0 whose signature checks out. If there is none, say so and don't sign.
@@ -31,19 +43,19 @@ In the inbox, a Yo whose emoji URL is not ours is labelled "他実装".
 **Yo back.** Every received Yo has a "Yo! を返す" button.
 - The recipient is the **author pubkey of the verified event**, never a tag value.
 - It reuses the send path above and needs a click plus a NIP-07 signature; there are no auto-replies.
-- While a send is in progress, all Yo buttons are disabled. The row shows the target npub, progress, and the result.
+- While a send is in progress, all Yo buttons are disabled. The row shows short progress and the result (the npub is in "詳細").
 
 **Pick a recipient from your follows.** After login, the app loads your newest verified kind 3 (read-only: it never publishes kind 3 or changes follows).
 - **Loading profiles:** follows' kind 0 are fetched in batches of 150 authors, relay by relay. Each relay is only asked for profiles still missing, with at most 2 requests in flight, and the UI yields between batches. Test: 404 follows took 16 queries in total.
 - **What's used from a profile:** only `name`, `display_name` and `nip05`, as untrusted strings. Control/bidi characters are removed, length is capped, and everything is shown with `textContent`. Pictures and `about` are not used.
-- **Searching:** matches name, display name, nip05 and npub (case- and width-insensitive). Every result shows a short npub, so people with the same name can be told apart.
+- **Searching:** matches name, display name, nip05 and npub (case- and width-insensitive). A short npub is shown only for same-name results or results without a profile.
 - **Choosing a result:** clicking one fixes that pubkey as the recipient. Editing the field by hand clears the choice; typing an npub manually still works.
-- **Honest states:** loading / failed (all relays) / no kind 3 / empty / profiles n/m / follows without a profile (findable by npub only).
+- **States:** short messages for loading, failed, and no or empty follow list. Counts are not shown. Follows without a profile can be found by npub only.
 
 **Sender icons and names.** The inbox and the follow search show each person's icon and display_name/name, taken from their newest verified kind 0.
 - Profiles the follow loader already has are reused. Unknown senders are looked up in batches, at most once each.
 - Names are untrusted text, shown with `textContent`.
-- A short npub is always shown under the name, so people with the same name can be told apart. The Yo back target stays fixed to the event author.
+- The npub is in the row's collapsed "詳細" section. The Yo back target stays fixed to the event author.
 - No profile, a failed lookup, no picture, an invalid picture URL, or an image that fails to load → a built-in letter avatar.
 
 **Privacy note (profile pictures).** Showing a `picture` means your browser fetches that image from whatever host the profile points to. That host sees your IP address and the time.
