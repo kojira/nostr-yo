@@ -1,0 +1,46 @@
+[B] ws created wss://r.kojira.io/
+[B] ws created wss://yabu.me/
+[B] ws created wss://x.kojira.io/
+[B] ws created wss://n.kojira.io/
+[A] ws created wss://r.kojira.io/
+[A] ws created wss://yabu.me/
+[A] ws created wss://x.kojira.io/
+[A] ws created wss://n.kojira.io/
+relay list A: wss://r.kojira.io
+接続OK
+×
+wss://yabu.me
+接続OK
+×
+wss://x.kojira.io
+接続OK
+×
+wss://n.kojira.io
+接続OK
+×
+B npub: npub1cy0vc7xgz0cf79u2yj87mtlngjc0a5yqxegqw495npz8zzs2twxs5z954g
+[A] mock signer signed kind=7117 content="Yo!" tags=[["p","c11ecc78c813f09f178a248fedaff344b0fed08036500754b49844710a0a5b8d"],["alt","Yo! (a one-word ping sent with nostr-yo)"]] id=d97ac81d2b6e4e663b017517800bd04c80264abab4581f1b5d42ed00295945d3
+A status: Yo! を npub1cy0vc…5z954g に送りました（4/4 relay が受理）
+A send results: wss://r.kojira.io
+✓ 受理 (OK true)
+wss://yabu.me
+✓ 受理 (OK true)
+wss://x.kojira.io
+✓ 受理 (OK true)
+wss://n.kojira.io
+✓ 受理 (OK true)
+B inbox: Yo!
+from npub1euwpz…0kswp2
+2026/11/27 13:07:07 | 1 件の Yo（署名検証済み）
+[M-swap-recipient] ws created wss://r.kojira.io/
+[M-swap-recipient] ws created wss://yabu.me/
+[M-swap-recipient] ws created wss://x.kojira.io/
+[M-swap-recipient] ws created wss://n.kojira.io/
+[M-swap-recipient] mock signer signed kind=7117 content="Yo!" tags=[["p","d59a7615f6f0785b15508c87a1d6b16e47624215b22446f8f2ce70860735ca82"],["alt","Yo! (a one-word ping sent with nostr-yo)"]] id=43975f571e44aaa00086845c76bef95efac54b61cff4c72893079237f86b7a60
+M-swap-recipient status: 署名済みイベントが要求と一致しないため送信を中止しました: tags が要求と違います（宛先が書き換えられた可能性） / p タグ（宛先）が要求と一致しません
+[M-kind1] ws created wss://r.kojira.io/
+[M-kind1] ws created wss://yabu.me/
+[M-kind1] ws created wss://x.kojira.io/
+[M-kind1] ws created wss://n.kojira.io/
+[M-kind1] mock signer signed kind=1 content="Yo!" tags=[["p","c11ecc78c813f09f178a248fedaff344b0fed08036500754b49844710a0a5b8d"],["alt","Yo! (a one-word ping sent with nostr-yo)"]] id=2e35f369c7346d64a0da72fb580a0a65a327b2596fd996a72b2e608cc2806c88
+M-kind1 status: 署名済みイベントが要求と一致しないため送信を中止しました: kind が 7117 ではありません (1)
