@@ -51,6 +51,26 @@ the kind.
 
 Note: Yo events are **public** (not encrypted). Anyone can see that A sent a Yo to B.
 
+## Default relays
+
+In this order (`src/config.ts`):
+
+1. `wss://r.kojira.io`
+2. `wss://yabu.me`
+3. `wss://x.kojira.io`
+4. `wss://n.kojira.io`
+
+The defaults apply only when there is no saved relay list. Once you add or remove a
+relay, the list is saved in `localStorage` (`nostr-yo:relays`), and from then on it
+is kept as-is, including over a change of defaults. Invalid or duplicate entries are
+dropped. If the saved value is empty or corrupt, the app falls back to the defaults.
+To get the new defaults back, clear the site data.
+
+Note: `n.kojira.io` sends a NIP-42 `AUTH` challenge on connect, and nostr-yo does not
+implement NIP-42. In the 2026-11-27 tests the relay still accepted Yo events (`OK true`)
+and served the inbox query. If a relay ever refuses for lack of AUTH, the UI shows its
+`OK false` / `CLOSED` message as a failure.
+
 ## Security notes
 
 - Received data is shown with `textContent` only; it is never parsed as HTML.

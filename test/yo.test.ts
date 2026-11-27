@@ -7,6 +7,7 @@ import {
   YO_KIND, acceptIncomingYo, buildYo, checkSignedYo, computeEventId, normalizeRelay,
   parsePubkey, toNpub, verifyEventSignature, type NostrEvent, type UnsignedEvent,
 } from "../src/yo.js";
+import { DEFAULT_RELAYS, resolveRelayUrls } from "../src/config.js";
 
 // Throwaway test keys generated in-process (never persisted).
 const skA = schnorr.utils.randomSecretKey();
@@ -106,4 +107,19 @@ test("normalizeRelay", () => {
   assert.throws(() => normalizeRelay("https://nos.lol"));
   assert.throws(() => normalizeRelay("javascript:alert(1)"));
   assert.throws(() => normalizeRelay("wss://u:p@nos.lol"));
+});
+
+test("default relays: exact list and order", () => {
+  assert.deepEqual([...DEFAULT_RELAYS], ["wss://r.kojira.io", "wss://yabu.me", "wss://x.kojira.io", "wss://n.kojira.io"]);
+  for (const u of DEFAULT_RELAYS) assert.equal(normalizeRelay(u), u);
+});
+
+test("resolveRelayUrls keeps a saved list, falls back to defaults otherwise", () => {
+  assert.deepEqual(resolveRelayUrls(null), [...DEFAULT_RELAYS]);
+  assert.deepEqual(resolveRelayUrls('["wss://nos.lol","wss://relay.damus.io/"]'), ["wss://nos.lol", "wss://relay.damus.io"]);
+  assert.deepEqual(resolveRelayUrls('["wss://nos.lol","ws://evil.example",42,"wss://nos.lol"]'), ["wss://nos.lol"]);
+  assert.deepEqual(resolveRelayUrls("[]"), [...DEFAULT_RELAYS]);
+  assert.deepEqual(resolveRelayUrls("not json"), [...DEFAULT_RELAYS]);
+  assert.deepEqual(resolveRelayUrls('{"a":1}'), [...DEFAULT_RELAYS]);
+  const r = resolveRelayUrls(null); r.push("wss://x"); assert.equal(DEFAULT_RELAYS.length, 4);
 });

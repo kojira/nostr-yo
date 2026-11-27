@@ -1,5 +1,6 @@
 // UI entry point. All untrusted text is rendered via textContent only.
 import { Relay, type PublishResult } from "./relay.js";
+import { LS_RELAYS, resolveRelayUrls } from "./config.js";
 import {
   acceptIncomingYo,
   buildYo,
@@ -22,8 +23,6 @@ declare global {
   }
 }
 
-const DEFAULT_RELAYS = ["wss://nos.lol", "wss://yabu.me", "wss://nostr.mom", "wss://relay.damus.io"];
-const LS_RELAYS = "nostr-yo:relays";
 
 const $ = <T extends HTMLElement>(id: string) => document.getElementById(id) as T;
 
@@ -41,16 +40,9 @@ const received: NostrEvent[] = [];
 let rejected = 0;
 
 function loadRelayUrls(): string[] {
-  try {
-    const v = JSON.parse(localStorage.getItem(LS_RELAYS) ?? "null");
-    if (Array.isArray(v)) {
-      const ok = v.filter((x) => typeof x === "string").map((x) => {
-        try { return normalizeRelay(x); } catch { return null; }
-      }).filter((x): x is string => !!x);
-      if (ok.length) return ok;
-    }
-  } catch { /* ignore */ }
-  return DEFAULT_RELAYS;
+  let raw: string | null = null;
+  try { raw = localStorage.getItem(LS_RELAYS); } catch { /* storage blocked */ }
+  return resolveRelayUrls(raw);
 }
 
 function saveRelayUrls() {
