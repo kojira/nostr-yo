@@ -75,3 +75,10 @@ UI marks: "nostr-yo" when emoji URL == ours, otherwise "他実装" (host shown a
 - Same send path as a normal Yo: newest kind 0 lookup → kind 7 with the shared tags → strict check of the signed result → publish.
 - Needs a click and a NIP-07 signature; there is no auto-reply.
 - While sending, all Yo buttons are disabled (prevents double sends). The row shows progress and then ok/failed.
+
+## e2263: show senders by icon and name
+- Profile source: the newest verified kind 0 per author. Profiles the follow loader already has are reused; otherwise unknown senders are batched (debounce 300 ms, up to 150 authors per REQ), relay by relay, asking only for still-missing authors. Each author is looked up at most once per session.
+- Fields: display_name || name (cleanText, untrusted, textContent). `picture` is used only if it is https, has no credentials, is ≤ 1024 chars, and has no whitespace or control characters.
+- `<img>` attributes: referrerpolicy=no-referrer, crossorigin=anonymous (no cookies), loading=lazy, decoding=async, width/height fixed. On error it falls back to a built-in letter avatar. CSP `img-src 'self' data: https:`.
+- Privacy: loading a sender's picture contacts that image's host. The host sees your IP and when you loaded it; no referrer is sent. Documented in the README. Emoji URLs inside Yo events are still never loaded.
+- No profile / lookup failed / no picture → letter avatar plus short npub. A short npub is always shown under the name (for same names). The Yo back target stays fixed to the event author.
