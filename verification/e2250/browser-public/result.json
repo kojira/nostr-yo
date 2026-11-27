@@ -1,0 +1,25 @@
+{
+  "site": "https://kojira.github.io/nostr-yo/",
+  "chrome": "Chrome/158.0.8127.38",
+  "startedAt": "2026-11-27T04:25:33.478Z",
+  "checks": {
+    "relaysOpenA": true,
+    "sendStatusOk": true,
+    "receivedByB": true,
+    "receivedTargetConfirmed": true,
+    "noProfileRefused": true,
+    "tamper_swap-recipient_refused": true,
+    "tamper_swap-target_refused": true,
+    "tamper_swap-emoji_refused": true,
+    "tamper_kind1_refused": true,
+    "onlySameOriginHttp": true
+  },
+  "profileB": "37f9f011e4761e397cc8bc0b5d0e74e5cc99ed615175638b7ebdc98c7fdea44a",
+  "httpRequests": [
+    "https://kojira.github.io/nostr-yo/",
+    "https://kojira.github.io/nostr-yo/style.css",
+    "https://kojira.github.io/nostr-yo/yo.png",
+    "https://kojira.github.io/nostr-yo/app.js"
+  ],
+  "finishedAt": "2026-11-27T04:25:53.687Z"
+}

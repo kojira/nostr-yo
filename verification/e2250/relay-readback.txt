@@ -1,0 +1,5 @@
+# readback of the public E2E recipient (throwaway key d310699b…) 2026-11-27T04:26:49Z via kind7 #p #k filter; accepted = app parseIncomingYo
+wss://r.kojira.io EOSE events=1 d51726035915 kind=7 content=:yo: accepted=true
+wss://yabu.me EOSE events=1 d51726035915 kind=7 content=:yo: accepted=true
+wss://x.kojira.io EOSE events=1 d51726035915 kind=7 content=:yo: accepted=true
+wss://n.kojira.io EOSE events=1 d51726035915 kind=7 content=:yo: accepted=true
