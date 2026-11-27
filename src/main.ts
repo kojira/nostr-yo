@@ -199,6 +199,16 @@ function displayName(pubkey: string): { name: string; picture: string; state: st
   return { name: profile ? (profile.displayName || profile.name) : "", picture: profile?.picture ?? "", state };
 }
 
+/** Small inline "more" indicator inside a name button (decorative). */
+function chevron(): HTMLElement {
+  const c = el("span", "chev", "▾");
+  c.setAttribute("aria-hidden", "true");
+  return c;
+}
+
+/** Inbox rows whose details are open (by event id); survives re-renders. */
+const openDetails = new Set<string>();
+
 /** Per-row progress notes survive re-renders. */
 const rowNotes = new Map<string, { text: string; kind: "info" | "ok" | "err" }>();
 
@@ -209,26 +219,37 @@ function renderInbox() {
   const rows = received.slice(0, Math.min(inboxShown, 100));
   senders.want(rows.map((y) => y.ev.pubkey));
   const ul = $("inbox");
+  // Keep keyboard focus across re-renders (profiles arriving re-render the list).
+  const focusKey = (document.activeElement as HTMLElement | null)?.closest("#inbox") ? (document.activeElement as HTMLElement).dataset.focusKey : undefined;
   ul.replaceChildren();
   for (const yo of rows) {
     const e = yo.ev;
     const li = el("li", "yo-item");
     li.dataset.id = e.id;
     const { name, picture, state } = displayName(e.pubkey);
-    const who = el("div", "who");
+    // The name (with icon and time) is the disclosure button for the details; no separate row.
+    const detId = `det-${e.id}`;
+    const open = openDetails.has(e.id);
+    const who = el("button", "who") as HTMLButtonElement;
+    who.type = "button";
+    who.dataset.focusKey = `who:${e.id}`;
+    who.setAttribute("aria-expanded", String(open));
+    who.setAttribute("aria-controls", detId);
     who.append(avatar(e.pubkey, picture, name));
-    const t = el("div", "who-text");
-    t.append(el("span", name ? "from-name" : "from-name none", name || (state === "pending" ? "読み込み中…" : "名前なし")));
+    const t = el("span", "who-text");
+    const nm = el("span", name ? "from-name" : "from-name none", name || (state === "pending" ? "読み込み中…" : "名前なし"));
+    t.append(nm);
     const when = el("time", "when", formatWhen(e.created_at));
     when.setAttribute("datetime", new Date(e.created_at * 1000).toISOString());
     when.title = new Date(e.created_at * 1000).toLocaleString();
     t.append(when);
-    who.append(t);
+    who.append(t, chevron());
     // Yo back: recipient is the verified author of this event (never a tag value).
     const author = e.pubkey;
     const back = el("button", "yo-back", "Yo! を返す") as HTMLButtonElement;
     back.type = "button";
     back.dataset.to = author;
+    back.dataset.focusKey = `back:${e.id}`;
     back.setAttribute("aria-label", `${name || "この相手"} に Yo! を返す`);
     back.disabled = sending;
     li.append(who, back);
@@ -237,13 +258,21 @@ function renderInbox() {
     rowNote.hidden = !noteState;
     back.onclick = () => { void sendYoTo(author, e.id); };
     li.append(rowNote);
-    const det = el("details", "detail");
-    det.append(el("summary", undefined, "詳細"));
+    const det = el("div", "detail");
+    det.id = detId;
+    det.hidden = !open;
     det.append(el("code", "from-npub", toNpub(author)));
     if (!yo.ours) det.append(el("div", undefined, `他のアプリから（絵文字: ${yo.emojiHost}・読み込みません）`));
+    who.onclick = () => {
+      const next = !openDetails.has(e.id);
+      if (next) openDetails.add(e.id); else openDetails.delete(e.id);
+      who.setAttribute("aria-expanded", String(next));
+      det.hidden = !next;
+    };
     li.append(det);
     ul.append(li);
   }
+  if (focusKey) ul.querySelector<HTMLElement>(`[data-focus-key="${CSS.escape(focusKey)}"]`)?.focus();
   const note = $("inbox-note");
   if (!received.length) note.textContent = inboxLoaded ? "まだ Yo は届いていません。" : "読み込み中…";
   else note.textContent = "";
@@ -276,11 +305,11 @@ function renderAccount() {
   $("sendbox").hidden = !loggedIn;
   $("logout").hidden = !loggedIn;
   $("relogin").hidden = !loggedIn;
-  $("me-detail").hidden = !loggedIn;
   if (!account) {
+    setMeDetail(false);
     acc.hidden = true;
     acc.replaceChildren();
-    $("menu-me").textContent = "未ログイン";
+    $("menu-me").replaceChildren("未ログイン");
     $("me-npub").textContent = "";
     renderSigner();
     renderNet();
@@ -290,10 +319,25 @@ function renderAccount() {
   const { name, picture } = displayName(account);
   acc.replaceChildren(avatar(account, picture, name || "?"), el("span", "acc-name", name || "自分"));
   acc.hidden = false;
-  $("menu-me").textContent = `ログイン中: ${name || "（名前なし）"}`;
+  const meBtn = el("button", "name-btn") as HTMLButtonElement;
+  meBtn.type = "button";
+  meBtn.id = "me-name";
+  meBtn.setAttribute("aria-controls", "me-detail");
+  meBtn.append(el("span", "name-btn-text", name || "（名前なし）"), chevron());
+  meBtn.onclick = () => setMeDetail($("me-detail").hidden);
+  const hadFocus = document.activeElement?.id === "me-name";
+  $("menu-me").replaceChildren("ログイン中: ", meBtn);
+  setMeDetail(!$("me-detail").hidden);
+  if (hadFocus) meBtn.focus();
   $("me-npub").textContent = toNpub(account);
   renderSigner();
   renderNet();
+}
+
+/** Menu account: the name button discloses the npub. */
+function setMeDetail(open: boolean) {
+  $("me-detail").hidden = !open;
+  document.getElementById("me-name")?.setAttribute("aria-expanded", String(open));
 }
 
 function renderSigner() {
@@ -347,6 +391,8 @@ function startAccount(pk: string) {
   received = [];
   seen = new Set();
   rowNotes.clear();
+  openDetails.clear();
+  setMeDetail(false);
   inboxLoaded = false;
   inboxShown = 5;
   clearSelection(true);
@@ -369,6 +415,7 @@ function stopAccount() {
   received = [];
   seen = new Set();
   rowNotes.clear();
+  openDetails.clear();
   inboxLoaded = false;
   clearSelection(true);
   follows.reset();

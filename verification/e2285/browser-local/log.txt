@@ -1,0 +1,22 @@
+kind0 5723969d wss://r.kojira.io:true | wss://yabu.me:true | wss://x.kojira.io:true | wss://n.kojira.io:true
+kind0 e09a9094 wss://r.kojira.io:true | wss://yabu.me:true | wss://x.kojira.io:true | wss://n.kojira.io:true
+kind0 e950937a wss://r.kojira.io:true | wss://yabu.me:true | wss://x.kojira.io:true | wss://n.kojira.io:true
+kind0 793d3872 wss://r.kojira.io:true | wss://yabu.me:true | wss://x.kojira.io:true | wss://n.kojira.io:true
+R kind3 wss://r.kojira.io:true | wss://yabu.me:true | wss://x.kojira.io:true | wss://n.kojira.io:true
+S1 kind3 wss://r.kojira.io:true | wss://yabu.me:true | wss://x.kojira.io:true | wss://n.kojira.io:true
+yo S1->R wss://r.kojira.io:true | wss://yabu.me:true | wss://x.kojira.io:true | wss://n.kojira.io:true
+yo S3->R (other impl emoji) wss://r.kojira.io:true | wss://yabu.me:true | wss://x.kojira.io:true | wss://n.kojira.io:true
+forged yo wss://r.kojira.io:false | wss://yabu.me:false | wss://x.kojira.io:false | wss://n.kojira.io:false
+[R] getPublicKey called
+localStorage: {"nostr-yo:session":"{\"v\":1,\"pubkey\":\"5723969d9034810ebda6c75aa4233475e9a0bed44994f9f3a5386e20efce4d80\"}"}
+rows [{"to":"793d3872","name":"ながーい名前ながーい名前ながーい名前ながーい名前ながーい名前ながーい名前XXXXXXXXXXXXXXXXXXXXXXXXXXXX","when":"11/28 00:52","datetime":"2026-11-27T15:52:15.000Z","detailOpen":false,"expanded":"false"},{"to":"e09a9094","name":"アリス e2285eu3e","when":"11/27 23:54","datetime":"2026-11-27T14:54:14.000Z","detailOpen":false,"expanded":"false"}]
+closedRows [{"h":61,"whoH":44,"sameLine":true,"visibleChildren":["who","yo-back"]},{"h":60,"whoH":44,"sameLine":true,"visibleChildren":["who","yo-back"]}]
+ax {"role":"button","name":"アリス e2285eu3e 11/27 23:54","expanded":false}
+[R] getPublicKey called
+[R] mock signer signed kind=7 as 5723969d tags=[["e","a8440744dd0aa5234b51935b1e7f04e330ab52b53ca5103b3bf9e6fab66e9402","wss://r.kojira.io","e09a9094c4feb3ed72f236ad48c5313c5b1f9d71552a6f3eda7c5bd4ca8f8843"],["p","e09a9094c4feb3ed72f236ad48c5313c5b1f9d71552a6f3eda7c5bd4ca8f8843","wss://r.kojira.io"],["k","0"],["emoji","yo","https://kojira.github.io/nostr-yo/yo.png"],["t","yo"]]
+[R] getPublicKey called
+[R] mock signer signed kind=7 as 5723969d tags=[["e","3bbd4024369395846e12697abb403914882486a55f43f4bb59637de96148354c","wss://r.kojira.io","e950937a4b676d2e137911194a2b3f9a2d289bef78a2dae5cc6228c9cff5880b"],["p","e950937a4b676d2e137911194a2b3f9a2d289bef78a2dae5cc6228c9cff5880b","wss://r.kojira.io"],["k","0"],["emoji","yo","https://kojira.github.io/nostr-yo/yo.png"],["t","yo"]]
+yo S2->R after reconnect wss://r.kojira.io:true | wss://yabu.me:true | wss://x.kojira.io:true | wss://n.kojira.io:true
+[R] getPublicKey called
+[R] getPublicKey called
+[LATE] getPublicKey called
