@@ -1,0 +1,209 @@
+{
+  "site": "https://kojira.github.io/nostr-yo/",
+  "chrome": "Chrome/158.0.8127.38",
+  "emulation": "Chrome headless, 390x844 DPR3 mobile+touch, iOS Safari UA (Blink, not WebKit)",
+  "startedAt": "2026-11-27T15:55:57.340Z",
+  "checks": {
+    "viewportAllowsZoom": true,
+    "firstVisitLoginVisible": true,
+    "firstVisitNoAutoGetPublicKey": true,
+    "headerCompact": true,
+    "relaySettingsNotOnMainScreen": true,
+    "firstVisitNoHorizontalOverflow": true,
+    "loginShowsInbox": true,
+    "forgedYoNotShown": true,
+    "sessionStoresOnlyPubkey": true,
+    "inboxReplyButtonInFirstView": true,
+    "inboxItemInFirstView": true,
+    "dateTimeShown": true,
+    "iconAndNameShown": true,
+    "npubHiddenInDetails": true,
+    "noTechnicalInfoVisible": true,
+    "loggedInNoHorizontalOverflow": true,
+    "headerShowsAccountName": true,
+    "headerNoOverflowWithAccount": true,
+    "noDetailsSummaryRowInInbox": true,
+    "closedRowIsSingleLine": true,
+    "nameIsRealButton": true,
+    "axButtonWithNameAndExpanded": true,
+    "nameTapOpensDetail": true,
+    "otherRowsStayClosed": true,
+    "detailOpenNoHorizontalOverflow": true,
+    "otherAppNoteInDetail": true,
+    "bothOpenNoHorizontalOverflow": true,
+    "dateTimeKeptWhenOpen": true,
+    "openStateSurvivesRerender": true,
+    "nameTapAgainCloses": true,
+    "keyboardEnterOpens": true,
+    "keyboardSpaceCloses": true,
+    "nameToggleNeverSignsOrRepliesOrCallsExt": true,
+    "allClosedAgain": true,
+    "allInputsAtLeast16px": true,
+    "searchFindsLongName": true,
+    "searchLongNameNoOverflow": true,
+    "noFollowStatsShown": true,
+    "longTypedTextNoOverflow": true,
+    "searchSubLineKept": true,
+    "replyOk": true,
+    "replySignedOnceToAuthor": true,
+    "pickShowsNameNotNpub": true,
+    "sendOk": true,
+    "sendSignedToPicked": true,
+    "reloadRestoresInbox": true,
+    "reloadNoExtensionCallNoSign": true,
+    "reloadSignerNotClaimedReady": true,
+    "reconnectReceivesNewYo": true,
+    "stillLoggedInAfterResume": true,
+    "mismatchBlocksSend": true,
+    "mismatchNoSignature": true,
+    "mismatchBannerShown": true,
+    "switchToOtherAccount": true,
+    "switchedInboxShowsReplyFromR": true,
+    "switchedSessionPubkey": true,
+    "menuOpens": true,
+    "menuRelaysDefault": true,
+    "menuNoOverflow": true,
+    "menuNpubInDetails": true,
+    "menuNoSummaryRow": true,
+    "menuNameIsButtonCollapsed": true,
+    "menuNameTapOpens": true,
+    "menuOpenNoOverflow": true,
+    "menuNameKeyboardCloses": true,
+    "menuNameNoSignNoExt": true,
+    "menuAddRelay": true,
+    "menuRemoveRelay": true,
+    "logoutClearsUi": true,
+    "logoutRemovesSession": true,
+    "logoutStaysAfterReload": true,
+    "noExtRestoresReadOnlyInbox": true,
+    "noExtHonestBanner": true,
+    "noExtReplyShortError": true,
+    "noExtNoOverflow": true,
+    "noExtLoginShortError": true,
+    "lateExtensionWaitedFor": true,
+    "lateExtensionLogin": true,
+    "emojiUrlNeverLoaded": true,
+    "noForeignScripts": true,
+    "neverSignedWithoutTap": true
+  },
+  "layoutFirst": {
+    "innerWidth": 390,
+    "docSW": 390,
+    "docCW": 390,
+    "bodySW": 390,
+    "bodyCW": 390,
+    "over": []
+  },
+  "rows": [
+    {
+      "to": "57c8d90d",
+      "name": "ながーい名前ながーい名前ながーい名前ながーい名前ながーい名前ながーい名前XXXXXXXXXXXXXXXXXXXXXXXXXXXX",
+      "when": "11/28 00:54",
+      "datetime": "2026-11-27T15:54:00.000Z",
+      "detailOpen": false,
+      "expanded": "false"
+    },
+    {
+      "to": "3e4397ce",
+      "name": "アリス e2285ppy7",
+      "when": "11/27 23:56",
+      "datetime": "2026-11-27T14:56:00.000Z",
+      "detailOpen": false,
+      "expanded": "false"
+    }
+  ],
+  "bannedVisibleAfterLogin": [],
+  "layoutLoggedIn": {
+    "innerWidth": 390,
+    "docSW": 390,
+    "docCW": 390,
+    "bodySW": 390,
+    "bodyCW": 390,
+    "over": []
+  },
+  "closedRows": [
+    {
+      "h": 61,
+      "whoH": 44,
+      "sameLine": true,
+      "visibleChildren": [
+        "who",
+        "yo-back"
+      ]
+    },
+    {
+      "h": 60,
+      "whoH": 44,
+      "sameLine": true,
+      "visibleChildren": [
+        "who",
+        "yo-back"
+      ]
+    }
+  ],
+  "axNameButton": {
+    "role": "button",
+    "name": "アリス e2285ppy7 11/27 23:56",
+    "expanded": false
+  },
+  "layoutDetailOpen": {
+    "innerWidth": 390,
+    "docSW": 390,
+    "docCW": 390,
+    "bodySW": 390,
+    "bodyCW": 390,
+    "over": []
+  },
+  "layoutBothOpen": {
+    "innerWidth": 390,
+    "docSW": 390,
+    "docCW": 390,
+    "bodySW": 390,
+    "bodyCW": 390,
+    "over": []
+  },
+  "inputFontSizes": [
+    {
+      "id": "search",
+      "fs": 16
+    },
+    {
+      "id": "relay-input",
+      "fs": 16
+    }
+  ],
+  "layoutSearchLong": {
+    "innerWidth": 390,
+    "docSW": 390,
+    "docCW": 390,
+    "bodySW": 390,
+    "bodyCW": 390,
+    "over": []
+  },
+  "layoutLongTyped": {
+    "innerWidth": 390,
+    "docSW": 390,
+    "docCW": 390,
+    "bodySW": 390,
+    "bodyCW": 390,
+    "over": []
+  },
+  "layoutMenu": {
+    "sw": 352,
+    "cw": 352,
+    "right": 371,
+    "iw": 390,
+    "relayInputFs": 16
+  },
+  "layoutNoExt": {
+    "innerWidth": 390,
+    "docSW": 390,
+    "docCW": 390,
+    "bodySW": 390,
+    "bodyCW": 390,
+    "over": []
+  },
+  "finishedAt": "2026-11-27T15:56:45.637Z",
+  "pass": 81,
+  "total": 81
+}

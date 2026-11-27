@@ -1,0 +1,92 @@
+{
+  "site": "https://kojira.github.io/nostr-yo/",
+  "at": "2026-11-27T15:56:51.048Z",
+  "steps": {
+    "fresh": {
+      "storage": null,
+      "ui": [
+        {
+          "url": "wss://r.kojira.io",
+          "state": "open",
+          "notice": ""
+        },
+        {
+          "url": "wss://yabu.me",
+          "state": "open",
+          "notice": ""
+        },
+        {
+          "url": "wss://x.kojira.io",
+          "state": "open",
+          "notice": ""
+        },
+        {
+          "url": "wss://n.kojira.io",
+          "state": "open",
+          "notice": ""
+        }
+      ]
+    },
+    "legacySaved": {
+      "ui": [
+        {
+          "url": "wss://nos.lol",
+          "state": "open",
+          "notice": ""
+        },
+        {
+          "url": "wss://relay.damus.io",
+          "state": "error",
+          "notice": "WebSocket error"
+        }
+      ]
+    },
+    "afterUiEdit": {
+      "storage": "[\"wss://nos.lol\",\"wss://yabu.me\"]",
+      "ui": [
+        {
+          "url": "wss://nos.lol",
+          "state": "open",
+          "notice": ""
+        },
+        {
+          "url": "wss://yabu.me",
+          "state": "open",
+          "notice": ""
+        }
+      ]
+    },
+    "clearedAgain": {
+      "ui": [
+        {
+          "url": "wss://r.kojira.io",
+          "state": "open",
+          "notice": ""
+        },
+        {
+          "url": "wss://yabu.me",
+          "state": "open",
+          "notice": ""
+        },
+        {
+          "url": "wss://x.kojira.io",
+          "state": "open",
+          "notice": ""
+        },
+        {
+          "url": "wss://n.kojira.io",
+          "state": "open",
+          "notice": ""
+        }
+      ]
+    }
+  },
+  "checks": {
+    "freshDefaultsInOrder": true,
+    "freshNothingSaved": true,
+    "legacySavedKept": true,
+    "uiEditPersisted": true,
+    "emptySavedFallsBackToDefaults": true,
+    "clearedFallsBackToDefaults": true
+  }
+}
