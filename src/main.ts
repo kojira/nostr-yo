@@ -22,7 +22,7 @@ declare global {
   }
 }
 
-const DEFAULT_RELAYS = ["wss://relay.damus.io", "wss://nos.lol", "wss://yabu.me"];
+const DEFAULT_RELAYS = ["wss://nos.lol", "wss://yabu.me", "wss://nostr.mom", "wss://relay.damus.io"];
 const LS_RELAYS = "nostr-yo:relays";
 
 const $ = <T extends HTMLElement>(id: string) => document.getElementById(id) as T;
@@ -203,24 +203,35 @@ async function sendYo() {
       return;
     }
     const ev = signed as NostrEvent;
-    status(`${relays.length} 個の relay に送信中…`);
-    const results = await Promise.all(relays.map(async (r) => [r, await r.publish(ev)] as [Relay, PublishResult]));
-    renderSendResults(results, to);
+    status(`${relays.length} 個の relay に送信中…（応答を待っています）`);
+    const targets = [...relays];
+    const results: Array<[Relay, PublishResult | null]> = targets.map((r) => [r, null]);
+    renderSendResults(results, to, false);
+    await Promise.all(targets.map(async (r, i) => {
+      const res = await r.publish(ev);
+      results[i] = [r, res];
+      renderSendResults(results, to, false);
+    }));
+    renderSendResults(results, to, true);
   } finally {
     btn.disabled = false;
   }
 }
 
-function renderSendResults(results: [Relay, PublishResult][], to: string) {
+function renderSendResults(results: Array<[Relay, PublishResult | null]>, to: string, done: boolean) {
   const ul = $("send-results");
   ul.replaceChildren();
   let okCount = 0;
   for (const [r, res] of results) {
-    if (res.ok) okCount++;
-    const li = el("li", res.ok ? "ok" : "err");
-    li.append(el("span", "url", r.url), el("span", "res", res.ok ? "✓ 受理" : "✗ 失敗"));
-    if (res.message) li.append(el("span", "notice", res.message));
+    if (res?.ok) okCount++;
+    const li = el("li", res === null ? "pending" : res.ok ? "ok" : "err");
+    li.append(el("span", "url", r.url), el("span", "res", res === null ? "… 応答待ち" : res.ok ? "✓ 受理 (OK true)" : "✗ 失敗"));
+    if (res?.message) li.append(el("span", "notice", res.message));
     ul.append(li);
+  }
+  if (!done) {
+    if (okCount > 0) status(`Yo! 送信中… いま ${okCount}/${results.length} relay が受理`, "ok");
+    return;
   }
   if (okCount > 0) {
     status(`Yo! を ${shortNpub(to)} に送りました（${okCount}/${results.length} relay が受理）`, "ok");

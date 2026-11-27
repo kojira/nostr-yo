@@ -5,7 +5,7 @@ import { sha256 } from "@noble/hashes/sha2.js";
 import { bytesToHex, hexToBytes, utf8ToBytes } from "@noble/hashes/utils.js";
 import { bech32 } from "@scure/base";
 
-export const YO_KIND = 7107;
+export const YO_KIND = 7117;
 export const YO_CONTENT = "Yo!";
 export const YO_ALT = "Yo! (a one-word ping sent with nostr-yo)";
 /** Reject events whose created_at is too far in the future (seconds). */

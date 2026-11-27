@@ -2,3 +2,5 @@ node_modules/
 dist/
 dist-test/
 .verify-tmp/
+/.verify-tmp/
+verification/**/.chrome-profile-*

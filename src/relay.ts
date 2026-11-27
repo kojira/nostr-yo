@@ -129,13 +129,13 @@ export class Relay {
     }
   }
 
-  async publish(ev: NostrEvent, timeoutMs = 8000): Promise<PublishResult> {
-    const opened = await this.waitOpen(timeoutMs);
+  async publish(ev: NostrEvent, timeoutMs = 25000): Promise<PublishResult> {
+    const opened = await this.waitOpen(Math.min(timeoutMs, 10000));
     if (!opened) return { ok: false, message: "接続できませんでした" };
     return new Promise((resolve) => {
       const t = setTimeout(() => {
         this.pendingOk.delete(ev.id);
-        resolve({ ok: false, message: `タイムアウト（${timeoutMs / 1000}秒以内にOKなし）` });
+        resolve({ ok: false, message: `タイムアウト: ${timeoutMs / 1000}秒以内にOK応答なし（relay側で保存された可能性はあります）` });
       }, timeoutMs);
       this.pendingOk.set(ev.id, (r) => {
         clearTimeout(t);

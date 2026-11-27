@@ -39,7 +39,7 @@ test("parsePubkey rejects bad input", () => {
 });
 
 test("NIP-01 id matches an independent sha256 of the canonical serialization", () => {
-  const e = { pubkey: "a".repeat(64), created_at: 1, kind: 7107, tags: [["p", "b"]], content: 'he"llo\n\u2028日本' };
+  const e = { pubkey: "a".repeat(64), created_at: 1, kind: 7117, tags: [["p", "b"]], content: 'he"llo\n\u2028日本' };
   const ser = JSON.stringify([0, e.pubkey, e.created_at, e.kind, e.tags, e.content]);
   assert.equal(computeEventId(e), createHash("sha256").update(ser).digest("hex"));
 });

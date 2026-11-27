@@ -14,10 +14,10 @@ Nostr で「Yo!」だけを送り合う静的Webアプリ。GitHub Pages で配�
 - relay 通信はブラウザ標準 WebSocket で自前の最小実装（NIP-01 の EVENT/REQ/OK/EOSE/CLOSED/NOTICE）。
 
 ## イベント設計
-- kind `7107`（regular, 1000–9999。2026-11時点の公式NIP一覧に未登録のアプリ独自kind）。kind1 は使わない＝タイムラインを汚さない。
+- kind `7117`（regular, 1000–9999。2026-11時点の公式NIP一覧に未登録のアプリ独自kind）。kind1 は使わない＝タイムラインを汚さない。
 - content は固定 `"Yo!"`。
 - tags: `["p", <宛先hex>]` を正確に1つ、`["alt", "Yo! sent with nostr-yo"]`（NIP-31）。
-- 受信: `REQ {kinds:[7107], "#p":[自分], limit:50}`。
+- 受信: `REQ {kinds:[7117], "#p":[自分], limit:50}`。
 
 ## 検証
 - 送信前: NIP-07 が返したイベントの kind / content / tags / created_at / pubkey が依頼内容と一致、id 再計算一致、schnorr 署名検証OK でなければ送らない。

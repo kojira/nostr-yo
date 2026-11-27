@@ -1,0 +1,19 @@
+{
+  "site": "http://127.0.0.1:8765/",
+  "chrome": "Chrome/158.0.8127.38",
+  "startedAt": "2026-11-27T02:05:21.794Z",
+  "checks": {
+    "relaysOpenA": true,
+    "sendStatusOk": true,
+    "receivedByB": true,
+    "tamper_swap-recipient_refused": true,
+    "tamper_kind1_refused": true,
+    "onlySameOriginHttp": true
+  },
+  "httpRequests": [
+    "http://127.0.0.1:8765/",
+    "http://127.0.0.1:8765/style.css",
+    "http://127.0.0.1:8765/app.js"
+  ],
+  "finishedAt": "2026-11-27T02:05:47.768Z"
+}

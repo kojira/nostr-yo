@@ -1,0 +1,49 @@
+[B] ws created wss://nos.lol/
+[B] ws created wss://yabu.me/
+[B] ws created wss://nostr.mom/
+[B] ws created wss://relay.damus.io/
+[A] ws created wss://nos.lol/
+[A] ws created wss://yabu.me/
+[A] ws created wss://nostr.mom/
+[A] ws created wss://relay.damus.io/
+relay list A: wss://nos.lol
+接続OK
+×
+wss://yabu.me
+接続OK
+×
+wss://nostr.mom
+接続OK
+×
+wss://relay.damus.io
+接続OK
+×
+[B] ws created wss://relay.damus.io/
+B npub: npub1xsfw7yscpdaqd80t4t8tvedmx0qwrkvv4ad9pkmjqaymdrmng9jqfgrgew
+[A] mock signer signed kind=7117 content="Yo!" tags=[["p","3412ef12180b7a069debaaceb665bb33c0e1d98caf5a50db720749b68f734164"],["alt","Yo! (a one-word ping sent with nostr-yo)"]] id=977e45d4f51eeaa7f283fea93585dc6ed588dca71d5f42899dcdb0fb2e5e5523
+A status: Yo! を npub1xsfw7…fgrgew に送りました（4/4 relay が受理）
+A send results: wss://nos.lol
+✓ 受理 (OK true)
+wss://yabu.me
+✓ 受理 (OK true)
+wss://nostr.mom
+✓ 受理 (OK true)
+wss://relay.damus.io
+✓ 受理 (OK true)
+B inbox: Yo!
+from npub15lc5t…rccteh
+2026/11/27 11:05:25 | 1 件の Yo（署名検証済み）
+[M-swap-recipient] ws created wss://nos.lol/
+[M-swap-recipient] ws created wss://yabu.me/
+[M-swap-recipient] ws created wss://nostr.mom/
+[M-swap-recipient] ws created wss://relay.damus.io/
+[M-swap-recipient] ws created wss://relay.damus.io/
+[M-swap-recipient] mock signer signed kind=7117 content="Yo!" tags=[["p","77896bc0ba28802ea1b6414c141ccb0e315e90679e655f78362183576def3aa2"],["alt","Yo! (a one-word ping sent with nostr-yo)"]] id=966e1c5cf355d45320c88abb147f284ac0765aecce00390caff2c4e4cd9515f5
+M-swap-recipient status: 署名済みイベントが要求と一致しないため送信を中止しました: tags が要求と違います（宛先が書き換えられた可能性） / p タグ（宛先）が要求と一致しません
+[M-kind1] ws created wss://nos.lol/
+[M-kind1] ws created wss://yabu.me/
+[M-kind1] ws created wss://nostr.mom/
+[M-kind1] ws created wss://relay.damus.io/
+[M-kind1] ws created wss://relay.damus.io/
+[M-kind1] mock signer signed kind=1 content="Yo!" tags=[["p","3412ef12180b7a069debaaceb665bb33c0e1d98caf5a50db720749b68f734164"],["alt","Yo! (a one-word ping sent with nostr-yo)"]] id=b93ab41efab7a02e07731ae0238f98f2d1efd2f3de85b70b3b33b9e1261bd746
+M-kind1 status: 署名済みイベントが要求と一致しないため送信を中止しました: kind が 7117 ではありません (1)
