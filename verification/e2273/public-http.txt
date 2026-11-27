@@ -1,0 +1,5 @@
+# public HTTP 2026-11-27T11:03:58Z gh-pages=3b87f14 built from main 5e6d20c (clean clone)
+200 index.html served=a635d651a871aec4c56c3ec2871130a00d2d5357666b0096cb746d887ea5487b == build
+200 app.js served=4687b9d19b4b6087ba1134ab2e9b5ca14f3f9147d7d254fe4019c37563393494 == build
+200 style.css served=7bc8dc3dcac4802498adb2f1c1964bbf0570e63ed38e7933bba33e8c4cb13527 == build
+200 yo.png served=25a5e904e739821e5da2eda907ae669773b63fb8f0c3242e278f8195c999ab5c == build
