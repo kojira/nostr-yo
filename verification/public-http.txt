@@ -1,0 +1,10 @@
+# Public HTTP check 2026-11-27T02:07:50Z
+200 https://kojira.github.io/nostr-yo/index.html served_sha256=d0beea684b6668f67094b68536efae0cb6c6378eb25b2d34c15321651cc7d2c1 == clean build
+200 https://kojira.github.io/nostr-yo/app.js served_sha256=39adabf0ccad2f8e8eac4638b7427f688c3bfd95560cfddfa282582b83016974 == clean build
+200 https://kojira.github.io/nostr-yo/style.css served_sha256=4f73833c375af8c5296e59f8d5ef4509722eb2487baf343c46b24df5c8181fd7 == clean build
+200 https://kojira.github.io/nostr-yo/.nojekyll served_sha256=e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855 == clean build
+--- headers /
+HTTP/2 200 
+server: GitHub.com
+content-type: text/html; charset=utf-8
+cache-control: max-age=600

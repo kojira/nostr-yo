@@ -1,0 +1,53 @@
+[B] ws created wss://nos.lol/
+[B] ws created wss://yabu.me/
+[B] ws created wss://nostr.mom/
+[B] ws created wss://relay.damus.io/
+[A] ws created wss://nos.lol/
+[A] ws created wss://yabu.me/
+[A] ws created wss://nostr.mom/
+[A] ws created wss://relay.damus.io/
+relay list A: wss://nos.lol
+接続OK
+×
+wss://yabu.me
+接続OK
+×
+wss://nostr.mom
+接続OK
+×
+wss://relay.damus.io
+エラー
+WebSocket error
+×
+[B] ws created wss://relay.damus.io/
+[A] ws created wss://relay.damus.io/
+B npub: npub15dlqfvd9jkp3m6u0kcvm6xr0dv42c8uxkrl2du73fym0sauysvjq8u7r7h
+[A] mock signer signed kind=7117 content="Yo!" tags=[["p","a37e04b1a595831deb8fb619bd186f6b2aac1f86b0fea6f3d14936f877848324"],["alt","Yo! (a one-word ping sent with nostr-yo)"]] id=de639e17436b2cd1c6716fad903a7b629c8b2cc5a59278bd7aefae5e10f29c37
+[A] ws created wss://relay.damus.io/
+A status: Yo! を npub15dlqf…8u7r7h に送りました（3/4 relay が受理）
+A send results: wss://nos.lol
+✓ 受理 (OK true)
+wss://yabu.me
+✓ 受理 (OK true)
+wss://nostr.mom
+✓ 受理 (OK true)
+wss://relay.damus.io
+✗ 失敗
+接続できませんでした
+B inbox: Yo!
+from npub1atnt7…t6acg9
+2026/11/27 11:07:56 | 1 件の Yo（署名検証済み）
+[M-swap-recipient] ws created wss://nos.lol/
+[M-swap-recipient] ws created wss://yabu.me/
+[M-swap-recipient] ws created wss://nostr.mom/
+[M-swap-recipient] ws created wss://relay.damus.io/
+[M-swap-recipient] ws created wss://relay.damus.io/
+[M-swap-recipient] mock signer signed kind=7117 content="Yo!" tags=[["p","3d54159e3e54d9632d4c7629c98948651f47f49613312f4b162fa3eda3230f39"],["alt","Yo! (a one-word ping sent with nostr-yo)"]] id=7510e4ada581a301d1fc98ef1a7705a4bd7724b611421fc4b939df40062b0376
+M-swap-recipient status: 署名済みイベントが要求と一致しないため送信を中止しました: tags が要求と違います（宛先が書き換えられた可能性） / p タグ（宛先）が要求と一致しません
+[M-kind1] ws created wss://nos.lol/
+[M-kind1] ws created wss://yabu.me/
+[M-kind1] ws created wss://nostr.mom/
+[M-kind1] ws created wss://relay.damus.io/
+[M-kind1] ws created wss://relay.damus.io/
+[M-kind1] mock signer signed kind=1 content="Yo!" tags=[["p","a37e04b1a595831deb8fb619bd186f6b2aac1f86b0fea6f3d14936f877848324"],["alt","Yo! (a one-word ping sent with nostr-yo)"]] id=4abdd1474f47c4d7ca7fbfe344813dc7b9342a5992b0410d0b6cccd368339b20
+M-kind1 status: 署名済みイベントが要求と一致しないため送信を中止しました: kind が 7117 ではありません (1)
