@@ -376,7 +376,19 @@ function renderSent() {
       who.setAttribute("aria-expanded", String(next));
       det.hidden = !next;
     };
-    li.append(who, det);
+    // Yo again: recipient is the single verified p tag of my own verified Yo (parseSentYo).
+    const to = yo.to;
+    const again = el("button", "yo-back", "もう一度 Yo!") as HTMLButtonElement;
+    again.type = "button";
+    again.dataset.to = to;
+    again.dataset.focusKey = `again:${e.id}`;
+    again.setAttribute("aria-label", `${name || "この相手"} にもう一度 Yo! を送る`);
+    again.disabled = sending;
+    again.onclick = () => { void sendYoTo(to, `s:${e.id}`); };
+    const noteState = rowNotes.get(`s:${e.id}`);
+    const rowNote = el("span", `row-note ${noteState?.kind ?? ""}`, noteState?.text ?? "");
+    rowNote.hidden = !noteState;
+    li.append(who, again, rowNote, det);
     ul.append(li);
   }
   if (focusKey) ul.querySelector<HTMLElement>(`[data-focus-key="${CSS.escape(focusKey)}"]`)?.focus();
@@ -631,7 +643,7 @@ async function sendYo() {
  */
 async function sendYoTo(to: string, rowId: string | null): Promise<boolean> {
   const note = (t: string, kind: "info" | "ok" | "err" = "info") => {
-    if (rowId) { rowNotes.set(rowId, { text: t, kind }); renderInbox(); }
+    if (rowId) { rowNotes.set(rowId, { text: t, kind }); if (rowId.startsWith("s:")) renderSent(); else renderInbox(); }
     else status(t, kind);
   };
   if (!account) { note("先にログインしてください", "err"); return false; }
@@ -698,7 +710,7 @@ async function sendYoTo(to: string, rowId: string | null): Promise<boolean> {
     const ok = results.filter(([, r]) => r?.ok).length;
     // History: only an event at least one relay accepted, and only for the account that signed it.
     if (ok && gen === accountGen && account === mine) onSent(ev, mine);
-    if (ok) { note(rowId ? "✓ Yo! を返しました" : "✓ Yo! を送りました", "ok"); bounce(); }
+    if (ok) { note(rowId && !rowId.startsWith("s:") ? "✓ Yo! を返しました" : "✓ Yo! を送りました", "ok"); bounce(); }
     else note("送れませんでした（リレーが受け付けませんでした）", "err");
     if (ok && !rowId) clearSelection(true);
     return ok > 0;

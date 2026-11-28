@@ -23,7 +23,8 @@ Send a single "Yo!" to any npub over Nostr. That's it.
 
 ## Sent history (e2309, 2026-11-28)
 
-- The history card has two tabs: **届いた Yo** (default) and **送った Yo**. Each sent row shows the recipient's icon, name, and date and time, newest first. The npub is behind the name button. Sent rows have no reply button.
+- The history card has two tabs: **届いた Yo** (default) and **送った Yo**. Each sent row shows the recipient's icon, name, and date and time, newest first. The npub is behind the name button.
+- **Yo again (e2310):** each sent row has a "もう一度 Yo!" button. The recipient is the row's verified `p` pubkey. It uses the same send path as "Yo! を返す" (extension account check → newest verified kind 0 → NIP-07 sign → strict check → publish), so all Yo buttons are disabled while a send is in progress, failures are shown on the row, and an account switch during a send aborts it. A successful send appears at the top of the list.
 - **Source:** the relays, queried with `{"kinds":[7],"authors":[me],"#k":["0"],"limit":50}`. No `#t` filter, so Yo sent before the `t` tag existed are included. History therefore comes back after a reload or re-login without calling the extension.
 - **Recognition:** the same strict SPEC rules 1–6 as receiving, plus author == me. The recipient is the single `p` tag. Plain likes, `t=yo`-only events and forged signatures are not shown.
 - **Not invented:** a Yo sent from this page is added immediately only when at least one relay replied `OK true`, and only for the account that signed it. Rejected, cancelled or failed sends never appear.

@@ -1,0 +1,71 @@
+{
+  "site": "http://127.0.0.1:8790/",
+  "chrome": "Chrome/158.0.8127.38",
+  "relay": "local mock relay (this script)",
+  "chromeFlags": "default",
+  "nip07": "TEST MOCK (not a real extension)",
+  "startedAt": "2026-11-28T02:53:11.478Z",
+  "checks": {
+    "usesMockRelayOnly": true,
+    "everySentRowHasAgainButton": true,
+    "inboxReplyStillThere": true,
+    "noHorizontalOverflow": true,
+    "allYoButtonsDisabledWhileSending": true,
+    "againOk": true,
+    "doubleClickSignedOnce": true,
+    "againEventToR2InYoFormat": true,
+    "againAppearsAtTop": true,
+    "buttonsReenabled": true,
+    "rejectShowsRowError": true,
+    "rejectNotAdded": true,
+    "mismatchRefused": true,
+    "switchDuringSendNotSigned": true,
+    "switchShowsOnlyBSent": true,
+    "switchButtonsUsable": true
+  },
+  "sentA": [
+    {
+      "to": "ba4cadc1dd74cc2b95a14197f552195e072a42028846fe2822724e0a4198257f",
+      "id": "a8e6115da87738e2acaabc48f051e8e472df4aa4e769b2bb42111cd0a610a34e",
+      "name": "r1_e23105kg8",
+      "when": "11/28 11:48",
+      "dt": "2026-11-28T02:48:11.000Z",
+      "img": {
+        "src": "https://img-nocors.nyo.test/e23105kg8/S1.png",
+        "loaded": false
+      },
+      "letter": false,
+      "back": true
+    },
+    {
+      "to": "2ba958b2325ce0a529f826100562d12ab240e75fdc1c3b399de0e7e543b806a1",
+      "id": "5092bacd9e9b51f16ebf6eae55d24f7d077de421c35a5bfec4d4fa7d7bee3e51",
+      "name": "r2nopic_e23105kg8",
+      "when": "11/28 11:46",
+      "dt": "2026-11-28T02:46:31.000Z",
+      "img": null,
+      "letter": true,
+      "back": true
+    },
+    {
+      "to": "bd0fe9992c26b0460f105727713df2b2230c58d09b4302da9ccd4982cd7a6666",
+      "id": "35292eb0bc276791994db7f739ab26345a284ecd545a19f6f42d445684bd7959",
+      "name": "r3_e23105kg8",
+      "when": "11/28 11:44",
+      "dt": "2026-11-28T02:44:51.000Z",
+      "img": {
+        "src": "https://img-nocors.nyo.test/e23105kg8/S5.png",
+        "loaded": false
+      },
+      "letter": false,
+      "back": true
+    }
+  ],
+  "signedIds": [
+    "a6b2f6e09ccb8f96d069b443aa774cf260c17892176e0eb03b2d9e3ae913ca67",
+    "5f9d2981040ade0c20628cded737443ec836e1be007b2b016708bbce7daf27aa"
+  ],
+  "finishedAt": "2026-11-28T02:53:20.534Z",
+  "pass": 16,
+  "total": 16
+}
