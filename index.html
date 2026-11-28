@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data: https:; connect-src wss: ws://localhost:* ws://127.0.0.1:*; base-uri 'none'; form-action 'none'">
+<meta name="referrer" content="no-referrer">
+<meta name="theme-color" content="#7b2ff7">
+<title>Yo! on Nostr</title>
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="bar">
+  <h1 id="logo"><img src="yo.png" alt="Yo!" width="36" height="36"><span>Yo!</span></h1>
+  <div id="account" class="account" hidden></div>
+  <button id="menu-btn" class="icon-btn" type="button" aria-haspopup="dialog" aria-controls="menu" aria-label="メニュー">☰</button>
+</header>
+
+<main>
+  <section id="auth" class="card">
+    <p class="lead">Nostr で「Yo!」だけを送り合う。</p>
+    <button id="login" class="big" type="button">拡張でログイン</button>
+    <p class="small" id="ext" role="status" aria-live="polite">NIP-07 拡張を確認中…</p>
+  </section>
+
+  <p id="signer" class="signer" role="status" aria-live="polite" hidden></p>
+  <p id="net" class="warn" role="status" aria-live="polite" hidden></p>
+
+  <section id="inbox-card" class="card" hidden aria-label="Yo の履歴">
+    <div id="tabs" class="tabs" role="tablist" aria-label="Yo の履歴">
+      <button id="tab-in" class="tab" type="button" role="tab" aria-selected="true" aria-controls="panel-in">届いた Yo</button>
+      <button id="tab-out" class="tab" type="button" role="tab" aria-selected="false" aria-controls="panel-out" tabindex="-1">送った Yo</button>
+    </div>
+    <div id="panel-in" role="tabpanel" aria-labelledby="tab-in">
+      <ul id="inbox"></ul>
+      <p class="small" id="inbox-note" role="status" aria-live="polite"></p>
+    </div>
+    <div id="panel-out" role="tabpanel" aria-labelledby="tab-out" hidden>
+      <ul id="sent"></ul>
+      <p class="small" id="sent-note" role="status" aria-live="polite"></p>
+    </div>
+  </section>
+
+  <section id="sendbox" class="card" hidden>
+    <h2>Yo! を送る</h2>
+    <label class="sr" for="search">宛先</label>
+    <input id="search" type="search" placeholder="フォローの名前 または npub" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" enterkeyhint="search">
+    <p class="small" id="follow-state" role="status" aria-live="polite"></p>
+    <ul id="search-results" class="search-results"></ul>
+    <div id="selected" class="selected" hidden></div>
+    <button id="send" class="yo-btn" type="button">Yo!</button>
+    <div id="status" class="status" role="status" aria-live="polite" hidden></div>
+    <details id="send-detail" class="detail" hidden><summary>リレーごとの結果</summary><ul id="send-results" class="results"></ul></details>
+  </section>
+</main>
+
+<dialog id="menu" class="menu" aria-label="メニュー">
+  <div class="menu-head"><h2>メニュー</h2><button id="menu-close" class="icon-btn" type="button" aria-label="閉じる">×</button></div>
+  <section id="menu-account">
+    <h3>アカウント</h3>
+    <p class="small" id="menu-me">未ログイン</p>
+    <div id="me-detail" class="detail" hidden><span class="detail-label">公開鍵 (npub)</span><code id="me-npub"></code></div>
+    <div class="row">
+      <button id="relogin" type="button" hidden>拡張のアカウントで入り直す</button>
+      <button id="logout" type="button" class="danger" hidden>ログアウト</button>
+    </div>
+    <p class="small">このサイトは秘密鍵を扱いません。署名は毎回、拡張が行います。</p>
+  </section>
+  <section>
+    <h3>リレー設定</h3>
+    <ul id="relays"></ul>
+    <form id="relay-form">
+      <label class="sr" for="relay-input">追加するリレー</label>
+      <input id="relay-input" type="url" placeholder="wss://…" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false">
+      <button type="submit">追加</button>
+    </form>
+    <p class="small" id="relay-msg" role="status" aria-live="polite"></p>
+  </section>
+  <p class="small foot">
+    <a href="https://github.com/kojira/nostr-yo" rel="noopener noreferrer" target="_blank">source &amp; spec</a>
+  </p>
+</dialog>
+<script type="module" src="app.js"></script>
+</body>
+</html>
