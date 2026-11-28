@@ -5,7 +5,7 @@ import { schnorr } from "@noble/curves/secp256k1.js";
 import { bytesToHex, hexToBytes } from "@noble/hashes/utils.js";
 import {
   LEGACY_KIND, YO_EMOJI_URL, YO_KIND, acceptIncomingYo, buildYo, checkSignedYo, computeEventId, normalizeRelay,
-  parseIncomingYo, parsePubkey, pickLatestProfile, profileFilter, toNpub, verifyEventSignature, yoFilter,
+  parseIncomingYo, parseSentYo, parsePubkey, sentYoFilter, pickLatestProfile, profileFilter, toNpub, verifyEventSignature, yoFilter,
   type NostrEvent, type ProfileTarget, type UnsignedEvent,
 } from "../src/yo.js";
 import { DEFAULT_RELAYS, resolveRelayUrls } from "../src/config.js";
@@ -196,6 +196,41 @@ test("parseIncomingYo: recognition rule", () => {
   tagsNo([["e", "nothex", RELAY, pkB], P, K, EM, T], "e not hex");
   tagsNo([["e", profB.id, RELAY, pkA], P, K, EM, T], "e author hint not me");
   tagsNo([E, P, ["p", pkA], K, EM, T], "two p");
+  tagsNo([E, P, K, EM, T, ["a", `0:${pkB}:`]], "a tag");
+  no(sign(buildYo(tB, now + 3600), skA), "future");
+});
+
+test("sentYoFilter: my kind 7 reactions to kind 0 (no #t, so untagged Yo are found)", () => {
+  assert.deepEqual(sentYoFilter(pkA), { kinds: [7], authors: [pkA], "#k": ["0"], limit: 50 });
+});
+
+test("parseSentYo: same rules as receiving, author must be me, recipient from p", () => {
+  const now = 1700000000;
+  const req = buildYo(tB, now);
+  const [E, P, K, EM, T] = req.tags as [string[], string[], string[], string[], string[]];
+  const good = sign(req, skA);
+  const y = parseSentYo(good, pkA, now);
+  assert.equal(y?.to, pkB);
+  assert.equal(y?.targetId, profB.id);
+  assert.equal(y?.ours, true);
+  assert.equal(y?.hasTag, true);
+  // symmetric with receiving: B sees it as incoming, A as sent
+  assert.ok(parseIncomingYo(good, pkB, now));
+  assert.equal(parseSentYo(good, pkB, now), null, "not authored by B");
+  // untagged (pre-e2257) and other-implementation emoji are still sent Yo
+  assert.equal(parseSentYo(sign({ ...req, tags: [E, P, K, EM] }, skA), pkA, now)?.hasTag, false);
+  assert.equal(parseSentYo(sign({ ...req, tags: [E, P, K, ["emoji", "yo", "https://cdn.example.org/yo.webp"], T] }, skA), pkA, now)?.ours, false);
+  const no = (e: unknown, why: string) => assert.equal(parseSentYo(e, pkA, now), null, why);
+  const tagsNo = (tags: string[][], why: string, extra: Partial<UnsignedEvent> = {}) => no(sign({ ...req, ...extra, tags }, skA), why);
+  no({ ...good, sig: "f".repeat(128) }, "bad sig");
+  tagsNo([E, P, K, T], "t=yo only, no emoji");
+  tagsNo([E, P, K, EM, T], "plain like", { content: "+" });
+  tagsNo([E, P, K, EM, T], "kind 1", { kind: 1 });
+  tagsNo([E, K, EM, T], "no p");
+  tagsNo([E, P, ["p", pkA], K, EM, T], "two p");
+  tagsNo([E, ["p", "nothex"], K, EM, T], "p not hex");
+  tagsNo([["e", profB.id, RELAY, pkA], P, K, EM, T], "e author hint != recipient");
+  tagsNo([E, P, ["k", "1"], EM, T], "reaction to a note");
   tagsNo([E, P, K, EM, T, ["a", `0:${pkB}:`]], "a tag");
   no(sign(buildYo(tB, now + 3600), skA), "future");
 });

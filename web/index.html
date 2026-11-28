@@ -27,10 +27,19 @@
   <p id="signer" class="signer" role="status" aria-live="polite" hidden></p>
   <p id="net" class="warn" role="status" aria-live="polite" hidden></p>
 
-  <section id="inbox-card" class="card" hidden>
-    <h2>届いた Yo</h2>
-    <ul id="inbox"></ul>
-    <p class="small" id="inbox-note" role="status" aria-live="polite"></p>
+  <section id="inbox-card" class="card" hidden aria-label="Yo の履歴">
+    <div id="tabs" class="tabs" role="tablist" aria-label="Yo の履歴">
+      <button id="tab-in" class="tab" type="button" role="tab" aria-selected="true" aria-controls="panel-in">届いた Yo</button>
+      <button id="tab-out" class="tab" type="button" role="tab" aria-selected="false" aria-controls="panel-out" tabindex="-1">送った Yo</button>
+    </div>
+    <div id="panel-in" role="tabpanel" aria-labelledby="tab-in">
+      <ul id="inbox"></ul>
+      <p class="small" id="inbox-note" role="status" aria-live="polite"></p>
+    </div>
+    <div id="panel-out" role="tabpanel" aria-labelledby="tab-out" hidden>
+      <ul id="sent"></ul>
+      <p class="small" id="sent-note" role="status" aria-live="polite"></p>
+    </div>
   </section>
 
   <section id="sendbox" class="card" hidden>

@@ -21,6 +21,14 @@ Send a single "Yo!" to any npub over Nostr. That's it.
   - **Logout** removes the stored pubkey, clears the inbox and search, and stops subscriptions. Nothing is restored on reload. Logging out or switching in another tab is followed via the `storage` event.
 - **iPhone.** All inputs are 16 px or larger, so iOS does not zoom on focus. The viewport still allows pinch zoom (no `maximum-scale` / `user-scalable=no`). Long names are ellipsized, and the layout has no horizontal overflow at 390 px.
 
+## Sent history (e2309, 2026-11-28)
+
+- The history card has two tabs: **届いた Yo** (default) and **送った Yo**. Each sent row shows the recipient's icon, name, and date and time, newest first. The npub is behind the name button. Sent rows have no reply button.
+- **Source:** the relays, queried with `{"kinds":[7],"authors":[me],"#k":["0"],"limit":50}`. No `#t` filter, so Yo sent before the `t` tag existed are included. History therefore comes back after a reload or re-login without calling the extension.
+- **Recognition:** the same strict SPEC rules 1–6 as receiving, plus author == me. The recipient is the single `p` tag. Plain likes, `t=yo`-only events and forged signatures are not shown.
+- **Not invented:** a Yo sent from this page is added immediately only when at least one relay replied `OK true`, and only for the account that signed it. Rejected, cancelled or failed sends never appear.
+- **Account switch / logout:** the sent list, its subscription (`yo-sent`) and its tab reset with the account. Late relay answers for a previous account are dropped (generation check).
+
 ## Protocol spec
 
 **The shared Yo reaction convention is in [`SPEC.md`](SPEC.md).** It is a convention proposed by this project, not an adopted NIP.

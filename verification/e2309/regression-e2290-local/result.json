@@ -1,0 +1,436 @@
+{
+  "site": "http://127.0.0.1:18309/",
+  "chrome": "Chrome/158.0.8127.38",
+  "relay": "local mock relay (this script)",
+  "chromeFlags": "default",
+  "nip07": "TEST MOCK (not a real extension)",
+  "startedAt": "2026-11-28T02:48:22.834Z",
+  "checks": {
+    "cspImgSrcKept": true,
+    "referrerMetaKept": true,
+    "usesMockRelayOnly": true,
+    "loginA": true,
+    "inboxMoreShowsAll6": true,
+    "headerA_noCorsLoaded": true,
+    "inbox_noCorsLoaded": true,
+    "inbox_corsHostStillLoaded": true,
+    "inbox_realNoCorsHostLoaded": true,
+    "inbox_invalidUrlLetter": true,
+    "inbox_noPictureLetter": true,
+    "inbox_loadErrorLetter": true,
+    "realHostReallyHasNoAcao": true,
+    "candidate_noCorsLoaded": true,
+    "candidate_realNoCorsLoaded": true,
+    "candidate_corsLoaded": true,
+    "candidate_fallbacks": true,
+    "selected_noCorsLoaded": true,
+    "noCrossoriginAttributeAnywhere": true,
+    "noReferrerPolicyKept": true,
+    "imageRequestsNoCorsMode": true,
+    "imageRequestsNoReferer": true,
+    "noCorsErrors": true,
+    "httpPictureNeverRequested": true,
+    "switchPendingNoOldImage": true,
+    "switchDelayedKind0Shows": true,
+    "switchInboxOnlyB": true,
+    "switchNoAImagesLeft": true,
+    "switchToCNoBImage": true,
+    "logoutLateKind0NoImage": true,
+    "headerLoadErrorLetter": true,
+    "backToA_headerLoaded": true,
+    "neverSigned": true
+  },
+  "csp": "default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data: https:; connect-src wss: ws://localhost:* ws://127.0.0.1:*; base-uri 'none'; form-action 'none'",
+  "referrerMeta": "no-referrer",
+  "headerA": {
+    "img": true,
+    "src": "https://img-nocors.nyo.test/e2290rzq9/A.png",
+    "loaded": true,
+    "co": false,
+    "ref": "no-referrer"
+  },
+  "inboxA": {
+    "S1nocors": {
+      "img": true,
+      "src": "https://img-nocors.nyo.test/e2290rzq9/S1.png",
+      "loaded": true,
+      "co": false,
+      "ref": "no-referrer"
+    },
+    "S2invalid": {
+      "img": false,
+      "letter": true
+    },
+    "S3nopic": {
+      "img": false,
+      "letter": true
+    },
+    "S4missing": {
+      "img": false,
+      "letter": true
+    },
+    "S5cors": {
+      "img": true,
+      "src": "https://img-cors.nyo.test/e2290rzq9/S5.png",
+      "loaded": true,
+      "co": false,
+      "ref": "no-referrer"
+    },
+    "S6realNocors": {
+      "img": true,
+      "src": "https://www.google.com/favicon.ico",
+      "loaded": true,
+      "co": false,
+      "ref": "no-referrer"
+    }
+  },
+  "realNoCorsResponse": [
+    {
+      "url": "https://www.google.com/favicon.ico",
+      "status": 200,
+      "acao": null
+    }
+  ],
+  "candidates": {
+    "S1nocors": {
+      "img": true,
+      "src": "https://img-nocors.nyo.test/e2290rzq9/S1.png",
+      "loaded": true,
+      "co": false,
+      "coProp": null,
+      "ref": "no-referrer"
+    },
+    "S2invalid": {
+      "img": false,
+      "letter": true,
+      "text": "S"
+    },
+    "S3nopic": {
+      "img": false,
+      "letter": true,
+      "text": "S"
+    },
+    "S4missing": {
+      "img": false,
+      "letter": true,
+      "text": "S"
+    },
+    "S5cors": {
+      "img": true,
+      "src": "https://img-cors.nyo.test/e2290rzq9/S5.png",
+      "loaded": true,
+      "co": false,
+      "coProp": null,
+      "ref": "no-referrer"
+    },
+    "S6realNocors": {
+      "img": true,
+      "src": "https://www.google.com/favicon.ico",
+      "loaded": true,
+      "co": false,
+      "coProp": null,
+      "ref": "no-referrer"
+    }
+  },
+  "allAvatarAttrs": [
+    {
+      "src": "https://img-nocors.nyo.test/e2290rzq9/A.png",
+      "co": false,
+      "ref": "no-referrer"
+    },
+    {
+      "src": "https://www.google.com/favicon.ico",
+      "co": false,
+      "ref": "no-referrer"
+    },
+    {
+      "src": "https://img-cors.nyo.test/e2290rzq9/S5.png",
+      "co": false,
+      "ref": "no-referrer"
+    },
+    {
+      "src": "https://img-nocors.nyo.test/e2290rzq9/S1.png",
+      "co": false,
+      "ref": "no-referrer"
+    },
+    {
+      "src": "https://img-nocors.nyo.test/e2290rzq9/S1.png",
+      "co": false,
+      "ref": "no-referrer"
+    }
+  ],
+  "realHostRequest": [
+    {
+      "headers": {
+        "sec-ch-ua-platform": "\"macOS\"",
+        "Referer": "",
+        "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/158.0.0.0 Safari/537.36",
+        "sec-ch-ua": "\"Chromium\";v=\"158\", \"Not.A/Brand\";v=\"24\", \"Google Chrome\";v=\"158\"",
+        "sec-ch-ua-mobile": "?0"
+      },
+      "referrerPolicy": "no-referrer"
+    }
+  ],
+  "switchPending": {
+    "header": {
+      "img": false,
+      "letter": true,
+      "text": "?"
+    },
+    "name": "自分",
+    "srcs": [
+      "yo.png"
+    ]
+  },
+  "afterSwitchSrcs": [
+    "yo.png",
+    "https://img-nocors.nyo.test/e2290rzq9/B.png",
+    "https://img-nocors.nyo.test/e2290rzq9/S1.png"
+  ],
+  "afterLogout": {
+    "accountHidden": true,
+    "accountChildren": 0,
+    "srcs": [
+      "yo.png"
+    ],
+    "inbox": 0
+  },
+  "imageRequests": [
+    {
+      "url": "https://img-cors.nyo.test/e2290rzq9/S5.png",
+      "headerNames": [
+        "Accept",
+        "User-Agent",
+        "sec-ch-ua",
+        "sec-ch-ua-mobile",
+        "sec-ch-ua-platform"
+      ]
+    },
+    {
+      "url": "https://img-nocors.nyo.test/e2290rzq9/missing.png",
+      "headerNames": [
+        "Accept",
+        "User-Agent",
+        "sec-ch-ua",
+        "sec-ch-ua-mobile",
+        "sec-ch-ua-platform"
+      ]
+    },
+    {
+      "url": "https://img-nocors.nyo.test/e2290rzq9/missing.png",
+      "headerNames": [
+        "Accept",
+        "User-Agent",
+        "sec-ch-ua",
+        "sec-ch-ua-mobile",
+        "sec-ch-ua-platform"
+      ]
+    },
+    {
+      "url": "https://img-nocors.nyo.test/e2290rzq9/S1.png",
+      "headerNames": [
+        "Accept",
+        "User-Agent",
+        "sec-ch-ua",
+        "sec-ch-ua-mobile",
+        "sec-ch-ua-platform"
+      ]
+    },
+    {
+      "url": "https://img-nocors.nyo.test/e2290rzq9/missing.png",
+      "headerNames": [
+        "Accept",
+        "User-Agent",
+        "sec-ch-ua",
+        "sec-ch-ua-mobile",
+        "sec-ch-ua-platform"
+      ]
+    },
+    {
+      "url": "https://img-nocors.nyo.test/e2290rzq9/A.png",
+      "headerNames": [
+        "Accept",
+        "User-Agent",
+        "sec-ch-ua",
+        "sec-ch-ua-mobile",
+        "sec-ch-ua-platform"
+      ]
+    },
+    {
+      "url": "https://img-nocors.nyo.test/e2290rzq9/missing.png",
+      "headerNames": [
+        "Accept",
+        "User-Agent",
+        "sec-ch-ua",
+        "sec-ch-ua-mobile",
+        "sec-ch-ua-platform"
+      ]
+    },
+    {
+      "url": "https://img-nocors.nyo.test/e2290rzq9/B.png",
+      "headerNames": [
+        "Accept",
+        "User-Agent",
+        "sec-ch-ua",
+        "sec-ch-ua-mobile",
+        "sec-ch-ua-platform"
+      ]
+    },
+    {
+      "url": "https://img-nocors.nyo.test/e2290rzq9/missing.png",
+      "headerNames": [
+        "Accept",
+        "User-Agent",
+        "sec-ch-ua",
+        "sec-ch-ua-mobile",
+        "sec-ch-ua-platform"
+      ]
+    }
+  ],
+  "networkFailures": [],
+  "relayLog": [
+    {
+      "t": 1795834105697,
+      "sid": "yo-inbox",
+      "fs": "[{\"kinds\":[7],\"#p\":[\"949bb66a266a0d87c6999ca5564c4b1f8ae4a795c10c42d1bcebcd7028b34894\"],\"#k\":[\"0\"],\"limit\":50}]",
+      "n": 6,
+      "delay": 0
+    },
+    {
+      "t": 1795834105697,
+      "sid": "yo-sent",
+      "fs": "[{\"kinds\":[7],\"authors\":[\"949bb66a266a0d87c6999ca5564c4b1f8ae4a795c10c42d1bcebcd7028b34894\"],\"#k\":[\"0\"],\"limit\":50}]",
+      "n": 0,
+      "delay": 0
+    },
+    {
+      "t": 1795834105698,
+      "sid": "qw1rabtbv",
+      "fs": "[{\"kinds\":[3],\"authors\":[\"949bb66a266a0d87c6999ca5564c4b1f8ae4a795c10c42d1bcebcd7028b34894\"],\"limit\":1}]",
+      "n": 1,
+      "delay": 0
+    },
+    {
+      "t": 1795834105731,
+      "sid": "qirstz60n",
+      "fs": "[{\"kinds\":[0],\"authors\":[\"89e51cf9c9da6da78544164c4bcf7e35f479ba98916f5d23dcdf21cf6c343e8b\",\"b30111ab0f07047bd5a8ee0e6b980bfb573ae7d89c265a68c8a6a473fd6b2dce\",\"857ce42234a3ad8df17ccf771e2ff45e46606626",
+      "n": 6,
+      "delay": 0
+    },
+    {
+      "t": 1795834105998,
+      "sid": "qds6tiof1",
+      "fs": "[{\"kinds\":[0],\"authors\":[\"949bb66a266a0d87c6999ca5564c4b1f8ae4a795c10c42d1bcebcd7028b34894\"]}]",
+      "n": 1,
+      "delay": 0
+    },
+    {
+      "t": 1795834108246,
+      "sid": "yo-inbox",
+      "fs": "[{\"kinds\":[7],\"#p\":[\"ee194cd6a220ef380fd2f71e370c174836ec987d1fe70ad35d6124afde3638c3\"],\"#k\":[\"0\"],\"limit\":50}]",
+      "n": 1,
+      "delay": 0
+    },
+    {
+      "t": 1795834108246,
+      "sid": "yo-sent",
+      "fs": "[{\"kinds\":[7],\"authors\":[\"ee194cd6a220ef380fd2f71e370c174836ec987d1fe70ad35d6124afde3638c3\"],\"#k\":[\"0\"],\"limit\":50}]",
+      "n": 0,
+      "delay": 0
+    },
+    {
+      "t": 1795834108247,
+      "sid": "qewicvgzp",
+      "fs": "[{\"kinds\":[3],\"authors\":[\"ee194cd6a220ef380fd2f71e370c174836ec987d1fe70ad35d6124afde3638c3\"],\"limit\":1}]",
+      "n": 0,
+      "delay": 0
+    },
+    {
+      "t": 1795834108548,
+      "sid": "qwon4eh15",
+      "fs": "[{\"kinds\":[0],\"authors\":[\"ee194cd6a220ef380fd2f71e370c174836ec987d1fe70ad35d6124afde3638c3\",\"89e51cf9c9da6da78544164c4bcf7e35f479ba98916f5d23dcdf21cf6c343e8b\"]}]",
+      "n": 2,
+      "delay": 4000
+    },
+    {
+      "t": 1795834113253,
+      "sid": "yo-inbox",
+      "fs": "[{\"kinds\":[7],\"#p\":[\"3ba851a558265f92e92cb2bd9087a0510180a39beb6513fc3d2c5023f017675c\"],\"#k\":[\"0\"],\"limit\":50}]",
+      "n": 0,
+      "delay": 0
+    },
+    {
+      "t": 1795834113253,
+      "sid": "yo-sent",
+      "fs": "[{\"kinds\":[7],\"authors\":[\"3ba851a558265f92e92cb2bd9087a0510180a39beb6513fc3d2c5023f017675c\"],\"#k\":[\"0\"],\"limit\":50}]",
+      "n": 0,
+      "delay": 0
+    },
+    {
+      "t": 1795834113254,
+      "sid": "q7rnl4y9y",
+      "fs": "[{\"kinds\":[3],\"authors\":[\"3ba851a558265f92e92cb2bd9087a0510180a39beb6513fc3d2c5023f017675c\"],\"limit\":1}]",
+      "n": 0,
+      "delay": 0
+    },
+    {
+      "t": 1795834113559,
+      "sid": "qynpd9arn",
+      "fs": "[{\"kinds\":[0],\"authors\":[\"3ba851a558265f92e92cb2bd9087a0510180a39beb6513fc3d2c5023f017675c\"]}]",
+      "n": 1,
+      "delay": 3000
+    },
+    {
+      "t": 1795834118689,
+      "sid": "yo-inbox",
+      "fs": "[{\"kinds\":[7],\"#p\":[\"630c9a22c583d14b7ec4157f7ed76baeb93f982f2da0f0b557c6bfc30168f221\"],\"#k\":[\"0\"],\"limit\":50}]",
+      "n": 0,
+      "delay": 0
+    },
+    {
+      "t": 1795834118689,
+      "sid": "yo-sent",
+      "fs": "[{\"kinds\":[7],\"authors\":[\"630c9a22c583d14b7ec4157f7ed76baeb93f982f2da0f0b557c6bfc30168f221\"],\"#k\":[\"0\"],\"limit\":50}]",
+      "n": 0,
+      "delay": 0
+    },
+    {
+      "t": 1795834118689,
+      "sid": "qjehnwyfe",
+      "fs": "[{\"kinds\":[3],\"authors\":[\"630c9a22c583d14b7ec4157f7ed76baeb93f982f2da0f0b557c6bfc30168f221\"],\"limit\":1}]",
+      "n": 0,
+      "delay": 0
+    },
+    {
+      "t": 1795834118999,
+      "sid": "q8wd8lqxd",
+      "fs": "[{\"kinds\":[0],\"authors\":[\"630c9a22c583d14b7ec4157f7ed76baeb93f982f2da0f0b557c6bfc30168f221\"]}]",
+      "n": 1,
+      "delay": 0
+    },
+    {
+      "t": 1795834119654,
+      "sid": "yo-inbox",
+      "fs": "[{\"kinds\":[7],\"#p\":[\"949bb66a266a0d87c6999ca5564c4b1f8ae4a795c10c42d1bcebcd7028b34894\"],\"#k\":[\"0\"],\"limit\":50}]",
+      "n": 6,
+      "delay": 0
+    },
+    {
+      "t": 1795834119654,
+      "sid": "yo-sent",
+      "fs": "[{\"kinds\":[7],\"authors\":[\"949bb66a266a0d87c6999ca5564c4b1f8ae4a795c10c42d1bcebcd7028b34894\"],\"#k\":[\"0\"],\"limit\":50}]",
+      "n": 0,
+      "delay": 0
+    },
+    {
+      "t": 1795834119655,
+      "sid": "qoabhw7th",
+      "fs": "[{\"kinds\":[3],\"authors\":[\"949bb66a266a0d87c6999ca5564c4b1f8ae4a795c10c42d1bcebcd7028b34894\"],\"limit\":1}]",
+      "n": 1,
+      "delay": 0
+    }
+  ],
+  "finishedAt": "2026-11-28T02:48:39.659Z",
+  "pass": 33,
+  "total": 33
+}

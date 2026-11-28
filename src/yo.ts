@@ -194,8 +194,16 @@ export interface IncomingYo {
   hasTag: boolean;
 }
 
-/** Decide whether an incoming relay event is a valid Yo reaction addressed to `me`. */
-export function parseIncomingYo(e: unknown, me: string, now: number = Math.floor(Date.now() / 1000)): IncomingYo | null {
+interface YoShape {
+  ev: NostrEvent;
+  recipient: string;
+  targetId: string;
+  emojiUrl: string;
+  hasTag: boolean;
+}
+
+/** Rules 1–6 of SPEC.md, independent of who is looking (recipient = the single p tag). */
+function parseYoShape(e: unknown, now: number): YoShape | null {
   if (!verifyEventSignature(e)) return null;
   if (e.kind !== YO_KIND || e.content !== YO_CONTENT) return null;
   if (e.created_at > now + MAX_FUTURE_SKEW) return null;
@@ -203,7 +211,9 @@ export function parseIncomingYo(e: unknown, me: string, now: number = Math.floor
   if (em.length !== 1 || em[0]?.[1] !== YO_SHORTCODE || !isAcceptableEmojiUrl(em[0]?.[2])) return null;
   const emojiUrl = em[0][2] as string;
   const ps = tagsNamed(e.tags, "p");
-  if (ps.length !== 1 || ps[0]?.[1] !== me) return null;
+  if (ps.length !== 1) return null;
+  const recipient = ps[0]?.[1];
+  if (!isHex64(recipient)) return null;
   const ks = tagsNamed(e.tags, "k");
   if (ks.length !== 1 || ks[0]?.[1] !== String(PROFILE_KIND)) return null;
   const es = tagsNamed(e.tags, "e");
@@ -211,10 +221,36 @@ export function parseIncomingYo(e: unknown, me: string, now: number = Math.floor
   const target = es[0]?.[1];
   if (!isHex64(target)) return null;
   const authorHint = es[0]?.[3];
-  if (authorHint !== undefined && authorHint !== "" && authorHint !== me) return null;
+  if (authorHint !== undefined && authorHint !== "" && authorHint !== recipient) return null;
   if (tagsNamed(e.tags, "a").length) return null;
   const hasTag = tagsNamed(e.tags, "t").some((t) => t[1]?.toLowerCase() === YO_TAG[1]);
-  return { ev: e, targetId: target, ours: emojiUrl === YO_EMOJI_URL, emojiHost: new URL(emojiUrl).hostname, hasTag };
+  return { ev: e, recipient, targetId: target, emojiUrl, hasTag };
+}
+
+/** Decide whether an incoming relay event is a valid Yo reaction addressed to `me`. */
+export function parseIncomingYo(e: unknown, me: string, now: number = Math.floor(Date.now() / 1000)): IncomingYo | null {
+  const y = parseYoShape(e, now);
+  if (!y || y.recipient !== me) return null;
+  return { ev: y.ev, targetId: y.targetId, ours: y.emojiUrl === YO_EMOJI_URL, emojiHost: new URL(y.emojiUrl).hostname, hasTag: y.hasTag };
+}
+
+export interface SentYo {
+  ev: NostrEvent;
+  /** recipient pubkey (the single p tag of a valid Yo authored by me) */
+  to: string;
+  targetId: string;
+  ours: boolean;
+  hasTag: boolean;
+}
+
+/**
+ * Decide whether a relay event is a valid Yo that `me` sent (author == me, same
+ * rules 1–6 as receiving). Only signed events from relays are shown as sent.
+ */
+export function parseSentYo(e: unknown, me: string, now: number = Math.floor(Date.now() / 1000)): SentYo | null {
+  const y = parseYoShape(e, now);
+  if (!y || y.ev.pubkey !== me) return null;
+  return { ev: y.ev, to: y.recipient, targetId: y.targetId, ours: y.emojiUrl === YO_EMOJI_URL, hasTag: y.hasTag };
 }
 
 export function acceptIncomingYo(e: unknown, me: string, now?: number): e is NostrEvent {
@@ -223,6 +259,11 @@ export function acceptIncomingYo(e: unknown, me: string, now?: number): e is Nos
 
 export function yoFilter(me: string, limit = 50): Record<string, unknown> {
   return { kinds: [YO_KIND], "#p": [me], "#k": [String(PROFILE_KIND)], limit };
+}
+
+/** Yo events I authored (send history). No #t filter, so pre-t-tag Yo are found too. */
+export function sentYoFilter(me: string, limit = 50): Record<string, unknown> {
+  return { kinds: [YO_KIND], authors: [me], "#k": [String(PROFILE_KIND)], limit };
 }
 
 export function profileFilter(author: string): Record<string, unknown> {

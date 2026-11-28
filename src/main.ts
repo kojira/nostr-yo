@@ -16,6 +16,8 @@ import { LS_SESSION, compareSigner, formatWhen, parseSession, serializeSession, 
 import {
   buildYo,
   parseIncomingYo,
+  parseSentYo,
+  sentYoFilter,
   pickLatestProfile,
   profileFilter,
   checkSignedYo,
@@ -25,6 +27,7 @@ import {
   toNpub,
   yoFilter,
   type IncomingYo,
+  type SentYo,
   type NostrEvent,
 } from "./yo.js";
 
@@ -58,6 +61,12 @@ let seen = new Set<string>();
 let received: IncomingYo[] = [];
 let inboxLoaded = false;
 let inboxShown = 5;
+/** Send history: only valid Yo authored by `account`, read back from relays (or accepted by ≥1 relay in this page). */
+let sentSeen = new Set<string>();
+let sent: SentYo[] = [];
+let sentLoaded = false;
+let sentShown = 5;
+let tab: "in" | "out" = "in";
 let selected: { pubkey: string; label: string } | null = null;
 let sending = false;
 
@@ -66,7 +75,7 @@ function scheduleInbox() {
   if (inboxRenderQueued) return;
   inboxRenderQueued = true;
   // setTimeout (not rAF): rAF never fires in background tabs, which would freeze the inbox.
-  setTimeout(() => { inboxRenderQueued = false; renderInbox(); renderAccount(); }, 50);
+  setTimeout(() => { inboxRenderQueued = false; renderInbox(); renderSent(); renderAccount(); }, 50);
 }
 const follows = new FollowLoader(() => { renderFollowState(); renderSearch(); if (follows.state.phase === "ready") scheduleInbox(); });
 const senders = new ProfileCache(() => [...relays], () => follows.profiles, scheduleInbox);
@@ -145,6 +154,25 @@ function subscribeOne(r: Relay) {
     () => { if (gen === accountGen && !inboxLoaded) { inboxLoaded = true; renderInbox(); } },
     (m) => { r.lastNotice = `購読が閉じられました: ${m}`; onRelayChange(); },
   );
+  r.subscribe(
+    "yo-sent",
+    sentYoFilter(mine),
+    (ev) => { if (gen === accountGen) onSent(ev, mine); },
+    () => { if (gen === accountGen && !sentLoaded) { sentLoaded = true; renderSent(); } },
+    () => { if (gen === accountGen && !sentLoaded) { sentLoaded = true; renderSent(); } },
+  );
+}
+
+/** A Yo authored by `mine` (from a relay, or our own signed event once a relay accepted it). */
+function onSent(ev: unknown, mine: string) {
+  const id = (ev as { id?: unknown })?.id;
+  if (typeof id === "string" && sentSeen.has(id)) return;
+  const yo = parseSentYo(ev, mine);
+  if (typeof id === "string") sentSeen.add(id);
+  if (!yo) return;
+  sent.push(yo);
+  sent.sort((a, b) => b.ev.created_at - a.ev.created_at);
+  scheduleInbox();
 }
 
 function reconnectAll() {
@@ -217,7 +245,7 @@ const rowNotes = new Map<string, { text: string; kind: "info" | "ok" | "err" }>(
 function renderInbox() {
   const card = $("inbox-card");
   card.hidden = !account;
-  if (!account) { $("inbox").replaceChildren(); card.querySelector("button.more")?.remove(); return; }
+  if (!account) { $("inbox").replaceChildren(); $("panel-in").querySelector("button.more")?.remove(); return; }
   const rows = received.slice(0, Math.min(inboxShown, 100));
   senders.want(rows.map((y) => y.ev.pubkey));
   const ul = $("inbox");
@@ -279,15 +307,91 @@ function renderInbox() {
   if (!received.length) note.textContent = inboxLoaded ? "まだ Yo は届いていません。" : "読み込み中…";
   else note.textContent = "";
   note.hidden = received.length > 0;
-  let more = card.querySelector<HTMLButtonElement>("button.more");
+  const panel = $("panel-in");
+  let more = panel.querySelector<HTMLButtonElement>("button.more");
   if (received.length > rows.length && rows.length < 100) {
     if (!more) {
       more = el("button", "more", "") as HTMLButtonElement;
       more.type = "button";
       more.onclick = () => { inboxShown = Math.min(inboxShown + 20, 100); renderInbox(); };
-      card.append(more);
+      panel.append(more);
     }
     more.textContent = `さらに表示（全 ${received.length} 件）`;
+  } else more?.remove();
+}
+
+// ---------------------------------------------------------------- send history
+function setTab(t: "in" | "out", focus = false) {
+  tab = t;
+  for (const [k, id] of [["in", "tab-in"], ["out", "tab-out"]] as const) {
+    const b = $(id);
+    const on = k === t;
+    b.setAttribute("aria-selected", String(on));
+    b.tabIndex = on ? 0 : -1;
+    if (on && focus) b.focus();
+  }
+  $("panel-in").hidden = t !== "in";
+  $("panel-out").hidden = t !== "out";
+  if (t === "out") renderSent();
+}
+
+function renderSent() {
+  const panel = $("panel-out");
+  const ul = $("sent");
+  if (!account) { ul.replaceChildren(); panel.querySelector("button.more")?.remove(); $("sent-note").textContent = ""; return; }
+  const rows = sent.slice(0, Math.min(sentShown, 100));
+  // Only look up recipients while the tab is visible (no extra queries for a hidden list).
+  if (tab === "out") senders.want(rows.map((y) => y.to));
+  const focusKey = (document.activeElement as HTMLElement | null)?.closest("#sent") ? (document.activeElement as HTMLElement).dataset.focusKey : undefined;
+  ul.replaceChildren();
+  for (const yo of rows) {
+    const e = yo.ev;
+    const li = el("li", "yo-item sent-item");
+    li.dataset.id = e.id;
+    li.dataset.to = yo.to;
+    const { name, picture, state } = displayName(yo.to);
+    const detId = `sdet-${e.id}`;
+    const open = openDetails.has(`s:${e.id}`);
+    const who = el("button", "who") as HTMLButtonElement;
+    who.type = "button";
+    who.dataset.focusKey = `swho:${e.id}`;
+    who.setAttribute("aria-expanded", String(open));
+    who.setAttribute("aria-controls", detId);
+    who.append(avatar(yo.to, picture, name));
+    const t = el("span", "who-text");
+    t.append(el("span", name ? "from-name" : "from-name none", name || (state === "pending" ? "読み込み中…" : "名前なし")));
+    const when = el("time", "when", formatWhen(e.created_at));
+    when.setAttribute("datetime", new Date(e.created_at * 1000).toISOString());
+    when.title = new Date(e.created_at * 1000).toLocaleString();
+    t.append(when);
+    who.append(t, chevron());
+    const det = el("div", "detail");
+    det.id = detId;
+    det.hidden = !open;
+    det.append(el("code", "from-npub", toNpub(yo.to)));
+    who.onclick = () => {
+      const k = `s:${e.id}`;
+      const next = !openDetails.has(k);
+      if (next) openDetails.add(k); else openDetails.delete(k);
+      who.setAttribute("aria-expanded", String(next));
+      det.hidden = !next;
+    };
+    li.append(who, det);
+    ul.append(li);
+  }
+  if (focusKey) ul.querySelector<HTMLElement>(`[data-focus-key="${CSS.escape(focusKey)}"]`)?.focus();
+  const note = $("sent-note");
+  note.textContent = sent.length ? "" : sentLoaded ? "まだ Yo を送っていません。" : "読み込み中…";
+  note.hidden = sent.length > 0;
+  let more = panel.querySelector<HTMLButtonElement>("button.more");
+  if (sent.length > rows.length && rows.length < 100) {
+    if (!more) {
+      more = el("button", "more", "") as HTMLButtonElement;
+      more.type = "button";
+      more.onclick = () => { sentShown = Math.min(sentShown + 20, 100); renderSent(); };
+      panel.append(more);
+    }
+    more.textContent = `さらに表示（全 ${sent.length} 件）`;
   } else more?.remove();
 }
 
@@ -392,6 +496,10 @@ function startAccount(pk: string) {
   account = pk;
   received = [];
   seen = new Set();
+  sent = [];
+  sentSeen = new Set();
+  sentLoaded = false;
+  sentShown = 5;
   rowNotes.clear();
   openDetails.clear();
   setMeDetail(false);
@@ -401,21 +509,26 @@ function startAccount(pk: string) {
   $("send-results").replaceChildren();
   $("send-detail").hidden = true;
   hideStatus();
-  for (const r of relays) { r.unsubscribe("yo-inbox"); subscribeOne(r); }
+  for (const r of relays) { r.unsubscribe("yo-inbox"); r.unsubscribe("yo-sent"); subscribeOne(r); }
   netGraceUntil = Date.now() + 6000;
   setTimeout(renderNet, 6100);
   follows.reset();
   void follows.load(pk, [...relays]);
+  setTab("in");
   renderAccount();
   renderInbox();
+  renderSent();
 }
 
 function stopAccount() {
   accountGen++;
   account = null;
-  for (const r of relays) r.unsubscribe("yo-inbox");
+  for (const r of relays) { r.unsubscribe("yo-inbox"); r.unsubscribe("yo-sent"); }
   received = [];
   seen = new Set();
+  sent = [];
+  sentSeen = new Set();
+  sentLoaded = false;
   rowNotes.clear();
   openDetails.clear();
   inboxLoaded = false;
@@ -424,8 +537,10 @@ function stopAccount() {
   $("send-results").replaceChildren();
   $("send-detail").hidden = true;
   hideStatus();
+  setTab("in");
   renderAccount();
   renderInbox();
+  renderSent();
 }
 
 /** Ask the extension for its current key (user-initiated only). */
@@ -581,6 +696,8 @@ async function sendYoTo(to: string, rowId: string | null): Promise<boolean> {
       if (!rowId) renderSendResults(results);
     }));
     const ok = results.filter(([, r]) => r?.ok).length;
+    // History: only an event at least one relay accepted, and only for the account that signed it.
+    if (ok && gen === accountGen && account === mine) onSent(ev, mine);
     if (ok) { note(rowId ? "✓ Yo! を返しました" : "✓ Yo! を送りました", "ok"); bounce(); }
     else note("送れませんでした（リレーが受け付けませんでした）", "err");
     if (ok && !rowId) clearSelection(true);
@@ -740,6 +857,14 @@ function init() {
   $("relogin").onclick = () => { void relogin(); };
   $("send").onclick = () => { void sendYo(); };
   $("menu-btn").onclick = openMenu;
+  $("tab-in").onclick = () => setTab("in");
+  $("tab-out").onclick = () => setTab("out");
+  $("tabs").onkeydown = (e) => {
+    if (e.key === "ArrowLeft" || e.key === "ArrowRight" || e.key === "Home" || e.key === "End") {
+      e.preventDefault();
+      setTab(e.key === "Home" ? "in" : e.key === "End" ? "out" : tab === "in" ? "out" : "in", true);
+    }
+  };
   $("menu-close").onclick = closeMenu;
   menu().addEventListener("click", (e) => { if (e.target === menu()) closeMenu(); });
   $("relay-form").onsubmit = addRelay;

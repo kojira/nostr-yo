@@ -1,0 +1,280 @@
+{
+  "site": "http://127.0.0.1:18309/",
+  "chrome": "Chrome/158.0.8127.38",
+  "relay": "local mock relay (this script)",
+  "chromeFlags": "default",
+  "nip07": "TEST MOCK (not a real extension)",
+  "startedAt": "2026-11-28T02:48:05.907Z",
+  "checks": {
+    "usesMockRelayOnly": true,
+    "loggedOutNoHistory": true,
+    "inboxDefaultTab": true,
+    "inboxStillShowsReceived": true,
+    "tabSwitchesToSent": true,
+    "sentShowsOnlyValidYoNewestFirst": true,
+    "sentRecipientsFromPTag": true,
+    "sentUntaggedYoIncluded": true,
+    "sentNamesShown": true,
+    "sentIconsShown": true,
+    "sentDateTimeShown": true,
+    "sentRowsHaveNoReplyButton": true,
+    "sentNpubInDetailCollapsed": true,
+    "sentDetailToggles": true,
+    "arrowKeySwitchesTab": true,
+    "noHorizontalOverflow": true,
+    "sendOk": true,
+    "acceptedSendAppearsInHistory": true,
+    "sentEventKeepsYoFormat": true,
+    "rejectedSendFails": true,
+    "rejectedSendNotInHistory": true,
+    "cancelledSignNotInHistory": true,
+    "reloadRestoresSentFromRelay": true,
+    "reloadNoExtensionCall": true,
+    "switchResetsToInboxTab": true,
+    "switchPendingNoOldSent": true,
+    "switchPendingShowsLoading": true,
+    "switchShowsOnlyBSent": true,
+    "switchInboxOnlyB": true,
+    "switchBackNoBSent": true,
+    "logoutLateSentNotShown": true,
+    "reloginAShowsHistory": true,
+    "noUnexpectedSigning": true,
+    "sentFilterShape": true
+  },
+  "sentA": [
+    {
+      "to": "705d8f1c1d7a6f0f4b1a7822c81457e2ed9bbfd7a03ff48051bf2a9d4895efcf",
+      "id": "bda2acdf800bf01da8cab0594111cda3ea4a4b11cfd153fc23341a209df464fb",
+      "name": "r1_e2309ibrr",
+      "when": "11/28 11:43",
+      "dt": "2026-11-28T02:43:05.000Z",
+      "img": {
+        "src": "https://img-nocors.nyo.test/e2309ibrr/S1.png",
+        "loaded": true
+      },
+      "letter": false,
+      "back": false
+    },
+    {
+      "to": "ee6523f124a12e8f1b3b54890d29d6fcb4ef170a8d0ca5a301fd29f2bfe79be2",
+      "id": "eaa396c480b810e912897a08946f6169680e8b925ef5979fdd2c234db21232d1",
+      "name": "r2nopic_e2309ibrr",
+      "when": "11/28 11:41",
+      "dt": "2026-11-28T02:41:25.000Z",
+      "img": null,
+      "letter": true,
+      "back": false
+    },
+    {
+      "to": "b052c622604bd289379961031033de20c3d30cad69acab92d14ef0ff40633460",
+      "id": "c7181d788a43e626b13a17ae29a37b5561375582ec4688e0fe1565e7f47b179d",
+      "name": "r3_e2309ibrr",
+      "when": "11/28 11:39",
+      "dt": "2026-11-28T02:39:45.000Z",
+      "img": {
+        "src": "https://img-nocors.nyo.test/e2309ibrr/S5.png",
+        "loaded": true
+      },
+      "letter": false,
+      "back": false
+    }
+  ],
+  "switchPending": {
+    "tab": {
+      "inSel": "true",
+      "outSel": "false",
+      "inHidden": false,
+      "outHidden": true
+    },
+    "sent": [],
+    "note": "読み込み中…"
+  },
+  "signedIds": [
+    "c46cf87303e6246da57b1c5361d4b898fd3512a51a1586b6c5ef27665ed867fb",
+    "4307fc9ac83e238e8ff950dd36d900f2eb53e8b3a92506fdd1de645c7fba9ddb"
+  ],
+  "relayLog": [
+    {
+      "t": 1795834088700,
+      "sid": "yo-inbox",
+      "fs": "[{\"kinds\":[7],\"#p\":[\"5991cb928e3336ef599981de4393db0fde969d97837044cd904942bbfc1134b5\"],\"#k\":[\"0\"],\"limit\":50}]",
+      "n": 1,
+      "delay": 0
+    },
+    {
+      "t": 1795834088701,
+      "sid": "yo-sent",
+      "fs": "[{\"kinds\":[7],\"authors\":[\"5991cb928e3336ef599981de4393db0fde969d97837044cd904942bbfc1134b5\"],\"#k\":[\"0\"],\"limit\":50}]",
+      "n": 6,
+      "delay": 0
+    },
+    {
+      "t": 1795834088701,
+      "sid": "qqnhj6p42",
+      "fs": "[{\"kinds\":[3],\"authors\":[\"5991cb928e3336ef599981de4393db0fde969d97837044cd904942bbfc1134b5\"],\"limit\":1}]",
+      "n": 1,
+      "delay": 0
+    },
+    {
+      "t": 1795834088733,
+      "sid": "qpvzxednw",
+      "fs": "[{\"kinds\":[0],\"authors\":[\"705d8f1c1d7a6f0f4b1a7822c81457e2ed9bbfd7a03ff48051bf2a9d4895efcf\",\"ee6523f124a12e8f1b3b54890d29d6fcb4ef170a8d0ca5a301fd29f2bfe79be2\",\"b052c622604bd289379961031033de20c3d30cad",
+      "n": 3,
+      "delay": 0
+    },
+    {
+      "t": 1795834089001,
+      "sid": "qleu2adbk",
+      "fs": "[{\"kinds\":[0],\"authors\":[\"5991cb928e3336ef599981de4393db0fde969d97837044cd904942bbfc1134b5\",\"66df0986bb4e757cc1aa12a87eb1bc565e92f4af9b4116f3e8a5903d1b8e6d6c\"]}]",
+      "n": 2,
+      "delay": 0
+    },
+    {
+      "t": 1795834090005,
+      "sid": "qan67797r",
+      "fs": "[{\"kinds\":[0],\"authors\":[\"66df0986bb4e757cc1aa12a87eb1bc565e92f4af9b4116f3e8a5903d1b8e6d6c\"],\"limit\":1}]",
+      "n": 1,
+      "delay": 0
+    },
+    {
+      "t": 1795834090429,
+      "sid": "qd36eml5i",
+      "fs": "[{\"kinds\":[0],\"authors\":[\"705d8f1c1d7a6f0f4b1a7822c81457e2ed9bbfd7a03ff48051bf2a9d4895efcf\"],\"limit\":1}]",
+      "n": 1,
+      "delay": 0
+    },
+    {
+      "t": 1795834091491,
+      "sid": "qj17xngsp",
+      "fs": "[{\"kinds\":[0],\"authors\":[\"705d8f1c1d7a6f0f4b1a7822c81457e2ed9bbfd7a03ff48051bf2a9d4895efcf\"],\"limit\":1}]",
+      "n": 1,
+      "delay": 0
+    },
+    {
+      "t": 1795834091901,
+      "sid": "yo-inbox",
+      "fs": "[{\"kinds\":[7],\"#p\":[\"5991cb928e3336ef599981de4393db0fde969d97837044cd904942bbfc1134b5\"],\"#k\":[\"0\"],\"limit\":50}]",
+      "n": 1,
+      "delay": 0
+    },
+    {
+      "t": 1795834091901,
+      "sid": "yo-sent",
+      "fs": "[{\"kinds\":[7],\"authors\":[\"5991cb928e3336ef599981de4393db0fde969d97837044cd904942bbfc1134b5\"],\"#k\":[\"0\"],\"limit\":50}]",
+      "n": 7,
+      "delay": 0
+    },
+    {
+      "t": 1795834091901,
+      "sid": "qrdsbkfrf",
+      "fs": "[{\"kinds\":[3],\"authors\":[\"5991cb928e3336ef599981de4393db0fde969d97837044cd904942bbfc1134b5\"],\"limit\":1}]",
+      "n": 1,
+      "delay": 0
+    },
+    {
+      "t": 1795834091906,
+      "sid": "qwprwjooc",
+      "fs": "[{\"kinds\":[0],\"authors\":[\"705d8f1c1d7a6f0f4b1a7822c81457e2ed9bbfd7a03ff48051bf2a9d4895efcf\",\"ee6523f124a12e8f1b3b54890d29d6fcb4ef170a8d0ca5a301fd29f2bfe79be2\",\"b052c622604bd289379961031033de20c3d30cad",
+      "n": 3,
+      "delay": 0
+    },
+    {
+      "t": 1795834092203,
+      "sid": "q96m8eut8",
+      "fs": "[{\"kinds\":[0],\"authors\":[\"5991cb928e3336ef599981de4393db0fde969d97837044cd904942bbfc1134b5\",\"66df0986bb4e757cc1aa12a87eb1bc565e92f4af9b4116f3e8a5903d1b8e6d6c\"]}]",
+      "n": 2,
+      "delay": 0
+    },
+    {
+      "t": 1795834093706,
+      "sid": "yo-inbox",
+      "fs": "[{\"kinds\":[7],\"#p\":[\"ee64f2599d7803bf73643a0b83068310d7bc9bf492a86631c526c4469efa35e3\"],\"#k\":[\"0\"],\"limit\":50}]",
+      "n": 1,
+      "delay": 0
+    },
+    {
+      "t": 1795834093706,
+      "sid": "yo-sent",
+      "fs": "[{\"kinds\":[7],\"authors\":[\"ee64f2599d7803bf73643a0b83068310d7bc9bf492a86631c526c4469efa35e3\"],\"#k\":[\"0\"],\"limit\":50}]",
+      "n": 1,
+      "delay": 3000
+    },
+    {
+      "t": 1795834093707,
+      "sid": "q1l3jyiq7",
+      "fs": "[{\"kinds\":[3],\"authors\":[\"ee64f2599d7803bf73643a0b83068310d7bc9bf492a86631c526c4469efa35e3\"],\"limit\":1}]",
+      "n": 0,
+      "delay": 0
+    },
+    {
+      "t": 1795834094016,
+      "sid": "qzv9o67yg",
+      "fs": "[{\"kinds\":[0],\"authors\":[\"ee64f2599d7803bf73643a0b83068310d7bc9bf492a86631c526c4469efa35e3\",\"705d8f1c1d7a6f0f4b1a7822c81457e2ed9bbfd7a03ff48051bf2a9d4895efcf\"]}]",
+      "n": 2,
+      "delay": 0
+    },
+    {
+      "t": 1795834097343,
+      "sid": "yo-inbox",
+      "fs": "[{\"kinds\":[7],\"#p\":[\"5991cb928e3336ef599981de4393db0fde969d97837044cd904942bbfc1134b5\"],\"#k\":[\"0\"],\"limit\":50}]",
+      "n": 1,
+      "delay": 0
+    },
+    {
+      "t": 1795834097343,
+      "sid": "yo-sent",
+      "fs": "[{\"kinds\":[7],\"authors\":[\"5991cb928e3336ef599981de4393db0fde969d97837044cd904942bbfc1134b5\"],\"#k\":[\"0\"],\"limit\":50}]",
+      "n": 7,
+      "delay": 3000
+    },
+    {
+      "t": 1795834097345,
+      "sid": "qh978ht3u",
+      "fs": "[{\"kinds\":[3],\"authors\":[\"5991cb928e3336ef599981de4393db0fde969d97837044cd904942bbfc1134b5\"],\"limit\":1}]",
+      "n": 1,
+      "delay": 0
+    },
+    {
+      "t": 1795834097350,
+      "sid": "q2ya510ym",
+      "fs": "[{\"kinds\":[0],\"authors\":[\"705d8f1c1d7a6f0f4b1a7822c81457e2ed9bbfd7a03ff48051bf2a9d4895efcf\",\"ee6523f124a12e8f1b3b54890d29d6fcb4ef170a8d0ca5a301fd29f2bfe79be2\",\"b052c622604bd289379961031033de20c3d30cad",
+      "n": 3,
+      "delay": 0
+    },
+    {
+      "t": 1795834101858,
+      "sid": "yo-inbox",
+      "fs": "[{\"kinds\":[7],\"#p\":[\"5991cb928e3336ef599981de4393db0fde969d97837044cd904942bbfc1134b5\"],\"#k\":[\"0\"],\"limit\":50}]",
+      "n": 1,
+      "delay": 0
+    },
+    {
+      "t": 1795834101858,
+      "sid": "yo-sent",
+      "fs": "[{\"kinds\":[7],\"authors\":[\"5991cb928e3336ef599981de4393db0fde969d97837044cd904942bbfc1134b5\"],\"#k\":[\"0\"],\"limit\":50}]",
+      "n": 7,
+      "delay": 0
+    },
+    {
+      "t": 1795834101858,
+      "sid": "qvr4nuw17",
+      "fs": "[{\"kinds\":[3],\"authors\":[\"5991cb928e3336ef599981de4393db0fde969d97837044cd904942bbfc1134b5\"],\"limit\":1}]",
+      "n": 1,
+      "delay": 0
+    },
+    {
+      "t": 1795834101869,
+      "sid": "qhb6urug1",
+      "fs": "[{\"kinds\":[0],\"authors\":[\"705d8f1c1d7a6f0f4b1a7822c81457e2ed9bbfd7a03ff48051bf2a9d4895efcf\",\"ee6523f124a12e8f1b3b54890d29d6fcb4ef170a8d0ca5a301fd29f2bfe79be2\",\"b052c622604bd289379961031033de20c3d30cad",
+      "n": 3,
+      "delay": 0
+    }
+  ],
+  "sentFilters": [
+    "[{\"kinds\":[7],\"authors\":[\"<pk>\"],\"#k\":[\"0\"],\"limit\":50}]",
+    "[{\"kinds\":[7],\"authors\":[\"<pk>\"],\"#k\":[\"0\"],\"limit\":50}]"
+  ],
+  "finishedAt": "2026-11-28T02:48:21.874Z",
+  "pass": 34,
+  "total": 34
+}

@@ -1,0 +1,6 @@
+mock relay ws://127.0.0.1:57242
+headerA {"img":true,"src":"https://img-nocors.nyo.test/e2290rzq9/A.png","loaded":true,"co":false,"ref":"no-referrer"}
+inboxA {"S1nocors":{"img":true,"src":"https://img-nocors.nyo.test/e2290rzq9/S1.png","loaded":true,"co":false,"ref":"no-referrer"},"S2invalid":{"img":false,"letter":true},"S3nopic":{"img":false,"letter":true},"S4missing":{"img":false,"letter":true},"S5cors":{"img":true,"src":"https://img-cors.nyo.test/e2290rzq9/S5.png","loaded":true,"co":false,"ref":"no-referrer"},"S6realNocors":{"img":true,"src":"https://www.google.com/favicon.ico","loaded":true,"co":false,"ref":"no-referrer"}}
+candidates {"S1nocors":{"img":true,"src":"https://img-nocors.nyo.test/e2290rzq9/S1.png","loaded":true,"co":false,"coProp":null,"ref":"no-referrer"},"S2invalid":{"img":false,"letter":true,"text":"S"},"S3nopic":{"img":false,"letter":true,"text":"S"},"S4missing":{"img":false,"letter":true,"text":"S"},"S5cors":{"img":true,"src":"https://img-cors.nyo.test/e2290rzq9/S5.png","loaded":true,"co":false,"coProp":null,"ref":"no-referrer"},"S6realNocors":{"img":true,"src":"https://www.google.com/favicon.ico","loaded":true,"co":false,"coProp":null,"ref":"no-referrer"}}
+switchPending {"header":{"img":false,"letter":true,"text":"?"},"name":"自分","srcs":["yo.png"]}
+afterLogout {"accountHidden":true,"accountChildren":0,"srcs":["yo.png"],"inbox":0}

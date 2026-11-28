@@ -66,6 +66,9 @@ ul { list-style: none; padding: 0; margin: 0; }
 .row-note.err { color: var(--err); }
 .yo-item { flex-wrap: wrap; }
 .yo-item .who { flex-basis: 0; }
+.tabs { display: flex; gap: 4px; margin: 0 0 6px; padding: 3px; background: #f4f0fc; border-radius: 12px; }
+.tab { flex: 1 1 0; min-width: 0; padding: 8px 6px; font-size: 15px; font-weight: 700; background: transparent; color: #6a5f80; border-radius: 10px; }
+.tab[aria-selected="true"] { background: #fff; color: var(--c1); box-shadow: 0 1px 4px rgba(123,47,247,.18); }
 .more { width: 100%; margin-top: 6px; font-size: 14px; }
 .empty { color: #888; font-size: 14px; padding: 6px 0; }
 
