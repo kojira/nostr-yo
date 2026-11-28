@@ -112,7 +112,7 @@ const RELAY = `ws://127.0.0.1:${relaySrv.address().port}`;
 L("mock relay", RELAY);
 
 // ---------------------------------------------------------------- chrome
-const chrome = spawn(CHROME, [`--remote-debugging-port=${port}`, "--headless=new", `--user-data-dir=${profile}`, "--no-first-run", "about:blank"], { stdio: "ignore" });
+const chrome = spawn(CHROME, [`--remote-debugging-port=${port}`, "--headless=new", `--user-data-dir=${profile}`, "--no-first-run", ...(process.env.LNA_OFF ? ["--disable-features=LocalNetworkAccessChecks,BlockInsecurePrivateNetworkRequests,PrivateNetworkAccessSendPreflights"] : []), "about:blank"], { stdio: "ignore" });
 let ver;
 for (let i = 0; i < 50; i++) { try { ver = await (await fetch(`http://127.0.0.1:${port}/json/version`)).json(); break; } catch { await sleep(200); } }
 const imgReqs = []; // intercepted *.nyo.test image requests
@@ -167,7 +167,7 @@ const setPk = async (pk) => { state.pk = pk; await evalJs(`window.__mockPk=${JSO
 const shot = async (file, full = false) => { const r = await send("Page.captureScreenshot", { format: "png", captureBeyondViewport: full }); writeFileSync(`${out}/${file}`, Buffer.from(r.result.data, "base64")); };
 async function waitFor(expr, ms) { const end = Date.now() + ms; while (Date.now() < end) { if (await evalJs(expr)) return true; await sleep(250); } return false; }
 
-const result = { site, chrome: ver?.Browser, relay: "local mock relay (this script)", nip07: "TEST MOCK (not a real extension)", startedAt: new Date().toISOString(), checks: {} };
+const result = { site, chrome: ver?.Browser, relay: "local mock relay (this script)", chromeFlags: process.env.LNA_OFF ? "LocalNetworkAccessChecks disabled (test browser only, so the https site can reach the ws://127.0.0.1 mock relay)" : "default", nip07: "TEST MOCK (not a real extension)", startedAt: new Date().toISOString(), checks: {} };
 const C = result.checks;
 // avatar snapshot: every avatar in a container
 const avs = (sel) => `[...document.querySelectorAll(${JSON.stringify(sel)})].map(a=>a.tagName==='IMG'?{img:true,src:a.getAttribute('src'),loaded:a.complete&&a.naturalWidth>0,co:a.hasAttribute('crossorigin'),coProp:a.crossOrigin,ref:a.referrerPolicy}:{img:false,letter:a.classList.contains('letter'),text:a.textContent})`;

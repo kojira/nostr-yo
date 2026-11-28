@@ -1,0 +1,401 @@
+{
+  "site": "https://kojira.github.io/nostr-yo/",
+  "chrome": "Chrome/158.0.8127.38",
+  "relay": "local mock relay (this script)",
+  "chromeFlags": "LocalNetworkAccessChecks disabled (test browser only, so the https site can reach the ws://127.0.0.1 mock relay)",
+  "nip07": "TEST MOCK (not a real extension)",
+  "startedAt": "2026-11-28T01:11:17.938Z",
+  "checks": {
+    "cspImgSrcKept": true,
+    "referrerMetaKept": true,
+    "usesMockRelayOnly": true,
+    "loginA": true,
+    "inboxMoreShowsAll6": true,
+    "headerA_noCorsLoaded": true,
+    "inbox_noCorsLoaded": true,
+    "inbox_corsHostStillLoaded": true,
+    "inbox_realNoCorsHostLoaded": true,
+    "inbox_invalidUrlLetter": true,
+    "inbox_noPictureLetter": true,
+    "inbox_loadErrorLetter": true,
+    "realHostReallyHasNoAcao": true,
+    "candidate_noCorsLoaded": true,
+    "candidate_realNoCorsLoaded": true,
+    "candidate_corsLoaded": true,
+    "candidate_fallbacks": true,
+    "selected_noCorsLoaded": true,
+    "noCrossoriginAttributeAnywhere": true,
+    "noReferrerPolicyKept": true,
+    "imageRequestsNoCorsMode": true,
+    "imageRequestsNoReferer": true,
+    "noCorsErrors": true,
+    "httpPictureNeverRequested": true,
+    "switchPendingNoOldImage": true,
+    "switchDelayedKind0Shows": true,
+    "switchInboxOnlyB": true,
+    "switchNoAImagesLeft": true,
+    "switchToCNoBImage": true,
+    "logoutLateKind0NoImage": true,
+    "headerLoadErrorLetter": true,
+    "backToA_headerLoaded": true,
+    "neverSigned": true
+  },
+  "csp": "default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data: https:; connect-src wss: ws://localhost:* ws://127.0.0.1:*; base-uri 'none'; form-action 'none'",
+  "referrerMeta": "no-referrer",
+  "headerA": {
+    "img": true,
+    "src": "https://img-nocors.nyo.test/e2290v4so/A.png",
+    "loaded": true,
+    "co": false,
+    "ref": "no-referrer"
+  },
+  "inboxA": {
+    "S1nocors": {
+      "img": true,
+      "src": "https://img-nocors.nyo.test/e2290v4so/S1.png",
+      "loaded": true,
+      "co": false,
+      "ref": "no-referrer"
+    },
+    "S2invalid": {
+      "img": false,
+      "letter": true
+    },
+    "S3nopic": {
+      "img": false,
+      "letter": true
+    },
+    "S4missing": {
+      "img": false,
+      "letter": true
+    },
+    "S5cors": {
+      "img": true,
+      "src": "https://img-cors.nyo.test/e2290v4so/S5.png",
+      "loaded": true,
+      "co": false,
+      "ref": "no-referrer"
+    },
+    "S6realNocors": {
+      "img": true,
+      "src": "https://www.google.com/favicon.ico",
+      "loaded": true,
+      "co": false,
+      "ref": "no-referrer"
+    }
+  },
+  "realNoCorsResponse": [
+    {
+      "url": "https://www.google.com/favicon.ico",
+      "status": 200,
+      "acao": null
+    }
+  ],
+  "candidates": {
+    "S1nocors": {
+      "img": true,
+      "src": "https://img-nocors.nyo.test/e2290v4so/S1.png",
+      "loaded": true,
+      "co": false,
+      "coProp": null,
+      "ref": "no-referrer"
+    },
+    "S2invalid": {
+      "img": false,
+      "letter": true,
+      "text": "S"
+    },
+    "S3nopic": {
+      "img": false,
+      "letter": true,
+      "text": "S"
+    },
+    "S4missing": {
+      "img": false,
+      "letter": true,
+      "text": "S"
+    },
+    "S5cors": {
+      "img": true,
+      "src": "https://img-cors.nyo.test/e2290v4so/S5.png",
+      "loaded": true,
+      "co": false,
+      "coProp": null,
+      "ref": "no-referrer"
+    },
+    "S6realNocors": {
+      "img": true,
+      "src": "https://www.google.com/favicon.ico",
+      "loaded": true,
+      "co": false,
+      "coProp": null,
+      "ref": "no-referrer"
+    }
+  },
+  "allAvatarAttrs": [
+    {
+      "src": "https://img-nocors.nyo.test/e2290v4so/A.png",
+      "co": false,
+      "ref": "no-referrer"
+    },
+    {
+      "src": "https://www.google.com/favicon.ico",
+      "co": false,
+      "ref": "no-referrer"
+    },
+    {
+      "src": "https://img-cors.nyo.test/e2290v4so/S5.png",
+      "co": false,
+      "ref": "no-referrer"
+    },
+    {
+      "src": "https://img-nocors.nyo.test/e2290v4so/S1.png",
+      "co": false,
+      "ref": "no-referrer"
+    },
+    {
+      "src": "https://img-nocors.nyo.test/e2290v4so/S1.png",
+      "co": false,
+      "ref": "no-referrer"
+    }
+  ],
+  "realHostRequest": [
+    {
+      "headers": {
+        "sec-ch-ua-platform": "\"macOS\"",
+        "Referer": "",
+        "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/158.0.0.0 Safari/537.36",
+        "sec-ch-ua": "\"Chromium\";v=\"158\", \"Not.A/Brand\";v=\"24\", \"Google Chrome\";v=\"158\"",
+        "sec-ch-ua-mobile": "?0"
+      },
+      "referrerPolicy": "no-referrer"
+    }
+  ],
+  "switchPending": {
+    "header": {
+      "img": false,
+      "letter": true,
+      "text": "?"
+    },
+    "name": "自分",
+    "srcs": [
+      "yo.png"
+    ]
+  },
+  "afterSwitchSrcs": [
+    "yo.png",
+    "https://img-nocors.nyo.test/e2290v4so/B.png",
+    "https://img-nocors.nyo.test/e2290v4so/S1.png"
+  ],
+  "afterLogout": {
+    "accountHidden": true,
+    "accountChildren": 0,
+    "srcs": [
+      "yo.png"
+    ],
+    "inbox": 0
+  },
+  "imageRequests": [
+    {
+      "url": "https://img-cors.nyo.test/e2290v4so/S5.png",
+      "headerNames": [
+        "Accept",
+        "User-Agent",
+        "sec-ch-ua",
+        "sec-ch-ua-mobile",
+        "sec-ch-ua-platform"
+      ]
+    },
+    {
+      "url": "https://img-nocors.nyo.test/e2290v4so/missing.png",
+      "headerNames": [
+        "Accept",
+        "User-Agent",
+        "sec-ch-ua",
+        "sec-ch-ua-mobile",
+        "sec-ch-ua-platform"
+      ]
+    },
+    {
+      "url": "https://img-nocors.nyo.test/e2290v4so/missing.png",
+      "headerNames": [
+        "Accept",
+        "User-Agent",
+        "sec-ch-ua",
+        "sec-ch-ua-mobile",
+        "sec-ch-ua-platform"
+      ]
+    },
+    {
+      "url": "https://img-nocors.nyo.test/e2290v4so/S1.png",
+      "headerNames": [
+        "Accept",
+        "User-Agent",
+        "sec-ch-ua",
+        "sec-ch-ua-mobile",
+        "sec-ch-ua-platform"
+      ]
+    },
+    {
+      "url": "https://img-nocors.nyo.test/e2290v4so/missing.png",
+      "headerNames": [
+        "Accept",
+        "User-Agent",
+        "sec-ch-ua",
+        "sec-ch-ua-mobile",
+        "sec-ch-ua-platform"
+      ]
+    },
+    {
+      "url": "https://img-nocors.nyo.test/e2290v4so/A.png",
+      "headerNames": [
+        "Accept",
+        "User-Agent",
+        "sec-ch-ua",
+        "sec-ch-ua-mobile",
+        "sec-ch-ua-platform"
+      ]
+    },
+    {
+      "url": "https://img-nocors.nyo.test/e2290v4so/missing.png",
+      "headerNames": [
+        "Accept",
+        "User-Agent",
+        "sec-ch-ua",
+        "sec-ch-ua-mobile",
+        "sec-ch-ua-platform"
+      ]
+    },
+    {
+      "url": "https://img-nocors.nyo.test/e2290v4so/B.png",
+      "headerNames": [
+        "Accept",
+        "User-Agent",
+        "sec-ch-ua",
+        "sec-ch-ua-mobile",
+        "sec-ch-ua-platform"
+      ]
+    },
+    {
+      "url": "https://img-nocors.nyo.test/e2290v4so/missing.png",
+      "headerNames": [
+        "Accept",
+        "User-Agent",
+        "sec-ch-ua",
+        "sec-ch-ua-mobile",
+        "sec-ch-ua-platform"
+      ]
+    }
+  ],
+  "networkFailures": [],
+  "relayLog": [
+    {
+      "t": 1795828280851,
+      "sid": "yo-inbox",
+      "fs": "[{\"kinds\":[7],\"#p\":[\"5a3229a07213585de0082d5ceec96cb9087269f4aa2a24b83a1f1c49b0e1ccd7\"],\"#k\":[\"0\"],\"limit\":50}]",
+      "n": 6,
+      "delay": 0
+    },
+    {
+      "t": 1795828280852,
+      "sid": "qrfwd25de",
+      "fs": "[{\"kinds\":[3],\"authors\":[\"5a3229a07213585de0082d5ceec96cb9087269f4aa2a24b83a1f1c49b0e1ccd7\"],\"limit\":1}]",
+      "n": 1,
+      "delay": 0
+    },
+    {
+      "t": 1795828280885,
+      "sid": "qqsnm6ird",
+      "fs": "[{\"kinds\":[0],\"authors\":[\"f8252f2d25e317338f66f0629133254b9293e3f2e5e9f58eb454ace5617b2c2e\",\"f585bcdd8d9d1797aa5821d204b3da92ef0c92a65f9f77474139a6843c7e6280\",\"fded088981d4df05d7cfa6693128d8cba7097dfd",
+      "n": 6,
+      "delay": 0
+    },
+    {
+      "t": 1795828281154,
+      "sid": "qyh822jgn",
+      "fs": "[{\"kinds\":[0],\"authors\":[\"5a3229a07213585de0082d5ceec96cb9087269f4aa2a24b83a1f1c49b0e1ccd7\"]}]",
+      "n": 1,
+      "delay": 0
+    },
+    {
+      "t": 1795828283409,
+      "sid": "yo-inbox",
+      "fs": "[{\"kinds\":[7],\"#p\":[\"d8746cb06d8990924eb2fbd463714c376cf0c7262100280dc7715c0f11ed7b47\"],\"#k\":[\"0\"],\"limit\":50}]",
+      "n": 1,
+      "delay": 0
+    },
+    {
+      "t": 1795828283410,
+      "sid": "qqx7wf1sv",
+      "fs": "[{\"kinds\":[3],\"authors\":[\"d8746cb06d8990924eb2fbd463714c376cf0c7262100280dc7715c0f11ed7b47\"],\"limit\":1}]",
+      "n": 0,
+      "delay": 0
+    },
+    {
+      "t": 1795828283716,
+      "sid": "qlns3kwg1",
+      "fs": "[{\"kinds\":[0],\"authors\":[\"d8746cb06d8990924eb2fbd463714c376cf0c7262100280dc7715c0f11ed7b47\",\"f8252f2d25e317338f66f0629133254b9293e3f2e5e9f58eb454ace5617b2c2e\"]}]",
+      "n": 2,
+      "delay": 4000
+    },
+    {
+      "t": 1795828288401,
+      "sid": "yo-inbox",
+      "fs": "[{\"kinds\":[7],\"#p\":[\"e80a5bae87383d71cf8b504a41ed0eea885a5f25585ec0844195bba00ca9daa6\"],\"#k\":[\"0\"],\"limit\":50}]",
+      "n": 0,
+      "delay": 0
+    },
+    {
+      "t": 1795828288402,
+      "sid": "qfc0c09lq",
+      "fs": "[{\"kinds\":[3],\"authors\":[\"e80a5bae87383d71cf8b504a41ed0eea885a5f25585ec0844195bba00ca9daa6\"],\"limit\":1}]",
+      "n": 0,
+      "delay": 0
+    },
+    {
+      "t": 1795828288709,
+      "sid": "ql80y60o0",
+      "fs": "[{\"kinds\":[0],\"authors\":[\"e80a5bae87383d71cf8b504a41ed0eea885a5f25585ec0844195bba00ca9daa6\"]}]",
+      "n": 1,
+      "delay": 3000
+    },
+    {
+      "t": 1795828293846,
+      "sid": "yo-inbox",
+      "fs": "[{\"kinds\":[7],\"#p\":[\"85e54de7416b0531dfed02cdee5a1b3d13da0e92ea05830d68e951ed171c6b62\"],\"#k\":[\"0\"],\"limit\":50}]",
+      "n": 0,
+      "delay": 0
+    },
+    {
+      "t": 1795828293846,
+      "sid": "qrm2gp7hn",
+      "fs": "[{\"kinds\":[3],\"authors\":[\"85e54de7416b0531dfed02cdee5a1b3d13da0e92ea05830d68e951ed171c6b62\"],\"limit\":1}]",
+      "n": 0,
+      "delay": 0
+    },
+    {
+      "t": 1795828294152,
+      "sid": "q0nnoxduv",
+      "fs": "[{\"kinds\":[0],\"authors\":[\"85e54de7416b0531dfed02cdee5a1b3d13da0e92ea05830d68e951ed171c6b62\"]}]",
+      "n": 1,
+      "delay": 0
+    },
+    {
+      "t": 1795828294794,
+      "sid": "yo-inbox",
+      "fs": "[{\"kinds\":[7],\"#p\":[\"5a3229a07213585de0082d5ceec96cb9087269f4aa2a24b83a1f1c49b0e1ccd7\"],\"#k\":[\"0\"],\"limit\":50}]",
+      "n": 6,
+      "delay": 0
+    },
+    {
+      "t": 1795828294795,
+      "sid": "qynbuy0k7",
+      "fs": "[{\"kinds\":[3],\"authors\":[\"5a3229a07213585de0082d5ceec96cb9087269f4aa2a24b83a1f1c49b0e1ccd7\"],\"limit\":1}]",
+      "n": 1,
+      "delay": 0
+    }
+  ],
+  "finishedAt": "2026-11-28T01:11:34.798Z",
+  "pass": 33,
+  "total": 33
+}
