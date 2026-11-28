@@ -1,0 +1,71 @@
+{
+  "site": "https://kojira.github.io/nostr-yo/",
+  "chrome": "Chrome/158.0.8127.38",
+  "relay": "local mock relay (this script)",
+  "chromeFlags": "LocalNetworkAccessChecks disabled (test browser only, so the https site can reach the ws://127.0.0.1 mock relay)",
+  "nip07": "TEST MOCK (not a real extension)",
+  "startedAt": "2026-11-28T02:55:14.653Z",
+  "checks": {
+    "usesMockRelayOnly": true,
+    "everySentRowHasAgainButton": true,
+    "inboxReplyStillThere": true,
+    "noHorizontalOverflow": true,
+    "allYoButtonsDisabledWhileSending": true,
+    "againOk": true,
+    "doubleClickSignedOnce": true,
+    "againEventToR2InYoFormat": true,
+    "againAppearsAtTop": true,
+    "buttonsReenabled": true,
+    "rejectShowsRowError": true,
+    "rejectNotAdded": true,
+    "mismatchRefused": true,
+    "switchDuringSendNotSigned": true,
+    "switchShowsOnlyBSent": true,
+    "switchButtonsUsable": true
+  },
+  "sentA": [
+    {
+      "to": "ec9e607016a255845e75d78767fd9ce6a37ecf2e7b3878bad26a0ca2154cccd8",
+      "id": "7fdb353fe804ff6cd793ddab4c28df17808a07a62fa21af8e8392fec264223f1",
+      "name": "r1_e23102cji",
+      "when": "11/28 11:50",
+      "dt": "2026-11-28T02:50:13.000Z",
+      "img": {
+        "src": "https://img-nocors.nyo.test/e23102cji/S1.png",
+        "loaded": true
+      },
+      "letter": false,
+      "back": true
+    },
+    {
+      "to": "6a85eb2603fccb526b0b1afe360ed419c0e49b3884e65285e4275eee6e686896",
+      "id": "8a6d622ea821f8f9ede092d7b7274d270c78c8280c2324c8ff1f6ceda5c6ac33",
+      "name": "r2nopic_e23102cji",
+      "when": "11/28 11:48",
+      "dt": "2026-11-28T02:48:33.000Z",
+      "img": null,
+      "letter": true,
+      "back": true
+    },
+    {
+      "to": "429182eda4a049a878fff86dabfd891bc72448a3951e922052eec7cdd6aa74d3",
+      "id": "e4ff115698490b942e374de1a4dc054020cac0986b3e7f31ab49395ad72b5852",
+      "name": "r3_e23102cji",
+      "when": "11/28 11:46",
+      "dt": "2026-11-28T02:46:53.000Z",
+      "img": {
+        "src": "https://img-nocors.nyo.test/e23102cji/S5.png",
+        "loaded": true
+      },
+      "letter": false,
+      "back": true
+    }
+  ],
+  "signedIds": [
+    "292538a926779e0ec1a3cc72a81d7b7e6bdc5d7bc556ba5e18204ac0e3d1daaf",
+    "cabe290b66d0df6a731e58ee8488568da947c537ed71b97a87a74889b3b64b0c"
+  ],
+  "finishedAt": "2026-11-28T02:55:23.795Z",
+  "pass": 16,
+  "total": 16
+}
