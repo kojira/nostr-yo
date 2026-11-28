@@ -1,0 +1,280 @@
+{
+  "site": "https://kojira.github.io/nostr-yo/",
+  "chrome": "Chrome/158.0.8127.38",
+  "relay": "local mock relay (this script)",
+  "chromeFlags": "LocalNetworkAccessChecks disabled (test browser only, so the https site can reach the ws://127.0.0.1 mock relay)",
+  "nip07": "TEST MOCK (not a real extension)",
+  "startedAt": "2026-11-28T02:49:46.781Z",
+  "checks": {
+    "usesMockRelayOnly": true,
+    "loggedOutNoHistory": true,
+    "inboxDefaultTab": true,
+    "inboxStillShowsReceived": true,
+    "tabSwitchesToSent": true,
+    "sentShowsOnlyValidYoNewestFirst": true,
+    "sentRecipientsFromPTag": true,
+    "sentUntaggedYoIncluded": true,
+    "sentNamesShown": true,
+    "sentIconsShown": true,
+    "sentDateTimeShown": true,
+    "sentRowsHaveNoReplyButton": true,
+    "sentNpubInDetailCollapsed": true,
+    "sentDetailToggles": true,
+    "arrowKeySwitchesTab": true,
+    "noHorizontalOverflow": true,
+    "sendOk": true,
+    "acceptedSendAppearsInHistory": true,
+    "sentEventKeepsYoFormat": true,
+    "rejectedSendFails": true,
+    "rejectedSendNotInHistory": true,
+    "cancelledSignNotInHistory": true,
+    "reloadRestoresSentFromRelay": true,
+    "reloadNoExtensionCall": true,
+    "switchResetsToInboxTab": true,
+    "switchPendingNoOldSent": true,
+    "switchPendingShowsLoading": true,
+    "switchShowsOnlyBSent": true,
+    "switchInboxOnlyB": true,
+    "switchBackNoBSent": true,
+    "logoutLateSentNotShown": true,
+    "reloginAShowsHistory": true,
+    "noUnexpectedSigning": true,
+    "sentFilterShape": true
+  },
+  "sentA": [
+    {
+      "to": "15a8204d91d631aee99380e4b16ae448b9908bbb005bbab4c806e1a50a6772af",
+      "id": "f856aa29172ccb74cfb8a283616f7444cebe8fbc54099b37848af5dc84d5237c",
+      "name": "r1_e23099zi9",
+      "when": "11/28 11:44",
+      "dt": "2026-11-28T02:44:46.000Z",
+      "img": {
+        "src": "https://img-nocors.nyo.test/e23099zi9/S1.png",
+        "loaded": true
+      },
+      "letter": false,
+      "back": false
+    },
+    {
+      "to": "b5c5aa4cb5f48f91d56b9941a1eecf84359ea4b4b6418d0907a44218711618c9",
+      "id": "4493162dd3b72daa1b3456713f6c32bc6533ecede72cbc835935d4708a1ae669",
+      "name": "r2nopic_e23099zi9",
+      "when": "11/28 11:43",
+      "dt": "2026-11-28T02:43:06.000Z",
+      "img": null,
+      "letter": true,
+      "back": false
+    },
+    {
+      "to": "d66c8e920038f99330a77cf7fded45dbbc4746359a49e03b4e18898f8e98b5e6",
+      "id": "e8fef2bb6b2d1a64d1800dd69165f2e6c3e514baf38190bec7d02dce1d9a1b5f",
+      "name": "r3_e23099zi9",
+      "when": "11/28 11:41",
+      "dt": "2026-11-28T02:41:26.000Z",
+      "img": {
+        "src": "https://img-nocors.nyo.test/e23099zi9/S5.png",
+        "loaded": true
+      },
+      "letter": false,
+      "back": false
+    }
+  ],
+  "switchPending": {
+    "tab": {
+      "inSel": "true",
+      "outSel": "false",
+      "inHidden": false,
+      "outHidden": true
+    },
+    "sent": [],
+    "note": "読み込み中…"
+  },
+  "signedIds": [
+    "a60d1065c46d6e786afc91b1b3d7ff6fff97414f1a4ef29b395397d916fb835a",
+    "97a26bf1df02f353d9b4e7d393340d27e065642876c14d383755fb333f972517"
+  ],
+  "relayLog": [
+    {
+      "t": 1795834189756,
+      "sid": "yo-inbox",
+      "fs": "[{\"kinds\":[7],\"#p\":[\"f563c4a96b35a9b874362a225f60ef8ecd8c9f748b354a58efeb8399f00be8d3\"],\"#k\":[\"0\"],\"limit\":50}]",
+      "n": 1,
+      "delay": 0
+    },
+    {
+      "t": 1795834189756,
+      "sid": "yo-sent",
+      "fs": "[{\"kinds\":[7],\"authors\":[\"f563c4a96b35a9b874362a225f60ef8ecd8c9f748b354a58efeb8399f00be8d3\"],\"#k\":[\"0\"],\"limit\":50}]",
+      "n": 6,
+      "delay": 0
+    },
+    {
+      "t": 1795834189757,
+      "sid": "qf4hw530d",
+      "fs": "[{\"kinds\":[3],\"authors\":[\"f563c4a96b35a9b874362a225f60ef8ecd8c9f748b354a58efeb8399f00be8d3\"],\"limit\":1}]",
+      "n": 1,
+      "delay": 0
+    },
+    {
+      "t": 1795834189793,
+      "sid": "qc7kcspq9",
+      "fs": "[{\"kinds\":[0],\"authors\":[\"15a8204d91d631aee99380e4b16ae448b9908bbb005bbab4c806e1a50a6772af\",\"b5c5aa4cb5f48f91d56b9941a1eecf84359ea4b4b6418d0907a44218711618c9\",\"d66c8e920038f99330a77cf7fded45dbbc474635",
+      "n": 3,
+      "delay": 0
+    },
+    {
+      "t": 1795834190058,
+      "sid": "qysf299ap",
+      "fs": "[{\"kinds\":[0],\"authors\":[\"f563c4a96b35a9b874362a225f60ef8ecd8c9f748b354a58efeb8399f00be8d3\",\"fa5f0b91b5bfcd1cbd747efe6a5f9f34d3867db4fd2cc5b10e56e4ab7b07d986\"]}]",
+      "n": 2,
+      "delay": 0
+    },
+    {
+      "t": 1795834191104,
+      "sid": "q7mb4ou16",
+      "fs": "[{\"kinds\":[0],\"authors\":[\"fa5f0b91b5bfcd1cbd747efe6a5f9f34d3867db4fd2cc5b10e56e4ab7b07d986\"],\"limit\":1}]",
+      "n": 1,
+      "delay": 0
+    },
+    {
+      "t": 1795834191515,
+      "sid": "qe32xzif4",
+      "fs": "[{\"kinds\":[0],\"authors\":[\"15a8204d91d631aee99380e4b16ae448b9908bbb005bbab4c806e1a50a6772af\"],\"limit\":1}]",
+      "n": 1,
+      "delay": 0
+    },
+    {
+      "t": 1795834192573,
+      "sid": "qry4z3qvn",
+      "fs": "[{\"kinds\":[0],\"authors\":[\"15a8204d91d631aee99380e4b16ae448b9908bbb005bbab4c806e1a50a6772af\"],\"limit\":1}]",
+      "n": 1,
+      "delay": 0
+    },
+    {
+      "t": 1795834193008,
+      "sid": "yo-inbox",
+      "fs": "[{\"kinds\":[7],\"#p\":[\"f563c4a96b35a9b874362a225f60ef8ecd8c9f748b354a58efeb8399f00be8d3\"],\"#k\":[\"0\"],\"limit\":50}]",
+      "n": 1,
+      "delay": 0
+    },
+    {
+      "t": 1795834193008,
+      "sid": "yo-sent",
+      "fs": "[{\"kinds\":[7],\"authors\":[\"f563c4a96b35a9b874362a225f60ef8ecd8c9f748b354a58efeb8399f00be8d3\"],\"#k\":[\"0\"],\"limit\":50}]",
+      "n": 7,
+      "delay": 0
+    },
+    {
+      "t": 1795834193008,
+      "sid": "qyt87yywr",
+      "fs": "[{\"kinds\":[3],\"authors\":[\"f563c4a96b35a9b874362a225f60ef8ecd8c9f748b354a58efeb8399f00be8d3\"],\"limit\":1}]",
+      "n": 1,
+      "delay": 0
+    },
+    {
+      "t": 1795834193012,
+      "sid": "q9sbyxjid",
+      "fs": "[{\"kinds\":[0],\"authors\":[\"15a8204d91d631aee99380e4b16ae448b9908bbb005bbab4c806e1a50a6772af\",\"b5c5aa4cb5f48f91d56b9941a1eecf84359ea4b4b6418d0907a44218711618c9\",\"d66c8e920038f99330a77cf7fded45dbbc474635",
+      "n": 3,
+      "delay": 0
+    },
+    {
+      "t": 1795834193311,
+      "sid": "qx2y6vkhk",
+      "fs": "[{\"kinds\":[0],\"authors\":[\"f563c4a96b35a9b874362a225f60ef8ecd8c9f748b354a58efeb8399f00be8d3\",\"fa5f0b91b5bfcd1cbd747efe6a5f9f34d3867db4fd2cc5b10e56e4ab7b07d986\"]}]",
+      "n": 2,
+      "delay": 0
+    },
+    {
+      "t": 1795834194796,
+      "sid": "yo-inbox",
+      "fs": "[{\"kinds\":[7],\"#p\":[\"7ef479c15c04a96b0ca612d27eda331038215dfb0b9b4bd42a6135c5446affb8\"],\"#k\":[\"0\"],\"limit\":50}]",
+      "n": 1,
+      "delay": 0
+    },
+    {
+      "t": 1795834194796,
+      "sid": "yo-sent",
+      "fs": "[{\"kinds\":[7],\"authors\":[\"7ef479c15c04a96b0ca612d27eda331038215dfb0b9b4bd42a6135c5446affb8\"],\"#k\":[\"0\"],\"limit\":50}]",
+      "n": 1,
+      "delay": 3000
+    },
+    {
+      "t": 1795834194797,
+      "sid": "qcdluvry6",
+      "fs": "[{\"kinds\":[3],\"authors\":[\"7ef479c15c04a96b0ca612d27eda331038215dfb0b9b4bd42a6135c5446affb8\"],\"limit\":1}]",
+      "n": 0,
+      "delay": 0
+    },
+    {
+      "t": 1795834195102,
+      "sid": "qbsyb5dem",
+      "fs": "[{\"kinds\":[0],\"authors\":[\"7ef479c15c04a96b0ca612d27eda331038215dfb0b9b4bd42a6135c5446affb8\",\"15a8204d91d631aee99380e4b16ae448b9908bbb005bbab4c806e1a50a6772af\"]}]",
+      "n": 2,
+      "delay": 0
+    },
+    {
+      "t": 1795834198428,
+      "sid": "yo-inbox",
+      "fs": "[{\"kinds\":[7],\"#p\":[\"f563c4a96b35a9b874362a225f60ef8ecd8c9f748b354a58efeb8399f00be8d3\"],\"#k\":[\"0\"],\"limit\":50}]",
+      "n": 1,
+      "delay": 0
+    },
+    {
+      "t": 1795834198428,
+      "sid": "yo-sent",
+      "fs": "[{\"kinds\":[7],\"authors\":[\"f563c4a96b35a9b874362a225f60ef8ecd8c9f748b354a58efeb8399f00be8d3\"],\"#k\":[\"0\"],\"limit\":50}]",
+      "n": 7,
+      "delay": 3000
+    },
+    {
+      "t": 1795834198429,
+      "sid": "qcqey3e81",
+      "fs": "[{\"kinds\":[3],\"authors\":[\"f563c4a96b35a9b874362a225f60ef8ecd8c9f748b354a58efeb8399f00be8d3\"],\"limit\":1}]",
+      "n": 1,
+      "delay": 0
+    },
+    {
+      "t": 1795834198434,
+      "sid": "q3ywzieeb",
+      "fs": "[{\"kinds\":[0],\"authors\":[\"15a8204d91d631aee99380e4b16ae448b9908bbb005bbab4c806e1a50a6772af\",\"b5c5aa4cb5f48f91d56b9941a1eecf84359ea4b4b6418d0907a44218711618c9\",\"d66c8e920038f99330a77cf7fded45dbbc474635",
+      "n": 3,
+      "delay": 0
+    },
+    {
+      "t": 1795834202940,
+      "sid": "yo-inbox",
+      "fs": "[{\"kinds\":[7],\"#p\":[\"f563c4a96b35a9b874362a225f60ef8ecd8c9f748b354a58efeb8399f00be8d3\"],\"#k\":[\"0\"],\"limit\":50}]",
+      "n": 1,
+      "delay": 0
+    },
+    {
+      "t": 1795834202940,
+      "sid": "yo-sent",
+      "fs": "[{\"kinds\":[7],\"authors\":[\"f563c4a96b35a9b874362a225f60ef8ecd8c9f748b354a58efeb8399f00be8d3\"],\"#k\":[\"0\"],\"limit\":50}]",
+      "n": 7,
+      "delay": 0
+    },
+    {
+      "t": 1795834202941,
+      "sid": "qxe38w3iq",
+      "fs": "[{\"kinds\":[3],\"authors\":[\"f563c4a96b35a9b874362a225f60ef8ecd8c9f748b354a58efeb8399f00be8d3\"],\"limit\":1}]",
+      "n": 1,
+      "delay": 0
+    },
+    {
+      "t": 1795834202951,
+      "sid": "qsaflurjd",
+      "fs": "[{\"kinds\":[0],\"authors\":[\"15a8204d91d631aee99380e4b16ae448b9908bbb005bbab4c806e1a50a6772af\",\"b5c5aa4cb5f48f91d56b9941a1eecf84359ea4b4b6418d0907a44218711618c9\",\"d66c8e920038f99330a77cf7fded45dbbc474635",
+      "n": 3,
+      "delay": 0
+    }
+  ],
+  "sentFilters": [
+    "[{\"kinds\":[7],\"authors\":[\"<pk>\"],\"#k\":[\"0\"],\"limit\":50}]",
+    "[{\"kinds\":[7],\"authors\":[\"<pk>\"],\"#k\":[\"0\"],\"limit\":50}]"
+  ],
+  "finishedAt": "2026-11-28T02:50:02.954Z",
+  "pass": 34,
+  "total": 34
+}

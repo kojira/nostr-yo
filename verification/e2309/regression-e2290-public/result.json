@@ -1,0 +1,436 @@
+{
+  "site": "https://kojira.github.io/nostr-yo/",
+  "chrome": "Chrome/158.0.8127.38",
+  "relay": "local mock relay (this script)",
+  "chromeFlags": "LocalNetworkAccessChecks disabled (test browser only, so the https site can reach the ws://127.0.0.1 mock relay)",
+  "nip07": "TEST MOCK (not a real extension)",
+  "startedAt": "2026-11-28T02:50:03.926Z",
+  "checks": {
+    "cspImgSrcKept": true,
+    "referrerMetaKept": true,
+    "usesMockRelayOnly": true,
+    "loginA": true,
+    "inboxMoreShowsAll6": true,
+    "headerA_noCorsLoaded": true,
+    "inbox_noCorsLoaded": true,
+    "inbox_corsHostStillLoaded": true,
+    "inbox_realNoCorsHostLoaded": true,
+    "inbox_invalidUrlLetter": true,
+    "inbox_noPictureLetter": true,
+    "inbox_loadErrorLetter": true,
+    "realHostReallyHasNoAcao": true,
+    "candidate_noCorsLoaded": true,
+    "candidate_realNoCorsLoaded": true,
+    "candidate_corsLoaded": true,
+    "candidate_fallbacks": true,
+    "selected_noCorsLoaded": true,
+    "noCrossoriginAttributeAnywhere": true,
+    "noReferrerPolicyKept": true,
+    "imageRequestsNoCorsMode": true,
+    "imageRequestsNoReferer": true,
+    "noCorsErrors": true,
+    "httpPictureNeverRequested": true,
+    "switchPendingNoOldImage": true,
+    "switchDelayedKind0Shows": true,
+    "switchInboxOnlyB": true,
+    "switchNoAImagesLeft": true,
+    "switchToCNoBImage": true,
+    "logoutLateKind0NoImage": true,
+    "headerLoadErrorLetter": true,
+    "backToA_headerLoaded": true,
+    "neverSigned": true
+  },
+  "csp": "default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data: https:; connect-src wss: ws://localhost:* ws://127.0.0.1:*; base-uri 'none'; form-action 'none'",
+  "referrerMeta": "no-referrer",
+  "headerA": {
+    "img": true,
+    "src": "https://img-nocors.nyo.test/e2290mehf/A.png",
+    "loaded": true,
+    "co": false,
+    "ref": "no-referrer"
+  },
+  "inboxA": {
+    "S1nocors": {
+      "img": true,
+      "src": "https://img-nocors.nyo.test/e2290mehf/S1.png",
+      "loaded": true,
+      "co": false,
+      "ref": "no-referrer"
+    },
+    "S2invalid": {
+      "img": false,
+      "letter": true
+    },
+    "S3nopic": {
+      "img": false,
+      "letter": true
+    },
+    "S4missing": {
+      "img": false,
+      "letter": true
+    },
+    "S5cors": {
+      "img": true,
+      "src": "https://img-cors.nyo.test/e2290mehf/S5.png",
+      "loaded": true,
+      "co": false,
+      "ref": "no-referrer"
+    },
+    "S6realNocors": {
+      "img": true,
+      "src": "https://www.google.com/favicon.ico",
+      "loaded": true,
+      "co": false,
+      "ref": "no-referrer"
+    }
+  },
+  "realNoCorsResponse": [
+    {
+      "url": "https://www.google.com/favicon.ico",
+      "status": 200,
+      "acao": null
+    }
+  ],
+  "candidates": {
+    "S1nocors": {
+      "img": true,
+      "src": "https://img-nocors.nyo.test/e2290mehf/S1.png",
+      "loaded": true,
+      "co": false,
+      "coProp": null,
+      "ref": "no-referrer"
+    },
+    "S2invalid": {
+      "img": false,
+      "letter": true,
+      "text": "S"
+    },
+    "S3nopic": {
+      "img": false,
+      "letter": true,
+      "text": "S"
+    },
+    "S4missing": {
+      "img": false,
+      "letter": true,
+      "text": "S"
+    },
+    "S5cors": {
+      "img": true,
+      "src": "https://img-cors.nyo.test/e2290mehf/S5.png",
+      "loaded": true,
+      "co": false,
+      "coProp": null,
+      "ref": "no-referrer"
+    },
+    "S6realNocors": {
+      "img": true,
+      "src": "https://www.google.com/favicon.ico",
+      "loaded": true,
+      "co": false,
+      "coProp": null,
+      "ref": "no-referrer"
+    }
+  },
+  "allAvatarAttrs": [
+    {
+      "src": "https://img-nocors.nyo.test/e2290mehf/A.png",
+      "co": false,
+      "ref": "no-referrer"
+    },
+    {
+      "src": "https://www.google.com/favicon.ico",
+      "co": false,
+      "ref": "no-referrer"
+    },
+    {
+      "src": "https://img-cors.nyo.test/e2290mehf/S5.png",
+      "co": false,
+      "ref": "no-referrer"
+    },
+    {
+      "src": "https://img-nocors.nyo.test/e2290mehf/S1.png",
+      "co": false,
+      "ref": "no-referrer"
+    },
+    {
+      "src": "https://img-nocors.nyo.test/e2290mehf/S1.png",
+      "co": false,
+      "ref": "no-referrer"
+    }
+  ],
+  "realHostRequest": [
+    {
+      "headers": {
+        "sec-ch-ua-platform": "\"macOS\"",
+        "Referer": "",
+        "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/158.0.0.0 Safari/537.36",
+        "sec-ch-ua": "\"Chromium\";v=\"158\", \"Not.A/Brand\";v=\"24\", \"Google Chrome\";v=\"158\"",
+        "sec-ch-ua-mobile": "?0"
+      },
+      "referrerPolicy": "no-referrer"
+    }
+  ],
+  "switchPending": {
+    "header": {
+      "img": false,
+      "letter": true,
+      "text": "?"
+    },
+    "name": "自分",
+    "srcs": [
+      "yo.png"
+    ]
+  },
+  "afterSwitchSrcs": [
+    "yo.png",
+    "https://img-nocors.nyo.test/e2290mehf/B.png",
+    "https://img-nocors.nyo.test/e2290mehf/S1.png"
+  ],
+  "afterLogout": {
+    "accountHidden": true,
+    "accountChildren": 0,
+    "srcs": [
+      "yo.png"
+    ],
+    "inbox": 0
+  },
+  "imageRequests": [
+    {
+      "url": "https://img-cors.nyo.test/e2290mehf/S5.png",
+      "headerNames": [
+        "Accept",
+        "User-Agent",
+        "sec-ch-ua",
+        "sec-ch-ua-mobile",
+        "sec-ch-ua-platform"
+      ]
+    },
+    {
+      "url": "https://img-nocors.nyo.test/e2290mehf/missing.png",
+      "headerNames": [
+        "Accept",
+        "User-Agent",
+        "sec-ch-ua",
+        "sec-ch-ua-mobile",
+        "sec-ch-ua-platform"
+      ]
+    },
+    {
+      "url": "https://img-nocors.nyo.test/e2290mehf/missing.png",
+      "headerNames": [
+        "Accept",
+        "User-Agent",
+        "sec-ch-ua",
+        "sec-ch-ua-mobile",
+        "sec-ch-ua-platform"
+      ]
+    },
+    {
+      "url": "https://img-nocors.nyo.test/e2290mehf/S1.png",
+      "headerNames": [
+        "Accept",
+        "User-Agent",
+        "sec-ch-ua",
+        "sec-ch-ua-mobile",
+        "sec-ch-ua-platform"
+      ]
+    },
+    {
+      "url": "https://img-nocors.nyo.test/e2290mehf/missing.png",
+      "headerNames": [
+        "Accept",
+        "User-Agent",
+        "sec-ch-ua",
+        "sec-ch-ua-mobile",
+        "sec-ch-ua-platform"
+      ]
+    },
+    {
+      "url": "https://img-nocors.nyo.test/e2290mehf/A.png",
+      "headerNames": [
+        "Accept",
+        "User-Agent",
+        "sec-ch-ua",
+        "sec-ch-ua-mobile",
+        "sec-ch-ua-platform"
+      ]
+    },
+    {
+      "url": "https://img-nocors.nyo.test/e2290mehf/missing.png",
+      "headerNames": [
+        "Accept",
+        "User-Agent",
+        "sec-ch-ua",
+        "sec-ch-ua-mobile",
+        "sec-ch-ua-platform"
+      ]
+    },
+    {
+      "url": "https://img-nocors.nyo.test/e2290mehf/B.png",
+      "headerNames": [
+        "Accept",
+        "User-Agent",
+        "sec-ch-ua",
+        "sec-ch-ua-mobile",
+        "sec-ch-ua-platform"
+      ]
+    },
+    {
+      "url": "https://img-nocors.nyo.test/e2290mehf/missing.png",
+      "headerNames": [
+        "Accept",
+        "User-Agent",
+        "sec-ch-ua",
+        "sec-ch-ua-mobile",
+        "sec-ch-ua-platform"
+      ]
+    }
+  ],
+  "networkFailures": [],
+  "relayLog": [
+    {
+      "t": 1795834206763,
+      "sid": "yo-inbox",
+      "fs": "[{\"kinds\":[7],\"#p\":[\"736af4e8c16cf2bc6d26e10fcf68627c37dc834feca511ac3a4890c718f5b907\"],\"#k\":[\"0\"],\"limit\":50}]",
+      "n": 6,
+      "delay": 0
+    },
+    {
+      "t": 1795834206764,
+      "sid": "yo-sent",
+      "fs": "[{\"kinds\":[7],\"authors\":[\"736af4e8c16cf2bc6d26e10fcf68627c37dc834feca511ac3a4890c718f5b907\"],\"#k\":[\"0\"],\"limit\":50}]",
+      "n": 0,
+      "delay": 0
+    },
+    {
+      "t": 1795834206765,
+      "sid": "qsxbbp32d",
+      "fs": "[{\"kinds\":[3],\"authors\":[\"736af4e8c16cf2bc6d26e10fcf68627c37dc834feca511ac3a4890c718f5b907\"],\"limit\":1}]",
+      "n": 1,
+      "delay": 0
+    },
+    {
+      "t": 1795834206796,
+      "sid": "q5rqqra7f",
+      "fs": "[{\"kinds\":[0],\"authors\":[\"dc37f6f0e701be4357b2ec73f68f9d2c83c1f75c867a5e5402bf3cb8e3c79355\",\"318f18e5334a35b3bb55fc1401cf06cdbc8e92d0dee8e21604f24f555e4cf3b3\",\"0b7d1c9ebacb9c692d06ac15205f1aedc5db0bd1",
+      "n": 6,
+      "delay": 0
+    },
+    {
+      "t": 1795834207065,
+      "sid": "q9tn5syo3",
+      "fs": "[{\"kinds\":[0],\"authors\":[\"736af4e8c16cf2bc6d26e10fcf68627c37dc834feca511ac3a4890c718f5b907\"]}]",
+      "n": 1,
+      "delay": 0
+    },
+    {
+      "t": 1795834209307,
+      "sid": "yo-inbox",
+      "fs": "[{\"kinds\":[7],\"#p\":[\"dd572c573a0a7f01166848f7da0eeb732d7f9de9a6fe8da473d830e5390cdc97\"],\"#k\":[\"0\"],\"limit\":50}]",
+      "n": 1,
+      "delay": 0
+    },
+    {
+      "t": 1795834209307,
+      "sid": "yo-sent",
+      "fs": "[{\"kinds\":[7],\"authors\":[\"dd572c573a0a7f01166848f7da0eeb732d7f9de9a6fe8da473d830e5390cdc97\"],\"#k\":[\"0\"],\"limit\":50}]",
+      "n": 0,
+      "delay": 0
+    },
+    {
+      "t": 1795834209308,
+      "sid": "qpv42vmy9",
+      "fs": "[{\"kinds\":[3],\"authors\":[\"dd572c573a0a7f01166848f7da0eeb732d7f9de9a6fe8da473d830e5390cdc97\"],\"limit\":1}]",
+      "n": 0,
+      "delay": 0
+    },
+    {
+      "t": 1795834209612,
+      "sid": "qtphheha5",
+      "fs": "[{\"kinds\":[0],\"authors\":[\"dd572c573a0a7f01166848f7da0eeb732d7f9de9a6fe8da473d830e5390cdc97\",\"dc37f6f0e701be4357b2ec73f68f9d2c83c1f75c867a5e5402bf3cb8e3c79355\"]}]",
+      "n": 2,
+      "delay": 4000
+    },
+    {
+      "t": 1795834214315,
+      "sid": "yo-inbox",
+      "fs": "[{\"kinds\":[7],\"#p\":[\"78cb9088e2cf8fd6b3270943936ea1785738da5c376fe1530edd1755ec984a82\"],\"#k\":[\"0\"],\"limit\":50}]",
+      "n": 0,
+      "delay": 0
+    },
+    {
+      "t": 1795834214315,
+      "sid": "yo-sent",
+      "fs": "[{\"kinds\":[7],\"authors\":[\"78cb9088e2cf8fd6b3270943936ea1785738da5c376fe1530edd1755ec984a82\"],\"#k\":[\"0\"],\"limit\":50}]",
+      "n": 0,
+      "delay": 0
+    },
+    {
+      "t": 1795834214317,
+      "sid": "qdu92th1s",
+      "fs": "[{\"kinds\":[3],\"authors\":[\"78cb9088e2cf8fd6b3270943936ea1785738da5c376fe1530edd1755ec984a82\"],\"limit\":1}]",
+      "n": 0,
+      "delay": 0
+    },
+    {
+      "t": 1795834214625,
+      "sid": "q1uiqngxl",
+      "fs": "[{\"kinds\":[0],\"authors\":[\"78cb9088e2cf8fd6b3270943936ea1785738da5c376fe1530edd1755ec984a82\"]}]",
+      "n": 1,
+      "delay": 3000
+    },
+    {
+      "t": 1795834219760,
+      "sid": "yo-inbox",
+      "fs": "[{\"kinds\":[7],\"#p\":[\"bf41026141a82dea5a38e2b983b8dfd040f7efe216f0b7e7f852d257c1c0228f\"],\"#k\":[\"0\"],\"limit\":50}]",
+      "n": 0,
+      "delay": 0
+    },
+    {
+      "t": 1795834219760,
+      "sid": "yo-sent",
+      "fs": "[{\"kinds\":[7],\"authors\":[\"bf41026141a82dea5a38e2b983b8dfd040f7efe216f0b7e7f852d257c1c0228f\"],\"#k\":[\"0\"],\"limit\":50}]",
+      "n": 0,
+      "delay": 0
+    },
+    {
+      "t": 1795834219760,
+      "sid": "q5fyhay13",
+      "fs": "[{\"kinds\":[3],\"authors\":[\"bf41026141a82dea5a38e2b983b8dfd040f7efe216f0b7e7f852d257c1c0228f\"],\"limit\":1}]",
+      "n": 0,
+      "delay": 0
+    },
+    {
+      "t": 1795834220069,
+      "sid": "qg7k3xirg",
+      "fs": "[{\"kinds\":[0],\"authors\":[\"bf41026141a82dea5a38e2b983b8dfd040f7efe216f0b7e7f852d257c1c0228f\"]}]",
+      "n": 1,
+      "delay": 0
+    },
+    {
+      "t": 1795834220706,
+      "sid": "yo-inbox",
+      "fs": "[{\"kinds\":[7],\"#p\":[\"736af4e8c16cf2bc6d26e10fcf68627c37dc834feca511ac3a4890c718f5b907\"],\"#k\":[\"0\"],\"limit\":50}]",
+      "n": 6,
+      "delay": 0
+    },
+    {
+      "t": 1795834220706,
+      "sid": "yo-sent",
+      "fs": "[{\"kinds\":[7],\"authors\":[\"736af4e8c16cf2bc6d26e10fcf68627c37dc834feca511ac3a4890c718f5b907\"],\"#k\":[\"0\"],\"limit\":50}]",
+      "n": 0,
+      "delay": 0
+    },
+    {
+      "t": 1795834220707,
+      "sid": "qu4p0397k",
+      "fs": "[{\"kinds\":[3],\"authors\":[\"736af4e8c16cf2bc6d26e10fcf68627c37dc834feca511ac3a4890c718f5b907\"],\"limit\":1}]",
+      "n": 1,
+      "delay": 0
+    }
+  ],
+  "finishedAt": "2026-11-28T02:50:20.709Z",
+  "pass": 33,
+  "total": 33
+}
