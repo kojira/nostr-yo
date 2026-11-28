@@ -1,0 +1,400 @@
+{
+  "site": "http://127.0.0.1:18792/",
+  "chrome": "Chrome/158.0.8127.38",
+  "relay": "local mock relay (this script)",
+  "nip07": "TEST MOCK (not a real extension)",
+  "startedAt": "2026-11-28T01:05:43.351Z",
+  "checks": {
+    "cspImgSrcKept": true,
+    "referrerMetaKept": true,
+    "usesMockRelayOnly": true,
+    "loginA": true,
+    "inboxMoreShowsAll6": true,
+    "headerA_noCorsLoaded": true,
+    "inbox_noCorsLoaded": true,
+    "inbox_corsHostStillLoaded": true,
+    "inbox_realNoCorsHostLoaded": true,
+    "inbox_invalidUrlLetter": true,
+    "inbox_noPictureLetter": true,
+    "inbox_loadErrorLetter": true,
+    "realHostReallyHasNoAcao": true,
+    "candidate_noCorsLoaded": true,
+    "candidate_realNoCorsLoaded": true,
+    "candidate_corsLoaded": true,
+    "candidate_fallbacks": true,
+    "selected_noCorsLoaded": true,
+    "noCrossoriginAttributeAnywhere": true,
+    "noReferrerPolicyKept": true,
+    "imageRequestsNoCorsMode": true,
+    "imageRequestsNoReferer": true,
+    "noCorsErrors": true,
+    "httpPictureNeverRequested": true,
+    "switchPendingNoOldImage": true,
+    "switchDelayedKind0Shows": true,
+    "switchInboxOnlyB": true,
+    "switchNoAImagesLeft": true,
+    "switchToCNoBImage": true,
+    "logoutLateKind0NoImage": true,
+    "headerLoadErrorLetter": true,
+    "backToA_headerLoaded": true,
+    "neverSigned": true
+  },
+  "csp": "default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data: https:; connect-src wss: ws://localhost:* ws://127.0.0.1:*; base-uri 'none'; form-action 'none'",
+  "referrerMeta": "no-referrer",
+  "headerA": {
+    "img": true,
+    "src": "https://img-nocors.nyo.test/e2290sb0p/A.png",
+    "loaded": true,
+    "co": false,
+    "ref": "no-referrer"
+  },
+  "inboxA": {
+    "S1nocors": {
+      "img": true,
+      "src": "https://img-nocors.nyo.test/e2290sb0p/S1.png",
+      "loaded": true,
+      "co": false,
+      "ref": "no-referrer"
+    },
+    "S2invalid": {
+      "img": false,
+      "letter": true
+    },
+    "S3nopic": {
+      "img": false,
+      "letter": true
+    },
+    "S4missing": {
+      "img": false,
+      "letter": true
+    },
+    "S5cors": {
+      "img": true,
+      "src": "https://img-cors.nyo.test/e2290sb0p/S5.png",
+      "loaded": true,
+      "co": false,
+      "ref": "no-referrer"
+    },
+    "S6realNocors": {
+      "img": true,
+      "src": "https://www.google.com/favicon.ico",
+      "loaded": true,
+      "co": false,
+      "ref": "no-referrer"
+    }
+  },
+  "realNoCorsResponse": [
+    {
+      "url": "https://www.google.com/favicon.ico",
+      "status": 200,
+      "acao": null
+    }
+  ],
+  "candidates": {
+    "S1nocors": {
+      "img": true,
+      "src": "https://img-nocors.nyo.test/e2290sb0p/S1.png",
+      "loaded": true,
+      "co": false,
+      "coProp": null,
+      "ref": "no-referrer"
+    },
+    "S2invalid": {
+      "img": false,
+      "letter": true,
+      "text": "S"
+    },
+    "S3nopic": {
+      "img": false,
+      "letter": true,
+      "text": "S"
+    },
+    "S4missing": {
+      "img": false,
+      "letter": true,
+      "text": "S"
+    },
+    "S5cors": {
+      "img": true,
+      "src": "https://img-cors.nyo.test/e2290sb0p/S5.png",
+      "loaded": true,
+      "co": false,
+      "coProp": null,
+      "ref": "no-referrer"
+    },
+    "S6realNocors": {
+      "img": true,
+      "src": "https://www.google.com/favicon.ico",
+      "loaded": true,
+      "co": false,
+      "coProp": null,
+      "ref": "no-referrer"
+    }
+  },
+  "allAvatarAttrs": [
+    {
+      "src": "https://img-nocors.nyo.test/e2290sb0p/A.png",
+      "co": false,
+      "ref": "no-referrer"
+    },
+    {
+      "src": "https://www.google.com/favicon.ico",
+      "co": false,
+      "ref": "no-referrer"
+    },
+    {
+      "src": "https://img-cors.nyo.test/e2290sb0p/S5.png",
+      "co": false,
+      "ref": "no-referrer"
+    },
+    {
+      "src": "https://img-nocors.nyo.test/e2290sb0p/S1.png",
+      "co": false,
+      "ref": "no-referrer"
+    },
+    {
+      "src": "https://img-nocors.nyo.test/e2290sb0p/S1.png",
+      "co": false,
+      "ref": "no-referrer"
+    }
+  ],
+  "realHostRequest": [
+    {
+      "headers": {
+        "sec-ch-ua-platform": "\"macOS\"",
+        "Referer": "",
+        "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/158.0.0.0 Safari/537.36",
+        "sec-ch-ua": "\"Chromium\";v=\"158\", \"Not.A/Brand\";v=\"24\", \"Google Chrome\";v=\"158\"",
+        "sec-ch-ua-mobile": "?0"
+      },
+      "referrerPolicy": "no-referrer"
+    }
+  ],
+  "switchPending": {
+    "header": {
+      "img": false,
+      "letter": true,
+      "text": "?"
+    },
+    "name": "自分",
+    "srcs": [
+      "yo.png"
+    ]
+  },
+  "afterSwitchSrcs": [
+    "yo.png",
+    "https://img-nocors.nyo.test/e2290sb0p/B.png",
+    "https://img-nocors.nyo.test/e2290sb0p/S1.png"
+  ],
+  "afterLogout": {
+    "accountHidden": true,
+    "accountChildren": 0,
+    "srcs": [
+      "yo.png"
+    ],
+    "inbox": 0
+  },
+  "imageRequests": [
+    {
+      "url": "https://img-cors.nyo.test/e2290sb0p/S5.png",
+      "headerNames": [
+        "Accept",
+        "User-Agent",
+        "sec-ch-ua",
+        "sec-ch-ua-mobile",
+        "sec-ch-ua-platform"
+      ]
+    },
+    {
+      "url": "https://img-nocors.nyo.test/e2290sb0p/missing.png",
+      "headerNames": [
+        "Accept",
+        "User-Agent",
+        "sec-ch-ua",
+        "sec-ch-ua-mobile",
+        "sec-ch-ua-platform"
+      ]
+    },
+    {
+      "url": "https://img-nocors.nyo.test/e2290sb0p/missing.png",
+      "headerNames": [
+        "Accept",
+        "User-Agent",
+        "sec-ch-ua",
+        "sec-ch-ua-mobile",
+        "sec-ch-ua-platform"
+      ]
+    },
+    {
+      "url": "https://img-nocors.nyo.test/e2290sb0p/S1.png",
+      "headerNames": [
+        "Accept",
+        "User-Agent",
+        "sec-ch-ua",
+        "sec-ch-ua-mobile",
+        "sec-ch-ua-platform"
+      ]
+    },
+    {
+      "url": "https://img-nocors.nyo.test/e2290sb0p/missing.png",
+      "headerNames": [
+        "Accept",
+        "User-Agent",
+        "sec-ch-ua",
+        "sec-ch-ua-mobile",
+        "sec-ch-ua-platform"
+      ]
+    },
+    {
+      "url": "https://img-nocors.nyo.test/e2290sb0p/A.png",
+      "headerNames": [
+        "Accept",
+        "User-Agent",
+        "sec-ch-ua",
+        "sec-ch-ua-mobile",
+        "sec-ch-ua-platform"
+      ]
+    },
+    {
+      "url": "https://img-nocors.nyo.test/e2290sb0p/missing.png",
+      "headerNames": [
+        "Accept",
+        "User-Agent",
+        "sec-ch-ua",
+        "sec-ch-ua-mobile",
+        "sec-ch-ua-platform"
+      ]
+    },
+    {
+      "url": "https://img-nocors.nyo.test/e2290sb0p/B.png",
+      "headerNames": [
+        "Accept",
+        "User-Agent",
+        "sec-ch-ua",
+        "sec-ch-ua-mobile",
+        "sec-ch-ua-platform"
+      ]
+    },
+    {
+      "url": "https://img-nocors.nyo.test/e2290sb0p/missing.png",
+      "headerNames": [
+        "Accept",
+        "User-Agent",
+        "sec-ch-ua",
+        "sec-ch-ua-mobile",
+        "sec-ch-ua-platform"
+      ]
+    }
+  ],
+  "networkFailures": [],
+  "relayLog": [
+    {
+      "t": 1795827946143,
+      "sid": "yo-inbox",
+      "fs": "[{\"kinds\":[7],\"#p\":[\"1f91eb4187c8feb16a6f4e95eea835882a23ca52dc95a776365558814e44adee\"],\"#k\":[\"0\"],\"limit\":50}]",
+      "n": 6,
+      "delay": 0
+    },
+    {
+      "t": 1795827946143,
+      "sid": "qips8co2t",
+      "fs": "[{\"kinds\":[3],\"authors\":[\"1f91eb4187c8feb16a6f4e95eea835882a23ca52dc95a776365558814e44adee\"],\"limit\":1}]",
+      "n": 1,
+      "delay": 0
+    },
+    {
+      "t": 1795827946175,
+      "sid": "q0lxdfeo4",
+      "fs": "[{\"kinds\":[0],\"authors\":[\"d876c2bbf63e4a5aa1013e599c9a6053866f206796fa5f83da51c8b459a0cdc1\",\"8745043cc1529a5787a822aae5340bbc0788b398411ad15d4c058c4795f5a967\",\"f9bec68a691a593d041b14cbe82f05b49a9269e7",
+      "n": 6,
+      "delay": 0
+    },
+    {
+      "t": 1795827946445,
+      "sid": "q6mbn7ni0",
+      "fs": "[{\"kinds\":[0],\"authors\":[\"1f91eb4187c8feb16a6f4e95eea835882a23ca52dc95a776365558814e44adee\"]}]",
+      "n": 1,
+      "delay": 0
+    },
+    {
+      "t": 1795827948665,
+      "sid": "yo-inbox",
+      "fs": "[{\"kinds\":[7],\"#p\":[\"01d5f2237444e7e349719a43849fd0412c35b88e62b6edaf4c4e995fc75613eb\"],\"#k\":[\"0\"],\"limit\":50}]",
+      "n": 1,
+      "delay": 0
+    },
+    {
+      "t": 1795827948666,
+      "sid": "q3wvk6hl5",
+      "fs": "[{\"kinds\":[3],\"authors\":[\"01d5f2237444e7e349719a43849fd0412c35b88e62b6edaf4c4e995fc75613eb\"],\"limit\":1}]",
+      "n": 0,
+      "delay": 0
+    },
+    {
+      "t": 1795827948969,
+      "sid": "qokfhes1k",
+      "fs": "[{\"kinds\":[0],\"authors\":[\"01d5f2237444e7e349719a43849fd0412c35b88e62b6edaf4c4e995fc75613eb\",\"d876c2bbf63e4a5aa1013e599c9a6053866f206796fa5f83da51c8b459a0cdc1\"]}]",
+      "n": 2,
+      "delay": 4000
+    },
+    {
+      "t": 1795827953654,
+      "sid": "yo-inbox",
+      "fs": "[{\"kinds\":[7],\"#p\":[\"0672cd0f1b9b15b163ad9ed5984a87f856958db22f5778ba4b320ed1cba24a6a\"],\"#k\":[\"0\"],\"limit\":50}]",
+      "n": 0,
+      "delay": 0
+    },
+    {
+      "t": 1795827953655,
+      "sid": "qss9ls9ul",
+      "fs": "[{\"kinds\":[3],\"authors\":[\"0672cd0f1b9b15b163ad9ed5984a87f856958db22f5778ba4b320ed1cba24a6a\"],\"limit\":1}]",
+      "n": 0,
+      "delay": 0
+    },
+    {
+      "t": 1795827953965,
+      "sid": "q65nlew7v",
+      "fs": "[{\"kinds\":[0],\"authors\":[\"0672cd0f1b9b15b163ad9ed5984a87f856958db22f5778ba4b320ed1cba24a6a\"]}]",
+      "n": 1,
+      "delay": 3000
+    },
+    {
+      "t": 1795827959072,
+      "sid": "yo-inbox",
+      "fs": "[{\"kinds\":[7],\"#p\":[\"0057ed12ebdf6ab26b2f736fc5ee27faac92fd805168ae22962516d9f459044b\"],\"#k\":[\"0\"],\"limit\":50}]",
+      "n": 0,
+      "delay": 0
+    },
+    {
+      "t": 1795827959072,
+      "sid": "qlh8isma2",
+      "fs": "[{\"kinds\":[3],\"authors\":[\"0057ed12ebdf6ab26b2f736fc5ee27faac92fd805168ae22962516d9f459044b\"],\"limit\":1}]",
+      "n": 0,
+      "delay": 0
+    },
+    {
+      "t": 1795827959380,
+      "sid": "qd29fl1kd",
+      "fs": "[{\"kinds\":[0],\"authors\":[\"0057ed12ebdf6ab26b2f736fc5ee27faac92fd805168ae22962516d9f459044b\"]}]",
+      "n": 1,
+      "delay": 0
+    },
+    {
+      "t": 1795827959999,
+      "sid": "yo-inbox",
+      "fs": "[{\"kinds\":[7],\"#p\":[\"1f91eb4187c8feb16a6f4e95eea835882a23ca52dc95a776365558814e44adee\"],\"#k\":[\"0\"],\"limit\":50}]",
+      "n": 6,
+      "delay": 0
+    },
+    {
+      "t": 1795827959999,
+      "sid": "qcp4wmuwt",
+      "fs": "[{\"kinds\":[3],\"authors\":[\"1f91eb4187c8feb16a6f4e95eea835882a23ca52dc95a776365558814e44adee\"],\"limit\":1}]",
+      "n": 1,
+      "delay": 0
+    }
+  ],
+  "finishedAt": "2026-11-28T01:06:00.002Z",
+  "pass": 33,
+  "total": 33
+}

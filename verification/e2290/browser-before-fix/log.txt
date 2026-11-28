@@ -1,0 +1,6 @@
+mock relay ws://127.0.0.1:63536
+headerA {"img":false,"letter":true,"text":"A"}
+inboxA {"S1nocors":{"img":false,"letter":true},"S2invalid":{"img":false,"letter":true},"S3nopic":{"img":false,"letter":true},"S4missing":{"img":false,"letter":true},"S5cors":{"img":true,"src":"https://img-cors.nyo.test/e2290f5kx/S5.png","loaded":true,"co":true,"ref":"no-referrer"},"S6realNocors":{"img":false,"letter":true}}
+candidates {"S1nocors":{"img":false,"letter":true,"text":"S"},"S2invalid":{"img":false,"letter":true,"text":"S"},"S3nopic":{"img":false,"letter":true,"text":"S"},"S4missing":{"img":false,"letter":true,"text":"S"},"S5cors":{"img":true,"src":"https://img-cors.nyo.test/e2290f5kx/S5.png","loaded":true,"co":true,"coProp":"anonymous","ref":"no-referrer"},"S6realNocors":{"img":false,"letter":true,"text":"S"}}
+switchPending {"header":{"img":false,"letter":true,"text":"?"},"name":"自分","srcs":["yo.png"]}
+afterLogout {"accountHidden":true,"accountChildren":0,"srcs":["yo.png"],"inbox":0}

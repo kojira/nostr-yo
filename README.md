@@ -61,7 +61,8 @@ In the inbox, a Yo whose emoji URL is not ours is noted inside the row's collaps
 **Privacy note (profile pictures).** Showing a `picture` means your browser fetches that image from whatever host the profile points to. That host sees your IP address and the time.
 - Mitigations:
   - only plain `https://` URLs are allowed (no credentials, whitespace or quotes, ≤ 1024 chars);
-  - images are fetched with `referrerpolicy="no-referrer"` and `crossorigin="anonymous"` (no cookies), and loaded lazily;
+  - images are fetched with `referrerpolicy="no-referrer"` (no Referer header) and loaded lazily;
+  - images are normal display-only `<img>` requests without `crossorigin`, so hosts that send no CORS headers still work. Because of this, the browser may send that host's own cookies, depending on its third-party cookie settings;
   - CSP limits images to `'self' data: https:`.
 - The emoji URL inside a Yo event is **still never fetched**; the app always shows its own `yo.png`.
 

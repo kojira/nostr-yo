@@ -186,7 +186,9 @@ function avatar(pubkey: string, picture: string, name: string): HTMLElement {
   img.width = 38;
   img.height = 38;
   img.referrerPolicy = "no-referrer";
-  img.crossOrigin = "anonymous";
+  // No crossOrigin: the image is only displayed (never read via canvas), so a plain
+  // no-cors request is used. CORS mode would make hosts without
+  // Access-Control-Allow-Origin fail and fall back to the letter avatar.
   img.loading = "lazy";
   img.decoding = "async";
   img.onerror = () => { img.replaceWith(letterAvatar(pubkey, name)); };

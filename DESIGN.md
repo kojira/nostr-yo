@@ -79,8 +79,8 @@ UI marks: "nostr-yo" when emoji URL == ours, otherwise "他実装" (host shown a
 ## e2263: show senders by icon and name
 - Profile source: the newest verified kind 0 per author. Profiles the follow loader already has are reused; otherwise unknown senders are batched (debounce 300 ms, up to 150 authors per REQ), relay by relay, asking only for still-missing authors. Each author is looked up at most once per session.
 - Fields: display_name || name (cleanText, untrusted, textContent). `picture` is used only if it is https, has no credentials, is ≤ 1024 chars, and has no whitespace or control characters.
-- `<img>` attributes: referrerpolicy=no-referrer, crossorigin=anonymous (no cookies), loading=lazy, decoding=async, width/height fixed. On error it falls back to a built-in letter avatar. CSP `img-src 'self' data: https:`.
+- `<img>` attributes: referrerpolicy=no-referrer, no crossorigin (plain display-only no-cors request; see e2290 below), loading=lazy, decoding=async, width/height fixed. On error it falls back to a built-in letter avatar. CSP `img-src 'self' data: https:`.
 - Privacy: loading a sender's picture contacts that image's host. The host sees your IP and when you loaded it; no referrer is sent. Documented in the README. Emoji URLs inside Yo events are still never loaded.
 - No profile / lookup failed / no picture → letter avatar plus short npub. A short npub is always shown under the name (for same names). The Yo back target stays fixed to the event author.
-- e2264: search candidates use the same `avatar()` (safe https only, no-referrer, anonymous CORS, lazy, letter fallback on missing/error) from the follow loader's profiles. No extra queries. The short npub stays, and clicking still fixes that pubkey.
+- e2264: search candidates use the same `avatar()` (safe https only, no-referrer, no crossorigin, lazy, letter fallback on missing/error) from the follow loader's profiles. No extra queries. The short npub stays, and clicking still fixes that pubkey.
 - Bug found in testing: inbox re-render used requestAnimationFrame, which never fires in background tabs → switched to setTimeout.

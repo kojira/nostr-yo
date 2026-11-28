@@ -1,0 +1,715 @@
+{
+  "site": "http://127.0.0.1:18791/",
+  "chrome": "Chrome/158.0.8127.38",
+  "relay": "local mock relay (this script)",
+  "nip07": "TEST MOCK (not a real extension)",
+  "startedAt": "2026-11-28T01:04:10.809Z",
+  "checks": {
+    "cspImgSrcKept": true,
+    "referrerMetaKept": true,
+    "usesMockRelayOnly": true,
+    "loginA": true,
+    "inboxMoreShowsAll6": true,
+    "headerA_noCorsLoaded": false,
+    "inbox_noCorsLoaded": false,
+    "inbox_corsHostStillLoaded": true,
+    "inbox_realNoCorsHostLoaded": false,
+    "inbox_invalidUrlLetter": true,
+    "inbox_noPictureLetter": true,
+    "inbox_loadErrorLetter": true,
+    "realHostReallyHasNoAcao": false,
+    "candidate_noCorsLoaded": false,
+    "candidate_realNoCorsLoaded": false,
+    "candidate_corsLoaded": true,
+    "candidate_fallbacks": true,
+    "selected_noCorsLoaded": false,
+    "noCrossoriginAttributeAnywhere": false,
+    "noReferrerPolicyKept": true,
+    "imageRequestsNoCorsMode": false,
+    "imageRequestsNoReferer": true,
+    "noCorsErrors": false,
+    "httpPictureNeverRequested": true,
+    "switchPendingNoOldImage": true,
+    "switchDelayedKind0Shows": false,
+    "switchInboxOnlyB": true,
+    "switchNoAImagesLeft": true,
+    "switchToCNoBImage": true,
+    "logoutLateKind0NoImage": true,
+    "headerLoadErrorLetter": true,
+    "backToA_headerLoaded": false,
+    "neverSigned": true
+  },
+  "csp": "default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data: https:; connect-src wss: ws://localhost:* ws://127.0.0.1:*; base-uri 'none'; form-action 'none'",
+  "referrerMeta": "no-referrer",
+  "headerA": {
+    "img": false,
+    "letter": true,
+    "text": "A"
+  },
+  "inboxA": {
+    "S1nocors": {
+      "img": false,
+      "letter": true
+    },
+    "S2invalid": {
+      "img": false,
+      "letter": true
+    },
+    "S3nopic": {
+      "img": false,
+      "letter": true
+    },
+    "S4missing": {
+      "img": false,
+      "letter": true
+    },
+    "S5cors": {
+      "img": true,
+      "src": "https://img-cors.nyo.test/e2290f5kx/S5.png",
+      "loaded": true,
+      "co": true,
+      "ref": "no-referrer"
+    },
+    "S6realNocors": {
+      "img": false,
+      "letter": true
+    }
+  },
+  "realNoCorsResponse": [],
+  "candidates": {
+    "S1nocors": {
+      "img": false,
+      "letter": true,
+      "text": "S"
+    },
+    "S2invalid": {
+      "img": false,
+      "letter": true,
+      "text": "S"
+    },
+    "S3nopic": {
+      "img": false,
+      "letter": true,
+      "text": "S"
+    },
+    "S4missing": {
+      "img": false,
+      "letter": true,
+      "text": "S"
+    },
+    "S5cors": {
+      "img": true,
+      "src": "https://img-cors.nyo.test/e2290f5kx/S5.png",
+      "loaded": true,
+      "co": true,
+      "coProp": "anonymous",
+      "ref": "no-referrer"
+    },
+    "S6realNocors": {
+      "img": false,
+      "letter": true,
+      "text": "S"
+    }
+  },
+  "allAvatarAttrs": [
+    {
+      "src": "https://img-cors.nyo.test/e2290f5kx/S5.png",
+      "co": true,
+      "ref": "no-referrer"
+    }
+  ],
+  "realHostRequest": [
+    {
+      "headers": {
+        "Origin": "http://127.0.0.1:18791",
+        "sec-ch-ua-platform": "\"macOS\"",
+        "Referer": "",
+        "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/158.0.0.0 Safari/537.36",
+        "sec-ch-ua": "\"Chromium\";v=\"158\", \"Not.A/Brand\";v=\"24\", \"Google Chrome\";v=\"158\"",
+        "sec-ch-ua-mobile": "?0"
+      },
+      "referrerPolicy": "no-referrer"
+    },
+    {
+      "headers": {
+        "Origin": "http://127.0.0.1:18791",
+        "sec-ch-ua-platform": "\"macOS\"",
+        "Referer": "",
+        "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/158.0.0.0 Safari/537.36",
+        "sec-ch-ua": "\"Chromium\";v=\"158\", \"Not.A/Brand\";v=\"24\", \"Google Chrome\";v=\"158\"",
+        "sec-ch-ua-mobile": "?0"
+      },
+      "referrerPolicy": "no-referrer"
+    },
+    {
+      "headers": {
+        "Origin": "http://127.0.0.1:18791",
+        "sec-ch-ua-platform": "\"macOS\"",
+        "Referer": "",
+        "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/158.0.0.0 Safari/537.36",
+        "sec-ch-ua": "\"Chromium\";v=\"158\", \"Not.A/Brand\";v=\"24\", \"Google Chrome\";v=\"158\"",
+        "sec-ch-ua-mobile": "?0"
+      },
+      "referrerPolicy": "no-referrer"
+    },
+    {
+      "headers": {
+        "Origin": "http://127.0.0.1:18791",
+        "sec-ch-ua-platform": "\"macOS\"",
+        "Referer": "",
+        "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/158.0.0.0 Safari/537.36",
+        "sec-ch-ua": "\"Chromium\";v=\"158\", \"Not.A/Brand\";v=\"24\", \"Google Chrome\";v=\"158\"",
+        "sec-ch-ua-mobile": "?0"
+      },
+      "referrerPolicy": "no-referrer"
+    }
+  ],
+  "switchPending": {
+    "header": {
+      "img": false,
+      "letter": true,
+      "text": "?"
+    },
+    "name": "自分",
+    "srcs": [
+      "yo.png"
+    ]
+  },
+  "afterSwitchSrcs": [
+    "yo.png"
+  ],
+  "afterLogout": {
+    "accountHidden": true,
+    "accountChildren": 0,
+    "srcs": [
+      "yo.png"
+    ],
+    "inbox": 0
+  },
+  "imageRequests": [
+    {
+      "url": "https://img-cors.nyo.test/e2290f5kx/S5.png",
+      "headerNames": [
+        "Accept",
+        "Origin",
+        "User-Agent",
+        "sec-ch-ua",
+        "sec-ch-ua-mobile",
+        "sec-ch-ua-platform"
+      ]
+    },
+    {
+      "url": "https://img-nocors.nyo.test/e2290f5kx/missing.png",
+      "headerNames": [
+        "Accept",
+        "Origin",
+        "User-Agent",
+        "sec-ch-ua",
+        "sec-ch-ua-mobile",
+        "sec-ch-ua-platform"
+      ]
+    },
+    {
+      "url": "https://img-nocors.nyo.test/e2290f5kx/missing.png",
+      "headerNames": [
+        "Accept",
+        "Origin",
+        "User-Agent",
+        "sec-ch-ua",
+        "sec-ch-ua-mobile",
+        "sec-ch-ua-platform"
+      ]
+    },
+    {
+      "url": "https://img-nocors.nyo.test/e2290f5kx/S1.png",
+      "headerNames": [
+        "Accept",
+        "Origin",
+        "User-Agent",
+        "sec-ch-ua",
+        "sec-ch-ua-mobile",
+        "sec-ch-ua-platform"
+      ]
+    },
+    {
+      "url": "https://img-nocors.nyo.test/e2290f5kx/missing.png",
+      "headerNames": [
+        "Accept",
+        "Origin",
+        "User-Agent",
+        "sec-ch-ua",
+        "sec-ch-ua-mobile",
+        "sec-ch-ua-platform"
+      ]
+    },
+    {
+      "url": "https://img-nocors.nyo.test/e2290f5kx/S1.png",
+      "headerNames": [
+        "Accept",
+        "Origin",
+        "User-Agent",
+        "sec-ch-ua",
+        "sec-ch-ua-mobile",
+        "sec-ch-ua-platform"
+      ]
+    },
+    {
+      "url": "https://img-nocors.nyo.test/e2290f5kx/A.png",
+      "headerNames": [
+        "Accept",
+        "Origin",
+        "User-Agent",
+        "sec-ch-ua",
+        "sec-ch-ua-mobile",
+        "sec-ch-ua-platform"
+      ]
+    },
+    {
+      "url": "https://img-nocors.nyo.test/e2290f5kx/S1.png",
+      "headerNames": [
+        "Accept",
+        "Origin",
+        "User-Agent",
+        "sec-ch-ua",
+        "sec-ch-ua-mobile",
+        "sec-ch-ua-platform"
+      ]
+    },
+    {
+      "url": "https://img-nocors.nyo.test/e2290f5kx/missing.png",
+      "headerNames": [
+        "Accept",
+        "Origin",
+        "User-Agent",
+        "sec-ch-ua",
+        "sec-ch-ua-mobile",
+        "sec-ch-ua-platform"
+      ]
+    },
+    {
+      "url": "https://img-nocors.nyo.test/e2290f5kx/S1.png",
+      "headerNames": [
+        "Accept",
+        "Origin",
+        "User-Agent",
+        "sec-ch-ua",
+        "sec-ch-ua-mobile",
+        "sec-ch-ua-platform"
+      ]
+    },
+    {
+      "url": "https://img-nocors.nyo.test/e2290f5kx/S1.png",
+      "headerNames": [
+        "Accept",
+        "Origin",
+        "User-Agent",
+        "sec-ch-ua",
+        "sec-ch-ua-mobile",
+        "sec-ch-ua-platform"
+      ]
+    },
+    {
+      "url": "https://img-nocors.nyo.test/e2290f5kx/B.png",
+      "headerNames": [
+        "Accept",
+        "Origin",
+        "User-Agent",
+        "sec-ch-ua",
+        "sec-ch-ua-mobile",
+        "sec-ch-ua-platform"
+      ]
+    },
+    {
+      "url": "https://img-nocors.nyo.test/e2290f5kx/missing.png",
+      "headerNames": [
+        "Accept",
+        "Origin",
+        "User-Agent",
+        "sec-ch-ua",
+        "sec-ch-ua-mobile",
+        "sec-ch-ua-platform"
+      ]
+    },
+    {
+      "url": "https://img-nocors.nyo.test/e2290f5kx/A.png",
+      "headerNames": [
+        "Accept",
+        "Origin",
+        "User-Agent",
+        "sec-ch-ua",
+        "sec-ch-ua-mobile",
+        "sec-ch-ua-platform"
+      ]
+    },
+    {
+      "url": "https://img-nocors.nyo.test/e2290f5kx/missing.png",
+      "headerNames": [
+        "Accept",
+        "Origin",
+        "User-Agent",
+        "sec-ch-ua",
+        "sec-ch-ua-mobile",
+        "sec-ch-ua-platform"
+      ]
+    },
+    {
+      "url": "https://img-nocors.nyo.test/e2290f5kx/A.png",
+      "headerNames": [
+        "Accept",
+        "Origin",
+        "User-Agent",
+        "sec-ch-ua",
+        "sec-ch-ua-mobile",
+        "sec-ch-ua-platform"
+      ]
+    },
+    {
+      "url": "https://img-nocors.nyo.test/e2290f5kx/missing.png",
+      "headerNames": [
+        "Accept",
+        "Origin",
+        "User-Agent",
+        "sec-ch-ua",
+        "sec-ch-ua-mobile",
+        "sec-ch-ua-platform"
+      ]
+    },
+    {
+      "url": "https://img-nocors.nyo.test/e2290f5kx/A.png",
+      "headerNames": [
+        "Accept",
+        "Origin",
+        "User-Agent",
+        "sec-ch-ua",
+        "sec-ch-ua-mobile",
+        "sec-ch-ua-platform"
+      ]
+    }
+  ],
+  "networkFailures": [
+    {
+      "id": "66827.16",
+      "error": "net::ERR_FAILED",
+      "cors": {
+        "corsError": "MissingAllowOriginHeader",
+        "failedParameter": ""
+      },
+      "blocked": null
+    },
+    {
+      "id": "66827.14",
+      "error": "net::ERR_FAILED",
+      "cors": {
+        "corsError": "MissingAllowOriginHeader",
+        "failedParameter": ""
+      },
+      "blocked": null
+    },
+    {
+      "id": "66827.23",
+      "error": "net::ERR_FAILED",
+      "cors": {
+        "corsError": "MissingAllowOriginHeader",
+        "failedParameter": ""
+      },
+      "blocked": null
+    },
+    {
+      "id": "66827.24",
+      "error": "net::ERR_FAILED",
+      "cors": {
+        "corsError": "MissingAllowOriginHeader",
+        "failedParameter": ""
+      },
+      "blocked": null
+    },
+    {
+      "id": "66827.21",
+      "error": "net::ERR_FAILED",
+      "cors": {
+        "corsError": "MissingAllowOriginHeader",
+        "failedParameter": ""
+      },
+      "blocked": null
+    },
+    {
+      "id": "66827.31",
+      "error": "net::ERR_FAILED",
+      "cors": {
+        "corsError": "MissingAllowOriginHeader",
+        "failedParameter": ""
+      },
+      "blocked": null
+    },
+    {
+      "id": "66827.32",
+      "error": "net::ERR_FAILED",
+      "cors": {
+        "corsError": "MissingAllowOriginHeader",
+        "failedParameter": ""
+      },
+      "blocked": null
+    },
+    {
+      "id": "66827.33",
+      "error": "net::ERR_FAILED",
+      "cors": {
+        "corsError": "MissingAllowOriginHeader",
+        "failedParameter": ""
+      },
+      "blocked": null
+    },
+    {
+      "id": "66827.29",
+      "error": "net::ERR_FAILED",
+      "cors": {
+        "corsError": "MissingAllowOriginHeader",
+        "failedParameter": ""
+      },
+      "blocked": null
+    },
+    {
+      "id": "66827.39",
+      "error": "net::ERR_FAILED",
+      "cors": {
+        "corsError": "MissingAllowOriginHeader",
+        "failedParameter": ""
+      },
+      "blocked": null
+    },
+    {
+      "id": "66827.40",
+      "error": "net::ERR_FAILED",
+      "cors": {
+        "corsError": "MissingAllowOriginHeader",
+        "failedParameter": ""
+      },
+      "blocked": null
+    },
+    {
+      "id": "66827.42",
+      "error": "net::ERR_FAILED",
+      "cors": {
+        "corsError": "MissingAllowOriginHeader",
+        "failedParameter": ""
+      },
+      "blocked": null
+    },
+    {
+      "id": "66827.46",
+      "error": "net::ERR_FAILED",
+      "cors": {
+        "corsError": "MissingAllowOriginHeader",
+        "failedParameter": ""
+      },
+      "blocked": null
+    },
+    {
+      "id": "66827.48",
+      "error": "net::ERR_FAILED",
+      "cors": {
+        "corsError": "MissingAllowOriginHeader",
+        "failedParameter": ""
+      },
+      "blocked": null
+    },
+    {
+      "id": "66827.49",
+      "error": "net::ERR_FAILED",
+      "cors": {
+        "corsError": "MissingAllowOriginHeader",
+        "failedParameter": ""
+      },
+      "blocked": null
+    },
+    {
+      "id": "66827.52",
+      "error": "net::ERR_FAILED",
+      "cors": {
+        "corsError": "MissingAllowOriginHeader",
+        "failedParameter": ""
+      },
+      "blocked": null
+    },
+    {
+      "id": "66827.54",
+      "error": "net::ERR_FAILED",
+      "cors": {
+        "corsError": "MissingAllowOriginHeader",
+        "failedParameter": ""
+      },
+      "blocked": null
+    },
+    {
+      "id": "66827.59",
+      "error": "net::ERR_FAILED",
+      "cors": {
+        "corsError": "MissingAllowOriginHeader",
+        "failedParameter": ""
+      },
+      "blocked": null
+    },
+    {
+      "id": "66827.60",
+      "error": "net::ERR_FAILED",
+      "cors": {
+        "corsError": "MissingAllowOriginHeader",
+        "failedParameter": ""
+      },
+      "blocked": null
+    },
+    {
+      "id": "66827.57",
+      "error": "net::ERR_FAILED",
+      "cors": {
+        "corsError": "MissingAllowOriginHeader",
+        "failedParameter": ""
+      },
+      "blocked": null
+    },
+    {
+      "id": "66827.67",
+      "error": "net::ERR_FAILED",
+      "cors": {
+        "corsError": "MissingAllowOriginHeader",
+        "failedParameter": ""
+      },
+      "blocked": null
+    },
+    {
+      "id": "66827.68",
+      "error": "net::ERR_FAILED",
+      "cors": {
+        "corsError": "MissingAllowOriginHeader",
+        "failedParameter": ""
+      },
+      "blocked": null
+    },
+    {
+      "id": "66827.65",
+      "error": "net::ERR_FAILED",
+      "cors": {
+        "corsError": "MissingAllowOriginHeader",
+        "failedParameter": ""
+      },
+      "blocked": null
+    }
+  ],
+  "relayLog": [
+    {
+      "t": 1795827853581,
+      "sid": "yo-inbox",
+      "fs": "[{\"kinds\":[7],\"#p\":[\"51743dd6209026a6e9adb465e254c4a69b708603a4ec4f2238c9fca83a203410\"],\"#k\":[\"0\"],\"limit\":50}]",
+      "n": 6,
+      "delay": 0
+    },
+    {
+      "t": 1795827853581,
+      "sid": "qa2ja7k9n",
+      "fs": "[{\"kinds\":[3],\"authors\":[\"51743dd6209026a6e9adb465e254c4a69b708603a4ec4f2238c9fca83a203410\"],\"limit\":1}]",
+      "n": 1,
+      "delay": 0
+    },
+    {
+      "t": 1795827853609,
+      "sid": "q06ntv1ov",
+      "fs": "[{\"kinds\":[0],\"authors\":[\"666a9af89f43a147c3f7aa3dd0fe93c8a614c68b5a11c77da64b70695fa158fe\",\"643ed7d463987735072f5033c347ea2e2a1cdf89404b74a821dc430cdbda6b38\",\"09054fa26c4535f40c55d7131d3a2d702be633ef",
+      "n": 6,
+      "delay": 0
+    },
+    {
+      "t": 1795827853881,
+      "sid": "q4rezhb4o",
+      "fs": "[{\"kinds\":[0],\"authors\":[\"51743dd6209026a6e9adb465e254c4a69b708603a4ec4f2238c9fca83a203410\"]}]",
+      "n": 1,
+      "delay": 0
+    },
+    {
+      "t": 1795827912420,
+      "sid": "yo-inbox",
+      "fs": "[{\"kinds\":[7],\"#p\":[\"1a69b202053480ed5ea20cddec67ae9674781aa3d2c870c72ae89d47825dffe3\"],\"#k\":[\"0\"],\"limit\":50}]",
+      "n": 1,
+      "delay": 0
+    },
+    {
+      "t": 1795827912421,
+      "sid": "qhjnnh0sx",
+      "fs": "[{\"kinds\":[3],\"authors\":[\"1a69b202053480ed5ea20cddec67ae9674781aa3d2c870c72ae89d47825dffe3\"],\"limit\":1}]",
+      "n": 0,
+      "delay": 0
+    },
+    {
+      "t": 1795827912723,
+      "sid": "qs1re9v8g",
+      "fs": "[{\"kinds\":[0],\"authors\":[\"1a69b202053480ed5ea20cddec67ae9674781aa3d2c870c72ae89d47825dffe3\",\"666a9af89f43a147c3f7aa3dd0fe93c8a614c68b5a11c77da64b70695fa158fe\"]}]",
+      "n": 2,
+      "delay": 4000
+    },
+    {
+      "t": 1795827925743,
+      "sid": "yo-inbox",
+      "fs": "[{\"kinds\":[7],\"#p\":[\"319c336b20b166b11cd039dd4f70fc0381aeb51670c748bc97fc327ce3c8d608\"],\"#k\":[\"0\"],\"limit\":50}]",
+      "n": 0,
+      "delay": 0
+    },
+    {
+      "t": 1795827925744,
+      "sid": "qx4v9bcof",
+      "fs": "[{\"kinds\":[3],\"authors\":[\"319c336b20b166b11cd039dd4f70fc0381aeb51670c748bc97fc327ce3c8d608\"],\"limit\":1}]",
+      "n": 0,
+      "delay": 0
+    },
+    {
+      "t": 1795827926045,
+      "sid": "qs2qrwujm",
+      "fs": "[{\"kinds\":[0],\"authors\":[\"319c336b20b166b11cd039dd4f70fc0381aeb51670c748bc97fc327ce3c8d608\"]}]",
+      "n": 1,
+      "delay": 3000
+    },
+    {
+      "t": 1795827931181,
+      "sid": "yo-inbox",
+      "fs": "[{\"kinds\":[7],\"#p\":[\"ef33a293468fa1b19c7de030e581f554ed1898b8d6e97e011ec6819390c02c0f\"],\"#k\":[\"0\"],\"limit\":50}]",
+      "n": 0,
+      "delay": 0
+    },
+    {
+      "t": 1795827931181,
+      "sid": "qpp14wk4d",
+      "fs": "[{\"kinds\":[3],\"authors\":[\"ef33a293468fa1b19c7de030e581f554ed1898b8d6e97e011ec6819390c02c0f\"],\"limit\":1}]",
+      "n": 0,
+      "delay": 0
+    },
+    {
+      "t": 1795827931488,
+      "sid": "q0qi4ckvf",
+      "fs": "[{\"kinds\":[0],\"authors\":[\"ef33a293468fa1b19c7de030e581f554ed1898b8d6e97e011ec6819390c02c0f\"]}]",
+      "n": 1,
+      "delay": 0
+    },
+    {
+      "t": 1795827932144,
+      "sid": "yo-inbox",
+      "fs": "[{\"kinds\":[7],\"#p\":[\"51743dd6209026a6e9adb465e254c4a69b708603a4ec4f2238c9fca83a203410\"],\"#k\":[\"0\"],\"limit\":50}]",
+      "n": 6,
+      "delay": 0
+    },
+    {
+      "t": 1795827932144,
+      "sid": "qji83f3yz",
+      "fs": "[{\"kinds\":[3],\"authors\":[\"51743dd6209026a6e9adb465e254c4a69b708603a4ec4f2238c9fca83a203410\"],\"limit\":1}]",
+      "n": 1,
+      "delay": 0
+    },
+    {
+      "t": 1795827932148,
+      "sid": "qkmpa1fkk",
+      "fs": "[{\"kinds\":[0],\"authors\":[\"666a9af89f43a147c3f7aa3dd0fe93c8a614c68b5a11c77da64b70695fa158fe\",\"643ed7d463987735072f5033c347ea2e2a1cdf89404b74a821dc430cdbda6b38\",\"09054fa26c4535f40c55d7131d3a2d702be633ef",
+      "n": 6,
+      "delay": 0
+    }
+  ],
+  "finishedAt": "2026-11-28T01:05:42.236Z",
+  "pass": 21,
+  "total": 33
+}
